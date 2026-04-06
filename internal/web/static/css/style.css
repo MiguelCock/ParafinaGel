@@ -1,7 +1,258 @@
-h1 {
-    color: aqua;
+/* ---------- 1. RESET ---------- */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* ---------- 2. VARIABLES (light mode) ---------- */
+:root {
+    /* Color palette */
+    --color-bg: #ffffff;
+    --color-surface: #f8f9fa;
+    --color-text: #212529;
+    --color-text-secondary: #6c757d;
+    --color-primary: #0d6efd;
+    --color-primary-hover: #0b5ed7;
+    --color-border: #dee2e6;
+
+    /* Spacing (rem based) */
+    --spacing-xs: 0.25rem; /* 4px if 1rem=16px */
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-2xl: 3rem;
+
+    /* Typography */
+    --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --font-mono: "SF Mono", Monaco, Consolas, monospace;
+    --text-xs: 0.75rem;
+    --text-sm: 0.875rem;
+    --text-base: 1rem;
+    --text-lg: 1.125rem;
+    --text-xl: 1.25rem;
+    --text-2xl: 1.5rem;
+
+    /* Borders & Effects */
+    --radius-sm: 0.25rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 1rem;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+    --transition: all 0.2s ease;
+}
+
+/* ---------- 3. DARK MODE (prefers-color-scheme) ---------- */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --color-bg: #121212;
+        --color-surface: #1e1e1e;
+        --color-text: #e9ecef;
+        --color-text-secondary: #adb5bd;
+        --color-primary: #3b82f6;
+        --color-primary-hover: #2563eb;
+        --color-border: #2c2c2c;
+    }
+}
+
+/* Optional: manual dark mode via class (if you add a theme toggle with Alpine) */
+:root.dark {
+    --color-bg: #121212;
+    --color-surface: #1e1e1e;
+    --color-text: #e9ecef;
+    --color-text-secondary: #adb5bd;
+    --color-primary: #3b82f6;
+    --color-primary-hover: #2563eb;
+    --color-border: #2c2c2c;
+}
+
+/* ---------- 4. GLOBAL STYLES ---------- */
+html {
+    font-size: 100%; /* 1rem = 16px default, but respects user zoom */
+    scroll-behavior: smooth;
 }
 
 body {
-    background-color: burlywood;
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    line-height: 1.5;
+    margin: 0;
+    padding: 0;
+    transition:
+        background-color 0.3s,
+        color 0.2s;
+}
+
+/* Typography */
+h1 {
+    font-size: var(--text-2xl);
+    margin-bottom: var(--spacing-lg);
+}
+h2 {
+    font-size: var(--text-xl);
+    margin-bottom: var(--spacing-md);
+}
+h3 {
+    font-size: var(--text-lg);
+    margin-bottom: var(--spacing-sm);
+}
+a {
+    color: var(--color-primary);
+    text-decoration: none;
+    transition: var(--transition);
+}
+a:hover {
+    color: var(--color-primary-hover);
+}
+
+/* ---------- 5. LAYOUT HELPERS ---------- */
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 var(--spacing-md);
+}
+
+/* Responsive grid (simple) */
+.grid {
+    display: grid;
+    gap: var(--spacing-lg);
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+/* Flex helpers */
+.flex {
+    display: flex;
+}
+.flex-col {
+    flex-direction: column;
+}
+.items-center {
+    align-items: center;
+}
+.justify-between {
+    justify-content: space-between;
+}
+.gap-sm {
+    gap: var(--spacing-sm);
+}
+.gap-md {
+    gap: var(--spacing-md);
+}
+
+/* ---------- 6. COMPONENTS ---------- */
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.button:hover {
+    background: var(--color-primary-hover);
+    transform: translateY(-1px);
+}
+
+.card {
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--color-border);
+    transition: var(--transition);
+}
+
+.card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+/* Form elements */
+input,
+textarea,
+select {
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    color: var(--color-text);
+    font-size: var(--text-base);
+    transition: var(--transition);
+}
+
+input:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+}
+
+/* ---------- 7. UTILITIES (optional, but helpful) ---------- */
+.text-center {
+    text-align: center;
+}
+.text-secondary {
+    color: var(--color-text-secondary);
+}
+.mt-auto {
+    margin-top: auto;
+}
+.w-full {
+    width: 100%;
+}
+
+/* Spacing utilities (margin/padding) */
+.p-sm {
+    padding: var(--spacing-sm);
+}
+.mb-md {
+    margin-bottom: var(--spacing-md);
+}
+.mt-xl {
+    margin-top: var(--spacing-xl);
+}
+
+/* ---------- 8. ANIMATIONS ---------- */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Great for HTMX content that swaps in */
+.htmx-swapping {
+    animation: fadeIn 0.2s ease-out;
+}
+
+/* Alpine transitions */
+[x-cloak] {
+    display: none !important;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.2s;
+}
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
 }
