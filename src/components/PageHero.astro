@@ -1,0 +1,73 @@
+---
+interface Props {
+  eyebrow: string;
+  title: string;
+  description?: string;
+  align?: "left" | "center";
+}
+
+const { eyebrow, title, description, align = "left" } = Astro.props;
+---
+
+<section class="page-hero">
+  <div
+    class:list={[
+      "container",
+      "page-hero__inner",
+      align === "center" && "page-hero__inner--center",
+    ]}
+  >
+    <p class="eyebrow">{eyebrow}</p>
+    <h1>{title}</h1>
+    {description && <p class="lede">{description}</p>}
+    <slot />
+  </div>
+</section>
+
+<style>
+  .page-hero {
+    position: relative;
+    padding-block: var(--space-7) var(--space-6);
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .page-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: radial-gradient(
+      ellipse at 80% 0%,
+      var(--color-accent-soft),
+      transparent 58%
+    );
+    opacity: 0.6;
+  }
+
+  .page-hero__inner {
+    display: grid;
+    gap: var(--space-3);
+    max-width: var(--container);
+  }
+
+  .page-hero__inner--center {
+    justify-items: center;
+    text-align: center;
+  }
+
+  .page-hero h1 {
+    max-width: 18ch;
+    font-size: var(--text-4xl);
+  }
+
+  .page-hero__inner--center h1 {
+    max-width: 22ch;
+  }
+
+  @media (min-width: 768px) {
+    .page-hero {
+      padding-block: var(--space-8) var(--space-7);
+    }
+  }
+</style>

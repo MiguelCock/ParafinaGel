@@ -1,0 +1,42 @@
+---
+import Button from "@components/Button.astro";
+import SectionHeading from "@components/SectionHeading.astro";
+import StoryVisual from "@components/StoryVisual.astro";
+---
+
+<section class="section story-teaser">
+  <div class="container split">
+    <StoryVisual />
+
+    <div class="story-teaser__content">
+      <SectionHeading
+        eyebrow="Nuestra historia"
+        title="Un oficio que se comparte en casa"
+        description="ParafinaGel nace de una mesa familiar, de las tardes probando aromas y de las ganas de compartir algo hecho con las manos."
+      />
+
+      <p>
+        Cada vela se prepara en pequeños lotes, con calma y atención al detalle.
+        Nos gusta pensar que nuestro trabajo acompaña momentos cotidianos: una
+        tarde de lectura, una cena con amigos o el final de un día largo.
+      </p>
+
+      <Button href="/nosotros" variant="secondary">
+        Conoce más
+      </Button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .story-teaser__content {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-5);
+  }
+
+  .story-teaser__content > p {
+    max-width: 52ch;
+    color: var(--color-text-muted);
+  }
+</style>

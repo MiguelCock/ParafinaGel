@@ -1,0 +1,215 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import FinalCTA from "@components/FinalCTA.astro";
+import PageHero from "@components/PageHero.astro";
+import StoryVisual from "@components/StoryVisual.astro";
+
+const valores = [
+  {
+    title: "Hecho a mano",
+    text: "Cada pieza pasa por nuestras manos, desde la preparación de la cera hasta el último detalle.",
+  },
+  {
+    title: "Pequeños lotes",
+    text: "Trabajamos por tandas pequeñas para cuidar la calidad y probar cada aroma con calma.",
+  },
+  {
+    title: "Atención cercana",
+    text: "Te ayudamos a elegir, resolvemos dudas y coordinamos tu pedido por WhatsApp.",
+  },
+];
+
+const proceso = [
+  "Elegimos la cera y el recipiente.",
+  "Mezclamos el aroma con cuidado.",
+  "Vertemos y dejamos reposar.",
+  "Curamos la vela antes de que llegue a tus manos.",
+];
+---
+
+<BaseLayout
+  title="Nosotros"
+  description="Conoce la historia familiar detrás de ParafinaGel y cómo hacemos nuestras velas."
+>
+  <PageHero
+    eyebrow="Nosotros"
+    title="Una familia, un oficio y muchas velas."
+    description="ParafinaGel es un proyecto familiar que nació de las ganas de hacer algo con las manos y compartirlo con otros."
+    align="center"
+  />
+
+  <section class="section">
+    <div class="container split">
+      <StoryVisual />
+
+      <div class="about-story">
+        <h2>Lo que empezó en casa</h2>
+        <p>
+          Todo comenzó con una mesa llena de utensilios, pruebas de aromas y
+          conversaciones sobre qué hace especial una vela. Poco a poco ese
+          experimento se convirtió en un pequeño taller familiar.
+        </p>
+        <p>
+          Hoy seguimos trabajando de la misma forma: en lotes pequeños, con
+          atención al detalle y con la idea de que cada vela acompañe un momento
+          cotidiano.
+        </p>
+        <p class="about-story__note">
+          Este texto es de ejemplo y se reemplazará con la historia real de la
+          familia.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section values">
+    <div class="container">
+      <h2 class="values__title">Lo que nos importa</h2>
+      <div class="values__grid">
+        {valores.map((valor) => (
+          <article class="value-card">
+            <h3>{valor.title}</h3>
+            <p>{valor.text}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section process">
+    <div class="container">
+      <div class="process__inner">
+        <div>
+          <p class="eyebrow">El proceso</p>
+          <h2>Cómo nace una vela</h2>
+          <p class="process__intro">
+            Cada paso importa. Estos son los momentos principales de nuestro
+            proceso artesanal.
+          </p>
+        </div>
+
+        <ol class="process__list">
+          {proceso.map((paso, index) => (
+            <li>
+              <span>{String(index + 1).padStart(2, "0")}</span>
+              <p>{paso}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <FinalCTA />
+</BaseLayout>
+
+<style>
+  .about-story {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .about-story h2 {
+    font-size: var(--text-3xl);
+  }
+
+  .about-story p {
+    max-width: 56ch;
+    color: var(--color-text-muted);
+  }
+
+  .about-story__note {
+    padding: var(--space-3) var(--space-4);
+    border: 1px dashed var(--color-border-strong);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    font-style: italic;
+  }
+
+  .values {
+    border-block: 1px solid var(--color-border);
+    background: var(--color-bg-elevated);
+  }
+
+  .values__title {
+    margin-bottom: var(--space-6);
+    font-size: var(--text-3xl);
+  }
+
+  .values__grid {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .value-card {
+    padding: var(--space-5);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-bg);
+  }
+
+  .value-card h3 {
+    margin-bottom: var(--space-2);
+    font-size: var(--text-xl);
+  }
+
+  .value-card p {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  .process__inner {
+    display: grid;
+    gap: var(--space-6);
+    align-items: start;
+  }
+
+  .process h2 {
+    margin-block: var(--space-2) var(--space-3);
+    font-size: var(--text-3xl);
+  }
+
+  .process__intro {
+    max-width: 48ch;
+    color: var(--color-text-muted);
+  }
+
+  .process__list {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .process__list li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-bg-elevated);
+  }
+
+  .process__list span {
+    flex: none;
+    color: var(--color-accent);
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: 600;
+  }
+
+  .process__list p {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  @media (min-width: 760px) {
+    .values__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .process__inner {
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: var(--space-8);
+    }
+  }
+</style>

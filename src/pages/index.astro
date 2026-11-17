@@ -1,0 +1,84 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import Button from "@components/Button.astro";
+import FinalCTA from "@components/FinalCTA.astro";
+import GameTeaser from "@components/GameTeaser.astro";
+import HomeHero from "@components/HomeHero.astro";
+import HowToBuy from "@components/HowToBuy.astro";
+import ProductCard from "@components/ProductCard.astro";
+import SectionHeading from "@components/SectionHeading.astro";
+import StoryTeaser from "@components/StoryTeaser.astro";
+import WhatsAppCTA from "@components/WhatsAppCTA.astro";
+import { getDestacados } from "@lib/products";
+
+const destacados = await getDestacados(3);
+---
+
+<BaseLayout>
+  <HomeHero />
+
+  <section class="section featured">
+    <div class="container">
+      <div class="featured__header">
+        <SectionHeading
+          eyebrow="Favoritos de la casa"
+          title="Aromas para cada momento"
+          description="Una selección para empezar a encontrar el aroma que te acompaña."
+        />
+        <Button href="/productos" variant="ghost">
+          Ver todo el catálogo <span aria-hidden="true">→</span>
+        </Button>
+      </div>
+
+      {destacados.length > 0 ? (
+        <div class="product-grid">
+          {destacados.map((producto) => (
+            <ProductCard producto={producto} />
+          ))}
+        </div>
+      ) : (
+        <div class="empty-state">
+          <h2>Estamos preparando el catálogo</h2>
+          <p>
+            Muy pronto vas a poder ver aquí nuestras velas y aromas. Mientras
+            tanto, escríbenos y te contamos qué tenemos disponible.
+          </p>
+          <div class="featured__empty-cta">
+            <WhatsAppCTA />
+          </div>
+        </div>
+      )}
+    </div>
+  </section>
+
+  <HowToBuy />
+  <StoryTeaser />
+  <GameTeaser />
+  <FinalCTA />
+</BaseLayout>
+
+<style>
+  .featured__header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+  }
+
+  .featured :global(.button--ghost) {
+    font-size: var(--text-sm);
+  }
+
+  .featured__empty-cta {
+    margin-top: var(--space-5);
+  }
+
+  @media (min-width: 800px) {
+    .featured__header {
+      flex-direction: row;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+  }
+</style>

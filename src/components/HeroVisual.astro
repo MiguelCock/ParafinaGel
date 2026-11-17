@@ -1,0 +1,195 @@
+<div class="hero-visual" aria-hidden="true">
+  <span class="hero-visual__dot"></span>
+
+  <div class="hero-visual__arch">
+    <svg viewBox="0 0 420 520" fill="none" role="presentation">
+      <ellipse
+        cx="210"
+        cy="462"
+        rx="132"
+        ry="22"
+        fill="var(--color-heading)"
+        opacity=".08"
+      />
+
+      <path
+        d="M132 300h156v126a42 42 0 0 1-42 42h-72a42 42 0 0 1-42-42z"
+        fill="var(--color-bg-elevated)"
+        stroke="var(--color-heading)"
+        stroke-width="4"
+      />
+      <path
+        d="M148 330h124v82a24 24 0 0 1-24 24h-76a24 24 0 0 1-24-24z"
+        fill="var(--color-accent-soft)"
+      />
+      <rect
+        x="166"
+        y="364"
+        width="88"
+        height="44"
+        rx="6"
+        fill="var(--color-bg-elevated)"
+        opacity=".8"
+      />
+      <text
+        x="210"
+        y="393"
+        text-anchor="middle"
+        font-family="Fraunces Variable, Georgia, serif"
+        font-size="17"
+        font-weight="600"
+        fill="var(--color-heading)"
+      >
+        ParafinaGel
+      </text>
+
+      <path
+        d="M210 300v-28"
+        stroke="var(--color-heading)"
+        stroke-width="4"
+        stroke-linecap="round"
+      />
+      <path
+        d="M210 230c22 24 34 41 34 59a34 34 0 1 1-68 0c0-18 12-35 34-59z"
+        fill="var(--color-accent)"
+      />
+      <path
+        d="M210 252c12 13 18 22 18 32a18 18 0 1 1-36 0c0-10 6-19 18-32z"
+        fill="#f6d36f"
+      />
+
+      <path
+        d="M88 430c-32-26-43-63-32-99 32 11 53 37 58 73"
+        fill="var(--color-sage)"
+        opacity=".7"
+      />
+      <path
+        d="M332 430c32-26 43-63 32-99-32 11-53 37-58 73"
+        fill="var(--color-sage)"
+        opacity=".5"
+      />
+
+      <path
+        d="M96 120l4 10 10 4-10 4-4 10-4-10-10-4 10-4z"
+        fill="var(--color-accent)"
+        opacity=".45"
+      />
+      <path
+        d="M330 170l3 7 7 3-7 3-3 7-3-7-7-3 7-3z"
+        fill="var(--color-sage)"
+        opacity=".6"
+      />
+      <circle
+        cx="320"
+        cy="96"
+        r="3"
+        fill="var(--color-heading)"
+        opacity=".25"
+      />
+      <circle
+        cx="112"
+        cy="220"
+        r="2.5"
+        fill="var(--color-heading)"
+        opacity=".2"
+      />
+    </svg>
+  </div>
+
+  <span class="hero-visual__tag hero-visual__tag--top">Pequeños lotes</span>
+  <span class="hero-visual__tag hero-visual__tag--bottom">Hecho a mano</span>
+</div>
+
+<style>
+  .hero-visual {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-height: 420px;
+    padding: var(--space-5);
+    isolation: isolate;
+  }
+
+  .hero-visual__dot {
+    position: absolute;
+    top: 6%;
+    left: 0;
+    z-index: -1;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: var(--color-sage-soft);
+    filter: blur(2px);
+  }
+
+  .hero-visual__arch {
+    position: relative;
+    display: grid;
+    place-items: end center;
+    width: min(100%, 380px);
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: 190px 190px 28px 28px;
+    background: radial-gradient(
+      circle at 50% 18%,
+      var(--color-accent-soft),
+      var(--color-surface) 72%
+    );
+    box-shadow: var(--shadow-lg);
+  }
+
+  .hero-visual__arch::before {
+    content: "";
+    position: absolute;
+    inset: 18px;
+    border: 1px solid
+      color-mix(in srgb, var(--color-border-strong) 60%, transparent);
+    border-radius: 172px 172px 20px 20px;
+    pointer-events: none;
+  }
+
+  .hero-visual__arch svg {
+    width: 88%;
+    height: auto;
+    margin-bottom: -2%;
+  }
+
+  .hero-visual__tag {
+    position: absolute;
+    z-index: 1;
+    padding: 0.55rem 0.9rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    background: var(--color-bg-elevated);
+    background: color-mix(in srgb, var(--color-bg-elevated) 86%, transparent);
+    box-shadow: var(--shadow-sm);
+    color: var(--color-heading);
+    font-size: var(--text-xs);
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    backdrop-filter: blur(8px);
+  }
+
+  .hero-visual__tag--top {
+    top: 12%;
+    right: 0;
+    transform: rotate(4deg);
+  }
+
+  .hero-visual__tag--bottom {
+    bottom: 10%;
+    left: 0;
+    transform: rotate(-3deg);
+  }
+
+  @media (max-width: 480px) {
+    .hero-visual {
+      min-height: 380px;
+    }
+
+    .hero-visual__tag--top {
+      right: -0.25rem;
+    }
+  }
+</style>

@@ -1,0 +1,347 @@
+---
+import { render } from "astro:content";
+import BaseLayout from "@layouts/BaseLayout.astro";
+import Button from "@components/Button.astro";
+import ProductCard from "@components/ProductCard.astro";
+import ProductImage from "@components/ProductImage.astro";
+import SectionHeading from "@components/SectionHeading.astro";
+import WhatsAppCTA from "@components/WhatsAppCTA.astro";
+import {
+  categoriaLabels,
+  getPrecio,
+  getProductos,
+  getRelacionados,
+  type Producto,
+} from "@lib/products";
+
+export async function getStaticPaths() {
+  const productos = await getProductos();
+
+  return productos.map((producto) => ({
+    params: { slug: producto.id },
+    props: { producto },
+  }));
+}
+
+interface Props {
+  producto: Producto;
+}
+
+const { producto } = Astro.props;
+const { Content } = await render(producto);
+const relacionados = await getRelacionados(producto);
+const precio = getPrecio(producto);
+const disponible = producto.data.disponible;
+const categoria = categoriaLabels[producto.data.categoria];
+const canonical = Astro.site
+  ? new URL(Astro.url.pathname, Astro.site)
+  : Astro.url;
+const mensaje = `Hola, quiero pedir "${producto.data.nombre}". ${canonical.href}`;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  name: producto.data.nombre,
+  description: producto.data.descripcion,
+  category: categoria,
+  sku: producto.id,
+  brand: {
+    "@type": "Brand",
+    name: "ParafinaGel",
+  },
+  url: canonical.href,
+  ...(producto.data.precio != null && {
+    offers: {
+      "@type": "Offer",
+      price: producto.data.precio,
+      priceCurrency: "COP",
+      availability: disponible
+        ? "https://schema.org/InStock"
+        : "https://schema.org/OutOfStock",
+      url: canonical.href,
+    },
+  }),
+};
+---
+
+<BaseLayout
+  title={producto.data.nombre}
+  description={producto.data.descripcion}
+>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  </Fragment>
+
+  <div class="container product-page">
+    <nav class="breadcrumb" aria-label="Ruta de navegación">
+      <a href="/">Inicio</a>
+      <span aria-hidden="true">/</span>
+      <a href="/productos">Productos</a>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">{producto.data.nombre}</span>
+    </nav>
+
+    <div class="product-detail">
+      <div class="product-detail__media">
+        <ProductImage producto={producto} eager />
+      </div>
+
+      <div class="product-detail__info">
+        <div class="product-detail__meta">
+          <span class="badge badge--accent">{categoria}</span>
+          {producto.data.borrador && (
+            <span class="badge badge--draft">Ejemplo</span>
+          )}
+          {!disponible && (
+            <span class="badge badge--unavailable">Agotado por ahora</span>
+          )}
+        </div>
+
+        <h1>{producto.data.nombre}</h1>
+
+        {producto.data.aromas.length > 0 && (
+          <ul class="product-detail__aromas" aria-label="Aromas">
+            {producto.data.aromas.map((aroma) => (
+              <li>{aroma}</li>
+            ))}
+          </ul>
+        )}
+
+        <p class="product-detail__description">{producto.data.descripcion}</p>
+
+        <p class="product-detail__price">{precio ?? "Precio por confirmar"}</p>
+
+        <div class="product-detail__actions">
+          <WhatsAppCTA
+            message={mensaje}
+            label={
+              disponible ? "Pedir por WhatsApp" : "Preguntar disponibilidad"
+            }
+          />
+          <Button href="/productos" variant="secondary">
+            Seguir explorando
+          </Button>
+        </div>
+
+        <dl class="product-detail__facts">
+          <div>
+            <dt>Categoría</dt>
+            <dd>{categoria}</dd>
+          </div>
+          {producto.data.tamano && (
+            <div>
+              <dt>Tamaño</dt>
+              <dd>{producto.data.tamano}</dd>
+            </div>
+          )}
+          <div>
+            <dt>Disponibilidad</dt>
+            <dd>{disponible ? "Disponible" : "Agotado por ahora"}</dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+
+    <div class="product-detail__extra">
+      {producto.data.cuidados.length > 0 && (
+        <section>
+          <h2>Cuidados</h2>
+          <ul class="care-list">
+            {producto.data.cuidados.map((cuidado) => (
+              <li>{cuidado}</li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      <section>
+        <h2>Más sobre este producto</h2>
+        <div class="prose">
+          <Content />
+        </div>
+      </section>
+    </div>
+  </div>
+
+  {relacionados.length > 0 && (
+    <section class="section related">
+      <div class="container">
+        <SectionHeading
+          eyebrow="También te puede gustar"
+          title="Otros aromas para descubrir"
+        />
+        <div class="product-grid related__grid">
+          {relacionados.map((item) => (
+            <ProductCard producto={item} />
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+</BaseLayout>
+
+<style>
+  .product-page {
+    padding-block: var(--space-6) var(--space-8);
+  }
+
+  .breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: var(--space-6);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  .breadcrumb a:hover {
+    color: var(--color-accent);
+  }
+
+  .breadcrumb span[aria-current="page"] {
+    color: var(--color-heading);
+    font-weight: 600;
+  }
+
+  .product-detail {
+    display: grid;
+    gap: var(--space-6);
+    align-items: start;
+  }
+
+  .product-detail__media {
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+  }
+
+  .product-detail__info {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .product-detail__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .product-detail h1 {
+    max-width: 16ch;
+    font-size: var(--text-4xl);
+  }
+
+  .product-detail__aromas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .product-detail__aromas li {
+    padding: 0.3rem 0.7rem;
+    border-radius: var(--radius-full);
+    background: var(--color-sage-soft);
+    color: var(--color-sage);
+    font-size: var(--text-xs);
+    font-weight: 700;
+  }
+
+  .product-detail__description {
+    max-width: 55ch;
+    color: var(--color-text-muted);
+    font-size: var(--text-lg);
+  }
+
+  .product-detail__price {
+    font-size: var(--text-2xl);
+    font-weight: 800;
+  }
+
+  .product-detail__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .product-detail__facts {
+    display: grid;
+    gap: var(--space-3);
+    margin-top: var(--space-2);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .product-detail__facts > div {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+
+  dt {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  dd {
+    font-size: var(--text-sm);
+    font-weight: 700;
+    text-align: right;
+  }
+
+  .product-detail__extra {
+    display: grid;
+    gap: var(--space-6);
+    margin-top: var(--space-8);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .product-detail__extra h2 {
+    margin-bottom: var(--space-3);
+    font-size: var(--text-2xl);
+  }
+
+  .care-list {
+    display: grid;
+    gap: 0.6rem;
+    color: var(--color-text-muted);
+  }
+
+  .care-list li {
+    position: relative;
+    padding-left: 1.25rem;
+  }
+
+  .care-list li::before {
+    content: "";
+    position: absolute;
+    top: 0.55em;
+    left: 0;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-accent);
+  }
+
+  .related {
+    border-top: 1px solid var(--color-border);
+    background: var(--color-bg-elevated);
+  }
+
+  .related__grid {
+    margin-top: var(--space-6);
+  }
+
+  @media (min-width: 900px) {
+    .product-detail {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-8);
+    }
+
+    .product-detail__extra {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>

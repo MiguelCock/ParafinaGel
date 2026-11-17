@@ -1,0 +1,119 @@
+---
+import Button from "@components/Button.astro";
+import HeroVisual from "@components/HeroVisual.astro";
+---
+
+<section class="hero">
+  <div class="container hero__grid">
+    <div class="hero__content">
+      <p class="eyebrow">Velas artesanales</p>
+      <h1>Luz que huele a casa.</h1>
+      <p class="hero__lede">
+        Velas y aromas elaborados en pequeños lotes por una familia que ama el
+        oficio. Encuentra tu aroma y pídelo por WhatsApp.
+      </p>
+
+      <div class="hero__actions">
+        <Button href="/productos">Ver catálogo</Button>
+        <Button href="/nosotros" variant="secondary">
+          Conoce la historia
+        </Button>
+      </div>
+
+      <ul class="hero__notes" aria-label="Características">
+        <li>Hecho a mano</li>
+        <li>Pequeños lotes</li>
+        <li>Aromas cuidados</li>
+      </ul>
+    </div>
+
+    <HeroVisual />
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    padding-block: var(--space-8) var(--space-9);
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      radial-gradient(
+        ellipse at 85% 18%,
+        var(--color-accent-soft),
+        transparent 55%
+      ),
+      radial-gradient(
+        ellipse at 0% 82%,
+        var(--color-sage-soft),
+        transparent 45%
+      );
+    opacity: 0.55;
+  }
+
+  .hero__grid {
+    display: grid;
+    gap: var(--space-7);
+    align-items: center;
+  }
+
+  .hero h1 {
+    max-width: 12ch;
+    margin-block: var(--space-3) var(--space-5);
+    font-size: var(--text-4xl);
+  }
+
+  .hero__lede {
+    max-width: 52ch;
+    color: var(--color-text-muted);
+    font-size: var(--text-lg);
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-6);
+  }
+
+  .hero__notes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    margin-top: var(--space-6);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  .hero__notes li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .hero__notes li::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-accent);
+  }
+
+  @media (min-width: 900px) {
+    .hero {
+      padding-block: var(--space-9);
+    }
+
+    .hero__grid {
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: var(--space-8);
+    }
+  }
+</style>

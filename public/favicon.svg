@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="16" fill="#faf5ee" />
+  <path
+    d="M32 11c4.4 5.3 7 9.2 7 13.2a7 7 0 1 1-14 0c0-4 2.6-7.9 7-13.2Z"
+    fill="#b4552f"
+  />
+  <path
+    d="M32 24v5"
+    stroke="#1e1914"
+    stroke-width="2.4"
+    stroke-linecap="round"
+  />
+  <rect
+    x="21"
+    y="31"
+    width="22"
+    height="24"
+    rx="5"
+    fill="none"
+    stroke="#1e1914"
+    stroke-width="2.6"
+  />
+  <path
+    d="M23 42h18"
+    stroke="#1e1914"
+    stroke-width="2"
+    opacity=".45"
+  />
+</svg>

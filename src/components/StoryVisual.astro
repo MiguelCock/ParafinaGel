@@ -1,0 +1,143 @@
+<div class="story-visual" aria-hidden="true">
+  <div class="story-visual__frame">
+    <svg viewBox="0 0 520 420" fill="none" role="presentation">
+      <ellipse
+        cx="260"
+        cy="352"
+        rx="220"
+        ry="18"
+        fill="var(--color-heading)"
+        opacity=".08"
+      />
+      <path
+        d="M80 330h360"
+        stroke="var(--color-heading)"
+        stroke-width="4"
+        opacity=".22"
+      />
+
+      <path
+        d="M110 190h170v110a40 40 0 0 1-40 40h-90a40 40 0 0 1-40-40z"
+        fill="var(--color-bg-elevated)"
+        stroke="var(--color-heading)"
+        stroke-width="4"
+      />
+      <path
+        d="M126 218h138v70a22 22 0 0 1-22 22h-94a22 22 0 0 1-22-22z"
+        fill="#f0d9a8"
+        opacity=".82"
+      />
+      <path
+        d="M110 230H84a14 14 0 0 0 0 28h26"
+        stroke="var(--color-heading)"
+        stroke-width="4"
+        stroke-linecap="round"
+      />
+      <path
+        d="M280 230h26a14 14 0 0 1 0 28h-26"
+        stroke="var(--color-heading)"
+        stroke-width="4"
+        stroke-linecap="round"
+      />
+
+      <path
+        d="M160 165c-14-18 14-28 0-46"
+        stroke="var(--color-accent)"
+        stroke-width="4"
+        stroke-linecap="round"
+        opacity=".55"
+      />
+      <path
+        d="M210 160c-14-18 14-28 0-46"
+        stroke="var(--color-accent)"
+        stroke-width="4"
+        stroke-linecap="round"
+        opacity=".4"
+      />
+
+      <path
+        d="M350 220h90v100a30 30 0 0 1-30 30h-30a30 30 0 0 1-30-30z"
+        fill="var(--color-bg-elevated)"
+        stroke="var(--color-heading)"
+        stroke-width="4"
+      />
+      <path
+        d="M364 244h62v52a16 16 0 0 1-16 16h-30a16 16 0 0 1-16-16z"
+        fill="var(--color-accent-soft)"
+      />
+      <path
+        d="M395 220v-18"
+        stroke="var(--color-heading)"
+        stroke-width="4"
+        stroke-linecap="round"
+      />
+      <path
+        d="M395 170c12 13 18 22 18 32a18 18 0 1 1-36 0c0-10 6-19 18-32z"
+        fill="var(--color-accent)"
+      />
+
+      <path
+        d="M70 350c-26-20-34-50-24-78 26 8 42 28 46 58"
+        fill="var(--color-sage)"
+        opacity=".65"
+      />
+      <path
+        d="M450 350c26-20 34-50 24-78-26 8-42 28-46 58"
+        fill="var(--color-sage)"
+        opacity=".45"
+      />
+    </svg>
+  </div>
+
+  <p class="story-visual__quote">Hecho en casa, en pequeños lotes.</p>
+</div>
+
+<style>
+  .story-visual {
+    position: relative;
+    padding: var(--space-3);
+  }
+
+  .story-visual__frame {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 5 / 4;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: linear-gradient(
+      150deg,
+      var(--color-sage-soft),
+      var(--color-surface)
+    );
+  }
+
+  .story-visual__frame svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .story-visual__quote {
+    position: absolute;
+    right: var(--space-6);
+    bottom: var(--space-6);
+    max-width: 15rem;
+    padding: var(--space-4);
+    border-radius: var(--radius-md);
+    background: var(--color-bg-elevated);
+    box-shadow: var(--shadow-md);
+    color: var(--color-heading);
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    line-height: 1.2;
+  }
+
+  @media (max-width: 560px) {
+    .story-visual__quote {
+      right: var(--space-4);
+      bottom: var(--space-4);
+      max-width: 12rem;
+      font-size: var(--text-base);
+    }
+  }
+</style>

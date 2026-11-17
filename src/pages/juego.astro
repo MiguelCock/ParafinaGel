@@ -1,0 +1,143 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import Button from "@components/Button.astro";
+import CandleGame from "@components/game/CandleGame.svelte";
+import PageHero from "@components/PageHero.astro";
+import SectionHeading from "@components/SectionHeading.astro";
+import { getProductos } from "@lib/products";
+
+const productos = (await getProductos())
+  .filter(
+    (producto) =>
+      producto.data.categoria === "velas" || producto.data.categoria === "kits",
+  )
+  .slice(0, 4)
+  .map((producto) => ({
+    id: producto.id,
+    nombre: producto.data.nombre,
+    aromas: producto.data.aromas,
+    categoria: producto.data.categoria,
+  }));
+
+const pasos = [
+  {
+    title: "Elige",
+    text: "Escoge uno de los productos de ejemplo y observa cómo cambia la vela.",
+  },
+  {
+    title: "Crea",
+    text: "Remueve la cera, viértela y deja que repose paso a paso.",
+  },
+  {
+    title: "Descubre",
+    text: "Termina con una recomendación y un enlace al producto real.",
+  },
+];
+---
+
+<BaseLayout
+  title="Juego"
+  description="Aprende cómo se hace una vela con el mini-juego de ParafinaGel."
+>
+  <PageHero
+    eyebrow="Juego"
+    title="Aprende haciendo."
+    description="Un recorrido corto por el proceso de hacer una vela. Elige un aroma, crea tu pieza y descubre qué producto va contigo."
+    align="center"
+  />
+
+  <section class="section game-section">
+    <div class="container">
+      <CandleGame client:visible productos={productos} />
+      <p class="game-disclaimer">
+        Prototipo con contenido de ejemplo. Las temperaturas, tiempos y
+        materiales reales se validarán con el negocio antes de publicar.
+      </p>
+    </div>
+  </section>
+
+  <section class="section section--tight how">
+    <div class="container">
+      <SectionHeading
+        eyebrow="Cómo funciona"
+        title="Tres momentos, una vela"
+        align="center"
+      />
+
+      <div class="how__grid">
+        {pasos.map((paso, index) => (
+          <article class="how__card">
+            <span>{String(index + 1).padStart(2, "0")}</span>
+            <h3>{paso.title}</h3>
+            <p>{paso.text}</p>
+          </article>
+        ))}
+      </div>
+
+      <div class="how__cta">
+        <Button href="/productos" variant="secondary">
+          Explorar el catálogo
+        </Button>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .game-disclaimer {
+    max-width: 62ch;
+    margin: var(--space-4) auto 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    text-align: center;
+  }
+
+  .how {
+    border-top: 1px solid var(--color-border);
+    background: var(--color-bg-elevated);
+  }
+
+  .how__grid {
+    display: grid;
+    gap: var(--space-4);
+    margin-top: var(--space-6);
+  }
+
+  .how__card {
+    padding: var(--space-5);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-bg);
+  }
+
+  .how__card span {
+    display: inline-block;
+    margin-bottom: var(--space-3);
+    color: var(--color-accent);
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: 600;
+  }
+
+  .how__card h3 {
+    margin-bottom: var(--space-2);
+    font-size: var(--text-xl);
+  }
+
+  .how__card p {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  .how__cta {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--space-6);
+  }
+
+  @media (min-width: 760px) {
+    .how__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>

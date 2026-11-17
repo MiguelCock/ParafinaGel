@@ -1,0 +1,102 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import PageHero from "@components/PageHero.astro";
+import ProductCard from "@components/ProductCard.astro";
+import WhatsAppCTA from "@components/WhatsAppCTA.astro";
+import { getProductos } from "@lib/products";
+
+const productos = await getProductos();
+const hayBorradores = productos.some((producto) => producto.data.borrador);
+---
+
+<BaseLayout
+  title="Catálogo"
+  description="Explora las velas, difusores, kits y accesorios de ParafinaGel."
+>
+  <PageHero
+    eyebrow="Catálogo"
+    title="Velas y aromas para tu casa."
+    description="Cada producto se prepara en pequeños lotes. Encuentra tu aroma y escríbenos para confirmar precio y disponibilidad."
+  >
+    {hayBorradores && (
+      <p class="catalog-note">
+        Estás viendo productos de ejemplo. El catálogo, los precios y las fotos
+        se reemplazarán antes de publicar.
+      </p>
+    )}
+  </PageHero>
+
+  {productos.length === 0 ? (
+    <section class="section">
+      <div class="container">
+        <div class="empty-state">
+          <h2>El catálogo está en preparación</h2>
+          <p>
+            Estamos organizando nuestros productos y precios. Escríbenos para
+            conocer qué tenemos disponible hoy.
+          </p>
+          <div class="catalog-empty__cta">
+            <WhatsAppCTA />
+          </div>
+        </div>
+      </div>
+    </section>
+  ) : (
+    <section class="section catalog">
+      <div class="container">
+        <div class="catalog__toolbar">
+          <p>
+            {productos.length}{" "}
+            {productos.length === 1 ? "producto" : "productos"}
+          </p>
+          <p>Velas · Difusores · Kits · Accesorios</p>
+        </div>
+
+        <div class="catalog__grid">
+          {productos.map((producto) => (
+            <ProductCard producto={producto} />
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+</BaseLayout>
+
+<style>
+  .catalog-note {
+    max-width: 60ch;
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-sage-soft);
+    color: var(--color-sage);
+    font-size: var(--text-sm);
+    font-weight: 600;
+  }
+
+  .catalog {
+    padding-top: var(--space-5);
+  }
+
+  .catalog__toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-2);
+    margin-bottom: var(--space-5);
+    padding-bottom: var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  .catalog__grid {
+    display: grid;
+    gap: var(--space-5);
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  }
+
+  .catalog-empty__cta {
+    margin-top: var(--space-5);
+  }
+</style>

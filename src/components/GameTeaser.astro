@@ -1,0 +1,174 @@
+---
+import Button from "@components/Button.astro";
+---
+
+<section class="section">
+  <div class="container">
+    <div class="game-teaser">
+      <div class="game-teaser__content">
+        <p class="eyebrow">Aprende haciendo</p>
+        <h2>Juega a crear tu vela.</h2>
+        <p>
+          Recorre el proceso paso a paso, elige tu aroma y descubre qué producto
+          va contigo. Una forma distinta de conocer lo que hacemos.
+        </p>
+        <Button href="/juego" class="game-teaser__button">
+          Probar el juego
+        </Button>
+      </div>
+
+      <div class="game-teaser__visual" aria-hidden="true">
+        <span class="game-teaser__step game-teaser__step--1">Elige</span>
+        <span class="game-teaser__step game-teaser__step--2">Vierte</span>
+        <span class="game-teaser__step game-teaser__step--3">Cura</span>
+
+        <svg viewBox="0 0 300 360" fill="none" role="presentation">
+          <ellipse
+            cx="150"
+            cy="316"
+            rx="96"
+            ry="16"
+            fill="#000"
+            opacity=".18"
+          />
+          <path
+            d="M88 168h124v104a36 36 0 0 1-36 36h-52a36 36 0 0 1-36-36z"
+            fill="#fbf3e9"
+            opacity=".16"
+            stroke="#fbf3e9"
+            stroke-width="4"
+          />
+          <path
+            d="M102 194h96v62a20 20 0 0 1-20 20h-56a20 20 0 0 1-20-20z"
+            fill="#e08a5f"
+            opacity=".8"
+          />
+          <path
+            d="M150 168v-24"
+            stroke="#fbf3e9"
+            stroke-width="4"
+            stroke-linecap="round"
+          />
+          <path
+            d="M150 104c20 22 30 37 30 53a30 30 0 1 1-60 0c0-16 10-31 30-53z"
+            fill="#e08a5f"
+          />
+          <path
+            d="M150 126c10 11 15 19 15 27a15 15 0 1 1-30 0c0-8 5-16 15-27z"
+            fill="#f6d36f"
+          />
+          <path
+            d="M52 300c-20-16-26-39-18-61 20 6 33 22 36 45"
+            fill="#9db292"
+            opacity=".55"
+          />
+          <path
+            d="M248 300c20-16 26-39 18-61-20 6-33 22-36 45"
+            fill="#9db292"
+            opacity=".4"
+          />
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .game-teaser {
+    display: grid;
+    gap: var(--space-6);
+    padding: var(--space-6);
+    border-radius: var(--radius-lg);
+    background: var(--color-panel);
+    color: var(--color-panel-text);
+    overflow: hidden;
+  }
+
+  .game-teaser__content {
+    display: grid;
+    align-content: center;
+    justify-items: start;
+    gap: var(--space-4);
+  }
+
+  .game-teaser .eyebrow {
+    color: #f3c6a8;
+  }
+
+  .game-teaser h2 {
+    max-width: 14ch;
+    color: var(--color-panel-text);
+    font-size: var(--text-3xl);
+  }
+
+  .game-teaser p {
+    max-width: 48ch;
+    color: color-mix(in srgb, var(--color-panel-text) 78%, transparent);
+  }
+
+  .game-teaser :global(.game-teaser__button) {
+    margin-top: var(--space-2);
+    background: var(--color-panel-text);
+    color: var(--color-panel);
+    box-shadow: none;
+  }
+
+  .game-teaser :global(.game-teaser__button:hover) {
+    background: #ffffff;
+  }
+
+  .game-teaser__visual {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-height: 280px;
+    border: 1px solid rgba(251, 243, 233, 0.14);
+    border-radius: var(--radius-md);
+    background: rgba(251, 243, 233, 0.06);
+    isolation: isolate;
+  }
+
+  .game-teaser__visual svg {
+    width: min(100%, 260px);
+    height: auto;
+  }
+
+  .game-teaser__step {
+    position: absolute;
+    z-index: 1;
+    padding: 0.35rem 0.7rem;
+    border: 1px solid rgba(251, 243, 233, 0.18);
+    border-radius: var(--radius-full);
+    background: rgba(251, 243, 233, 0.1);
+    color: var(--color-panel-text);
+    font-size: var(--text-xs);
+    font-weight: 800;
+    letter-spacing: 0.04em;
+  }
+
+  .game-teaser__step--1 {
+    top: 14%;
+    left: 8%;
+  }
+
+  .game-teaser__step--2 {
+    top: 42%;
+    right: 6%;
+  }
+
+  .game-teaser__step--3 {
+    bottom: 14%;
+    left: 12%;
+  }
+
+  @media (min-width: 900px) {
+    .game-teaser {
+      grid-template-columns: 1fr 0.9fr;
+      padding: var(--space-8);
+    }
+
+    .game-teaser__visual {
+      min-height: 360px;
+    }
+  }
+</style>

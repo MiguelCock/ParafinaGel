@@ -1,0 +1,215 @@
+---
+import Logo from "@components/Logo.astro";
+import WhatsAppCTA from "@components/WhatsAppCTA.astro";
+
+const links = [
+  { href: "/", label: "Inicio" },
+  { href: "/productos", label: "Productos" },
+  { href: "/nosotros", label: "Nosotros" },
+  { href: "/juego", label: "Juego" },
+  { href: "/contacto", label: "Contacto" },
+];
+
+const path = Astro.url.pathname;
+
+function isActive(href: string) {
+  return href === "/" ? path === "/" : path.startsWith(href);
+}
+---
+
+<header class="site-header">
+  <div class="container site-header__inner">
+    <a
+      href="/"
+      class="site-header__brand"
+      aria-label="ParafinaGel, ir al inicio"
+    >
+      <Logo />
+      <span>ParafinaGel</span>
+    </a>
+
+    <nav class="desktop-nav" aria-label="Navegación principal">
+      {links.map((link) => (
+        <a
+          href={link.href}
+          aria-current={isActive(link.href) ? "page" : undefined}
+        >
+          {link.label}
+        </a>
+      ))}
+    </nav>
+
+    <div class="site-header__cta">
+      <WhatsAppCTA small label="Pedir" />
+    </div>
+
+    <details class="mobile-menu">
+      <summary>
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          aria-hidden="true"
+        >
+          <path
+            d="M4 7h16M4 12h16M4 17h16"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+          ></path>
+        </svg>
+        <span>Menú</span>
+      </summary>
+
+      <nav class="mobile-menu__panel" aria-label="Navegación móvil">
+        {links.map((link) => (
+          <a
+            href={link.href}
+            aria-current={isActive(link.href) ? "page" : undefined}
+          >
+            {link.label}
+          </a>
+        ))}
+        <div class="mobile-menu__cta">
+          <WhatsAppCTA label="Pedir por WhatsApp" small />
+        </div>
+      </nav>
+    </details>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-bg);
+    background: color-mix(in srgb, var(--color-bg) 88%, transparent);
+    backdrop-filter: blur(14px);
+  }
+
+  .site-header__inner {
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+    min-height: var(--header-height);
+  }
+
+  .site-header__brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    color: var(--color-heading);
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+  }
+
+  .site-header__brand svg {
+    color: var(--color-accent);
+  }
+
+  .desktop-nav {
+    display: none;
+    gap: var(--space-5);
+    margin-inline: auto;
+  }
+
+  .desktop-nav a {
+    padding-block: 0.35rem;
+    border-bottom: 2px solid transparent;
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    transition:
+      color var(--transition),
+      border-color var(--transition);
+  }
+
+  .desktop-nav a:hover,
+  .desktop-nav a[aria-current="page"] {
+    border-bottom-color: var(--color-accent);
+    color: var(--color-heading);
+  }
+
+  .site-header__cta {
+    display: none;
+    align-items: center;
+  }
+
+  .mobile-menu {
+    position: relative;
+    margin-left: auto;
+  }
+
+  .mobile-menu summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.8rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    font-size: var(--text-sm);
+    font-weight: 700;
+    list-style: none;
+    cursor: pointer;
+  }
+
+  .mobile-menu summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .mobile-menu[open] summary {
+    background: var(--color-surface);
+  }
+
+  .mobile-menu__panel {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    display: grid;
+    gap: 0.25rem;
+    width: min(20rem, calc(100vw - 2rem));
+    padding: var(--space-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-bg-elevated);
+    box-shadow: var(--shadow-md);
+  }
+
+  .mobile-menu__panel > a {
+    padding: 0.7rem 0.8rem;
+    border-radius: var(--radius-sm);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    font-weight: 600;
+  }
+
+  .mobile-menu__panel > a:hover,
+  .mobile-menu__panel > a[aria-current="page"] {
+    background: var(--color-surface);
+    color: var(--color-heading);
+  }
+
+  .mobile-menu__cta {
+    display: flex;
+    margin-top: var(--space-2);
+  }
+
+  @media (min-width: 900px) {
+    .desktop-nav {
+      display: flex;
+    }
+
+    .site-header__cta {
+      display: flex;
+    }
+
+    .mobile-menu {
+      display: none;
+    }
+  }
+</style>

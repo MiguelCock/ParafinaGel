@@ -1,0 +1,168 @@
+---
+import ProductImage from "@components/ProductImage.astro";
+import { categoriaLabels, getPrecio, type Producto } from "@lib/products";
+
+interface Props {
+  producto: Producto;
+}
+
+const { producto } = Astro.props;
+const href = `/productos/${producto.id}/`;
+const precio = getPrecio(producto);
+const aromas = producto.data.aromas.slice(0, 2).join(" · ");
+---
+
+<article class="product-card">
+  <div class="product-card__media">
+    <a
+      href={href}
+      class="product-card__media-link"
+      tabindex="-1"
+      aria-hidden="true"
+    >
+      <ProductImage producto={producto} />
+    </a>
+
+    <div class="product-card__badges">
+      {producto.data.borrador && (
+        <span class="badge badge--draft">Ejemplo</span>
+      )}
+      {!producto.data.disponible && (
+        <span class="badge badge--unavailable">Agotado por ahora</span>
+      )}
+    </div>
+  </div>
+
+  <div class="product-card__body">
+    <p class="product-card__category">
+      {categoriaLabels[producto.data.categoria]}
+    </p>
+    <h3 class="product-card__title">
+      <a href={href}>{producto.data.nombre}</a>
+    </h3>
+    {aromas && <p class="product-card__aromas">{aromas}</p>}
+
+    <div class="product-card__footer">
+      <p
+        class:list={[
+          "product-card__price",
+          !precio && "product-card__price--pending",
+        ]}
+      >
+        {precio ?? "Precio por confirmar"}
+      </p>
+      <a
+        class="product-card__link"
+        href={href}
+        aria-label={`Ver ${producto.data.nombre}`}
+      >
+        Ver <span aria-hidden="true">→</span>
+      </a>
+    </div>
+  </div>
+</article>
+
+<style>
+  .product-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-bg-elevated);
+    box-shadow: var(--shadow-sm);
+    transition:
+      transform var(--transition),
+      box-shadow var(--transition),
+      border-color var(--transition);
+  }
+
+  .product-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--color-border-strong);
+    box-shadow: var(--shadow-md);
+  }
+
+  .product-card__media {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background: var(--color-surface);
+  }
+
+  .product-card__media-link {
+    display: block;
+    height: 100%;
+  }
+
+  .product-card__badges {
+    position: absolute;
+    top: var(--space-3);
+    left: var(--space-3);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+  }
+
+  .product-card__body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-4);
+  }
+
+  .product-card__category {
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .product-card__title {
+    font-size: var(--text-xl);
+    line-height: 1.2;
+  }
+
+  .product-card__title a:hover {
+    color: var(--color-accent);
+  }
+
+  .product-card__aromas {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  .product-card__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-top: auto;
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .product-card__price {
+    font-size: var(--text-sm);
+    font-weight: 800;
+  }
+
+  .product-card__price--pending {
+    color: var(--color-text-muted);
+    font-weight: 600;
+  }
+
+  .product-card__link {
+    color: var(--color-accent);
+    font-size: var(--text-sm);
+    font-weight: 800;
+  }
+
+  .product-card__link:hover {
+    color: var(--color-accent-hover);
+  }
+</style>

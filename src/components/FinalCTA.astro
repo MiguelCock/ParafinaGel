@@ -1,0 +1,66 @@
+---
+import Button from "@components/Button.astro";
+import WhatsAppCTA from "@components/WhatsAppCTA.astro";
+---
+
+<section class="section">
+  <div class="container">
+    <div class="final-cta">
+      <p class="eyebrow">Hablemos</p>
+      <h2>¿Listo para elegir tu aroma?</h2>
+      <p>
+        Escríbenos por WhatsApp y te ayudamos a encontrar la vela ideal. También
+        puedes explorar el catálogo completo.
+      </p>
+      <div class="final-cta__actions">
+        <WhatsAppCTA />
+        <Button href="/productos" variant="secondary">
+          Ver catálogo
+        </Button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .final-cta {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-4);
+    padding: var(--space-7) var(--space-5);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background:
+      radial-gradient(
+        ellipse at 50% 0%,
+        var(--color-accent-soft),
+        transparent 60%
+      ),
+      var(--color-bg-elevated);
+    text-align: center;
+  }
+
+  .final-cta h2 {
+    max-width: 18ch;
+    font-size: var(--text-3xl);
+  }
+
+  .final-cta p {
+    max-width: 52ch;
+    color: var(--color-text-muted);
+  }
+
+  .final-cta__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-3);
+    margin-top: var(--space-2);
+  }
+
+  @media (min-width: 760px) {
+    .final-cta {
+      padding: var(--space-8);
+    }
+  }
+</style>

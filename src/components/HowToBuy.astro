@@ -1,0 +1,103 @@
+---
+import SectionHeading from "@components/SectionHeading.astro";
+
+const steps = [
+  {
+    number: "01",
+    title: "Elige tu aroma",
+    text: "Explora el catálogo y guarda el producto que más te guste.",
+  },
+  {
+    number: "02",
+    title: "Escríbenos",
+    text: "Pídelo por WhatsApp. Te confirmamos precio, disponibilidad y envío.",
+  },
+  {
+    number: "03",
+    title: "Recíbelo en casa",
+    text: "Coordinamos entrega o envío según tu ciudad.",
+  },
+];
+---
+
+<section class="section how-to-buy">
+  <div class="container">
+    <SectionHeading
+      eyebrow="Cómo comprar"
+      title="Tres pasos, cero complicación"
+      description="Mientras el catálogo está en actualización, confirmamos precios y envíos por WhatsApp."
+      align="center"
+    />
+
+    <ol class="how-to-buy__steps">
+      {steps.map((step) => (
+        <li class="how-to-buy__step">
+          <span class="how-to-buy__number">{step.number}</span>
+          <h3>{step.title}</h3>
+          <p>{step.text}</p>
+        </li>
+      ))}
+    </ol>
+
+    <p class="how-to-buy__note">
+      ¿Tienes dudas? Escríbenos y te ayudamos a elegir.
+    </p>
+  </div>
+</section>
+
+<style>
+  .how-to-buy {
+    border-block: 1px solid var(--color-border);
+    background: var(--color-bg-elevated);
+  }
+
+  .how-to-buy__steps {
+    display: grid;
+    gap: var(--space-4);
+    margin-top: var(--space-7);
+  }
+
+  .how-to-buy__step {
+    padding: var(--space-5);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-bg);
+  }
+
+  .how-to-buy__number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-bottom: var(--space-4);
+    border-radius: 50%;
+    background: var(--color-accent-soft);
+    color: var(--color-accent-strong);
+    font-size: var(--text-sm);
+    font-weight: 800;
+  }
+
+  .how-to-buy__step h3 {
+    margin-bottom: var(--space-2);
+    font-size: var(--text-xl);
+  }
+
+  .how-to-buy__step p {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  .how-to-buy__note {
+    margin-top: var(--space-5);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    text-align: center;
+  }
+
+  @media (min-width: 760px) {
+    .how-to-buy__steps {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>
