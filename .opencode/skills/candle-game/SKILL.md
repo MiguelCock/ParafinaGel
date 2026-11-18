@@ -1,79 +1,70 @@
 ---
 name: Candle game
-description: Diseñar, implementar o modificar el juego 3D cozy de ParafinaGel (Astro + Svelte 5 + Threlte/Three.js): estaciones, pedidos, cámara fija, rendimiento móvil y fallback 2D. Úsalo al tocar el juego, su escena, UI o scoring.
+description: Diseñar, implementar o modificar el juego 2D cozy de ParafinaGel (Astro + Svelte 5): escenario ilustrado, estaciones, pedidos, SVG/CSS, responsive y accesibilidad. Úsalo al tocar el juego, sus escenas, paneles o scoring.
 ---
 
-# Juego 3D de velas
+# Juego 2D de velas
 
 ## Dónde vive
 
 - Página: `src/pages/juego.astro`.
-- Experiencia: `src/components/game3d/GameExperience.svelte` (detecta WebGL y alterna 3D / modo ligero).
-- Shell: `src/components/game3d/Game3D.svelte` (HUD, panel, `<Canvas>`).
-- Escena: `GameScene.svelte`, `CameraRig`, `GameClock`, `FrameStats`, `WorkshopRoom` y estaciones.
-- UI: `*Panel.svelte`, `StationTabs`, `OrderTicket`.
-- Motor: `src/lib/game3d/` (`game-state.svelte.ts`, `data.ts`, `orders.ts`, `palette.ts`, `motion.ts`, tests).
-- Respaldo 2D: `src/components/game/CandleGame.svelte`.
+- Shell: `src/components/game/GameExperience.svelte` (HUD, progreso, reloj y panel).
+- Escenario: `WorkshopStage.svelte`, `WorkshopBackdrop.svelte`, `CounterScene`, `MeltScene`, `PourScene`, `CoolScene`, `FinishScene`.
+- Controles: `*Panel.svelte`, `OrderTicket`, `StationTabs`, `OverviewPanel`, `LockedPanel`.
+- Arte: `Jar2D`, `Pot2D`, `Pitcher2D`, `Fan2D`, `Steam2D`, `CustomerPortrait`, `StationIcon`.
+- Motor: `src/lib/game/` (`game-state.svelte.ts`, `data.ts`, `orders.ts`, `types.ts`, tests).
+- Estilos compartidos: `src/styles/game.css`.
 
 ## Estado actual
 
-- Diorama 3D con **cámara fija**; no free-roam, no física, no motor de juego adicional.
+- Juego 2D con escenario ilustrado y cámara fija; no WebGL, canvas, Three.js ni Threlte.
 - Flujo: mostrador → cera → vertido → enfriado → acabado → score.
-- 3 pedidos de ejemplo y resumen del día.
-- Calidad `alta`/`baja` (sombras, DPR, detalle); móvil inicia en baja.
-- Modo ligero 2D si no hay WebGL o si el jugador lo elige.
-- Blockout procedural con primitivas de Three.js; el arte GLB llega después.
-- `npm test` cubre el motor puro; `npm run check` valida Astro/Svelte.
+- 3 pedidos de ejemplo y resumen del día; 5 estrellas, propinas y breakdown.
+- Arte procedural SVG/CSS; `CustomerPortrait` puede usar `customer.portrait` cuando exista arte final.
+- `GameExperience` se hidrata con `client:visible`; el resto del sitio no paga el JS del juego.
 
 ## Arquitectura
 
-- Mantén el motor puro separado de la escena y la UI. `Game3DState` vive en un `.svelte.ts` y usa runes.
-- `GameExperience` se hidrata con `client:only="svelte"`; el juego no se carga fuera de `/juego`.
-- `Game3D` orquesta HUD + panel + canvas. Las acciones críticas son botones HTML; los hotspots 3D son un extra.
-- `GameScene` contiene la escena Threlte y llama `interactivity()`.
-- La cámara se mueve con `CameraRig` entre posiciones fijas. Respeta `prefers-reduced-motion` (corte instantáneo).
-- Datos de pedidos en `data.ts`; `productSlug` enlaza al catálogo real. Los tiempos/temperaturas son aproximados.
+- Mantén el motor puro separado de la UI. `GameState` vive en un `.svelte.ts` y usa runes.
+- El reloj es `requestAnimationFrame` con `delta` limitado; `visibilitychange` pausa los timers.
+- La UI crítica son botones HTML; los hotspots del escenario son un extra.
+- El escenario cambia con `game.view`; `WorkshopStage` renderiza overview o la escena de estación.
+- Los paneles copiados desde la etapa anterior mantienen `data-testid`; úsalos para pruebas.
+- Datos en `src/lib/game/data.ts`; `productSlug` enlaza al catálogo real. No inventes temperaturas/tiempos reales.
 
-## Gotchas de Threlte/Svelte 5
+## Diseño y UI
 
-- `useThrelte().camera` es un **CurrentWritable**: usa `camera.current.position`, no `camera.position`.
-- `interactivity()` debe ejecutarse en un componente **hijo** de `<Canvas>`, no en el componente que renderiza `<Canvas>`.
-- **Nunca nombres una variable `state` en un componente que usa `$state`**: Svelte compila `$state` como suscripción a un store y lanza `store_invalid_shape`. Usa `game` o `store`.
-- `useTask` es el frame loop; pausa en `visibilitychange` y limita `delta`.
-- `Canvas` controla `shadows`, `dpr` y `renderMode`. No agregues postprocessing en móvil.
+- Estética de papel/editorial: crema, terracota, salvia, ámbar, tinta.
+- Tickets con cinta, sello “Ejemplo” y línea punteada; score como recibo; fin del día como ledger.
+- Iconos SVG lineales; no emojis como iconos.
+- Barra de progreso de 5 estaciones; tabs con iconos y checks.
+- Un CTA principal por paso; estados disabled claros; hints contextuales.
+- Desktop: escenario + panel lateral; móvil: HUD, escenario 4:3/380 px, ticket y controles apilados.
+- No agregues scroll horizontal; cuida el contraste y el foco.
 
-## Rendimiento móvil
+## Rendimiento y accesibilidad
 
-- Presupuesto objetivo: 60 fps en gama media, 30 fps mínima; < 100 draw calls ideal.
-- Calidad baja: sin sombras, DPR `[0.75, 1.2]`, menos velas de repisa y herramientas ocultas.
-- Evita materiales físicos con transmisión/refracción; el vidrio es estilizado.
-- No agregues Phaser, Rapier ni otro motor. Si hace falta optimizar, usa instancing/merge de geometría.
-- Usa el overlay de stats en dev para ver FPS, draw calls y triángulos.
-
-## Reglas de juego
-
-- Feedback inmediato y positivo; sin fail state que bloquee.
-- La temperatura se registra al entrar en rango; el enfriado es simbólico.
-- No inventes temperaturas, tiempos ni materiales reales: valida con el negocio.
-- Mantén el juego jugable con teclado, touch y sin audio.
-- Respeta movimiento reducido en cámara, llama, ventilador, vapor, cliente y jarra.
+- Nada de Three.js/Threlte/canvas. Si se necesita animación, CSS o SVG.
+- Respeta `prefers-reduced-motion` en llama, vapor, ventilador, escenas y transiciones.
+- axe (WCAG 2.1 AA) debe pasar en `/juego` en claro, oscuro y móvil.
+- `npm test`, `npm run check` y `npm run build` deben pasar.
+- Prueba el flujo completo de 3 pedidos y el cambio de estación; verifica 360/390/768/1280 px.
 
 ## Fase 2
 
-- “Crear mi vela” con captura 3D y CTA a WhatsApp.
-- Puntaje, persistencia en `localStorage`, audio opcional.
-- Más aromas, frascos, etiquetas y clientes.
-- Arte GLB optimizado y sonido.
+- “Crear mi vela” con resumen compartible y CTA a WhatsApp.
+- Puntaje persistente/`localStorage`, audio opcional y más clientes.
+- Retratos/escenas AI o arte final: usa `customer.portrait` y reemplaza SVG sin tocar el motor.
 - Integración real con catálogo y precios.
 
 ## Checklist
 
 - [ ] `npm test` y `npm run check` pasan.
-- [ ] El flujo completo funciona en 3D y en modo ligero.
+- [ ] Flujo completo de 3 pedidos y score correcto.
 - [ ] 360 px sin scroll horizontal; controles alcanzables.
-- [ ] El canvas no bloquea la lectura ni el teclado.
-- [ ] Sin errores de consola ni contextos WebGL perdidos.
-- [ ] Calidad baja usable y sin sombras.
+- [ ] Sin errores de consola.
+- [ ] axe 0 violaciones en claro/oscuro/móvil.
+- [ ] Respeta movimiento reducido y teclado.
 - [ ] Termina en un producto real con CTA.
 
 Diseño de referencia: `references/game-design.md`.

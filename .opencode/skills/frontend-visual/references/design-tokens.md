@@ -43,9 +43,10 @@ Fuente de verdad: `src/styles/global.css`.
 - No agregues una librería de UI ni Tailwind sin acordarlo.
 - Cualquier token nuevo debe tener su equivalente en modo oscuro.
 
-## Juego 3D
+## Juego 2D
 
-- La escena 3D vive en `src/lib/game3d/palette.ts` porque Three.js no puede leer variables CSS.
-- Mantén esa paleta alineada con los tokens del sitio: fondo `#f7eee1`, pared `#f2e4d4`, madera `#b98963`, terracota `#b4552f`, salvia `#6f8165`, crema `#fff9f2`.
-- El taller 3D es siempre cálido/claro; no lo cambies a modo oscuro sin una paleta y una revisión de contraste propias.
-- La UI del juego usa `src/styles/game.css` y clases `.game-*`; no mezcles estilos del sitio dentro de la escena.
+- La UI del juego usa los tokens del sitio (`src/styles/game.css`).
+- El escenario ilustrado y los objetos (jarra, olla, jarra de vertido, ventilador, vapor, iconos) viven en `src/components/game/` como SVG/CSS; no agregues paletas 3D ni canvas.
+- Las tarjetas de escena son theme-aware: usan `var(--color-bg-elevated)` para que el modo oscuro mantenga contraste.
+- `CustomerPortrait` admite `customer.portrait` para futuros retratos AI/foto; si falta, usa el SVG.
+- Mantén la estética de papel: tickets, sellos, líneas punteadas y recibos.

@@ -1,8 +1,8 @@
 # ParafinaGel
 
-Sitio web del negocio familiar de velas **ParafinaGel**: catálogo, contacto para comprar y un juego 3D cozy para aprender a hacer velas.
+Sitio web del negocio familiar de velas **ParafinaGel**: catálogo, contacto para comprar y un juego 2D cozy para aprender a hacer velas.
 
-Construido con **Astro 7**, islas de **Svelte 5** y **Threlte / Three.js** para el juego. Salida 100 % estática.
+Construido con **Astro 7** e islas de **Svelte 5**. El juego es 2D con SVG/CSS, sin WebGL. Salida 100 % estática.
 
 ## Requisitos
 
@@ -28,10 +28,9 @@ src/
   pages/           # rutas por archivo
   layouts/         # BaseLayout con SEO, fuentes y navegación
   components/      # UI en Astro
-  components/game3d/  # isla 3D: escena, estaciones, paneles y HUD
-  components/game/    # juego 2D de respaldo
+  components/game/ # juego 2D: shell, escenario, escenas, paneles y SVG
   content/         # productos del catálogo (Markdown)
-  lib/game3d/      # motor: pedidos, scoring, estado y datos
+  lib/game/        # motor: pedidos, scoring, estado y datos
   lib/             # lógica de productos, WhatsApp y formato
   styles/          # tokens y estilos globales
 public/            # favicon, robots
@@ -39,16 +38,15 @@ public/            # favicon, robots
 
 Rutas: `/`, `/productos`, `/productos/[slug]`, `/nosotros`, `/juego`, `/contacto` y 404. `/about` redirige a `/nosotros`.
 
-## Juego 3D
+## Juego 2D
 
-`/juego` tiene una experiencia 3D con cámara fija tipo diorama. Atiendes tres pedidos en el taller: mostrador, cera, vertido, enfriado y acabado. Cada pedido se puntúa por receta, temperatura, vertido y acabado, y termina en propinas y un resumen del día.
+`/juego` tiene una experiencia cozy ilustrada. Atiendes tres pedidos en el taller: mostrador, cera, vertido, enfriado y acabado. Cada pedido se puntúa por receta, temperatura, vertido y acabado, y termina en propinas y un resumen del día.
 
-- **Modo 3D / Modo ligero**: si el navegador no soporta WebGL, entra directo al juego 2D de respaldo. También puedes cambiar manualmente.
-- **Calidad**: en móvil inicia en “Baja” (sin sombras, menor DPR). Puedes cambiarla desde el HUD.
-- **Rendimiento**: en desarrollo hay un overlay con FPS, draw calls y triángulos. El juego solo carga en `/juego`.
-- **Peso**: el chunk del juego ronda 850 KB minificado (~217 KB gzip) por Three.js/Threlte; el resto del sitio no carga ese peso.
-- **Contenido**: los pedidos son de ejemplo y `productSlug` enlaza al catálogo real. Las temperaturas y tiempos son aproximados; valídalos antes de publicar.
-- **Arte**: esta fase usa primitivas procedurales (blockout). Los modelos GLB y el arte final llegan en una fase posterior.
+- **Escenario**: ilustración del taller con estaciones clicables y escenas de papel para cada paso.
+- **UI**: ticket de pedido, progreso por estaciones, termómetro, medidor de vertido, enfriado y recibo de propina.
+- **Arte**: SVG/CSS propio para jarras, olla, jarra de vertido, ventilador, vapor, iconos y retratos. `CustomerPortrait` acepta `customer.portrait` opcional para futuros retratos AI o fotos.
+- **Accesibilidad**: botones nativos, foco visible, `aria-live` para cambios de estación y `prefers-reduced-motion`.
+- **Sin WebGL**: funciona en cualquier navegador moderno y no carga Three.js.
 
 ## Catálogo y placeholders
 
@@ -70,6 +68,7 @@ El schema está en `src/content.config.ts`. Los precios son opcionales: si falta
 3. Agrega imágenes en `src/assets/productos/<slug>/` y referéncialas en `imagenes` con `alt`.
 4. Quita `borrador: true` cuando el contenido sea real.
 5. Ejecuta `npm run check` y revisa la card y el detalle en dev.
+6. Si aparece en el juego, actualiza su `productSlug` en `src/lib/game/data.ts`.
 
 ## Datos por reemplazar
 
@@ -79,7 +78,8 @@ El schema está en `src/content.config.ts`. Los precios son opcionales: si falta
 | Dominio del sitio                    | `astro.config.mjs`                                                              |
 | Catálogo y precios                   | `src/content/productos/*.md`                                                    |
 | Historia y copy de páginas           | `src/pages/nosotros.astro`, `src/pages/index.astro`, `src/pages/contacto.astro` |
-| Juego y tips educativos              | `src/lib/game3d/data.ts`, `src/lib/game3d/orders.ts` y `src/components/game3d/` |
+| Pedidos y datos del juego            | `src/lib/game/data.ts` y `src/lib/game/orders.ts`                               |
+| Escenas, tickets y UI del juego      | `src/components/game/` y `src/styles/game.css`                                  |
 | Paleta, tipografía y tokens          | `src/styles/global.css`                                                         |
 
 El juego usa datos de ejemplo y no incluye temperaturas reales. Valida tiempos, ceras y materiales con el negocio antes de publicar.
@@ -91,8 +91,8 @@ El juego usa datos de ejemplo y no incluye temperaturas reales. Valida tiempos, 
 ## Notas
 
 - El sitio no tiene backend ni checkout. El CTA de compra es WhatsApp.
-- `npm audit` reporta vulnerabilidades altas en dependencias de build (`picomatch` y tooling). No ejecutes `npm audit fix --force`: puede romper las versiones de Astro/Svelte/Threlte. No afecta el sitio estático.
-- La accesibilidad se verificó con axe (WCAG 2.1 AA) en las páginas principales, en modo claro y oscuro.
+- `npm audit` reporta vulnerabilidades altas en dependencias de build (`picomatch` y tooling). No ejecutes `npm audit fix --force`: puede romper las versiones de Astro/Svelte. No afecta el sitio estático.
+- La accesibilidad se verificó con axe (WCAG 2.1 AA) en las páginas principales y en `/juego`, en modo claro y oscuro.
 - `npm test` cubre el motor puro del juego; `npm run check` valida Astro y Svelte.
 
 ## Antes de publicar
@@ -102,6 +102,6 @@ El juego usa datos de ejemplo y no incluye temperaturas reales. Valida tiempos, 
 - [ ] Cargar productos reales y quitar `borrador: true`.
 - [ ] Reemplazar los textos marcados como ejemplo.
 - [ ] Validar los datos del juego con el negocio.
-- [ ] Reemplazar el blockout 3D por modelos/arte aprobados.
+- [ ] Reemplazar los SVG placeholders del juego por arte final si se desea.
 - [ ] Agregar fotos reales y `alt` descriptivos.
 - [ ] Ejecutar `npm test`, `npm run check`, `npm run build` y revisar en 360 px y desktop.

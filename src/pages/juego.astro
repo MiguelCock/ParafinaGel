@@ -1,23 +1,9 @@
 ---
 import BaseLayout from "@layouts/BaseLayout.astro";
 import Button from "@components/Button.astro";
-import GameExperience from "@components/game3d/GameExperience.svelte";
+import GameExperience from "@components/game/GameExperience.svelte";
 import PageHero from "@components/PageHero.astro";
 import SectionHeading from "@components/SectionHeading.astro";
-import { getProductos } from "@lib/products";
-
-const productos = (await getProductos())
-  .filter(
-    (producto) =>
-      producto.data.categoria === "velas" || producto.data.categoria === "kits",
-  )
-  .slice(0, 4)
-  .map((producto) => ({
-    id: producto.id,
-    nombre: producto.data.nombre,
-    aromas: producto.data.aromas,
-    categoria: producto.data.categoria,
-  }));
 
 const pasos = [
   {
@@ -37,22 +23,22 @@ const pasos = [
 
 <BaseLayout
   title="Juego"
-  description="Aprende cómo se hace una vela con el mini-juego de ParafinaGel."
+  description="Juega a preparar velas en el taller 2D de ParafinaGel."
 >
   <PageHero
     eyebrow="Juego"
     title="Aprende haciendo."
-    description="Una experiencia cozy en 3D: atiende pedidos, prepara velas y descubre cómo se trabaja en el taller familiar."
+    description="Una experiencia cozy en 2D: atiende pedidos, prepara velas y descubre cómo se trabaja en el taller familiar."
     align="center"
   />
 
   <section class="section game-section">
     <div class="container">
-      <GameExperience client:only="svelte" productos={productos} />
+      <GameExperience client:visible />
       <p class="game-disclaimer">
-        Prototipo 3D con contenido de ejemplo. Los tiempos, temperaturas y
-        materiales son aproximados; los datos reales se validarán con el negocio
-        antes de publicar. Si tu dispositivo va lento, usa “Modo ligero”.
+        Juego con contenido de ejemplo. Los tiempos, temperaturas y materiales
+        son aproximados; los datos reales se validarán con el negocio antes de
+        publicar.
       </p>
     </div>
   </section>

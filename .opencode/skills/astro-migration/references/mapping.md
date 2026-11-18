@@ -8,7 +8,7 @@
 | `/productos/` | `src/pages/productos/index.astro` | Grid completo; estado vacío en producción sin borradores |
 | `/productos/[slug]/` | `src/pages/productos/[slug].astro` | `getStaticPaths`, JSON-LD, relacionados |
 | `/nosotros/` | `src/pages/nosotros.astro` | Historia, valores y proceso |
-| `/juego/` | `src/pages/juego.astro` | `GameExperience` con `client:only`; 3D + modo ligero |
+| `/juego/` | `src/pages/juego.astro` | Juego 2D con `client:visible` |
 | `/contacto/` | `src/pages/contacto.astro` | WhatsApp, correo, Instagram y FAQ |
 | `/404` | `src/pages/404.astro` | Página no encontrada |
 | `/about` | `astro.config.mjs` | Redirect a `/nosotros` |
@@ -23,7 +23,7 @@
 | `internal/templates/pages/about.html` | `src/pages/nosotros.astro` |
 | `internal/templates/components/button.html` | `src/components/Button.astro` |
 | `internal/web/static/css/style.css` | `src/styles/global.css` |
-| `internal/web/static/js/index.js` | scripts de componentes / isla Svelte |
+| `internal/web/static/js/index.js` | scripts de componentes / juego Svelte |
 | `cmd/server/main.go` | routing por archivos en `src/pages/` |
 | `internal/handlers/*.go` | frontmatter + content collections |
 | `internal/templates/template.go` | `astro:content` + `getStaticPaths` |
@@ -35,19 +35,20 @@
 - Las imágenes reales van en `src/assets/productos/<slug>/` y se referencian con `imagenes: [{ src, alt }]`.
 - Los helpers de `src/lib/products.ts` ordenan por categoría (velas, difusores, kits, accesorios) y filtran borradores en producción.
 
-## Juego 3D
+## Juego 2D
 
-- Página: `src/pages/juego.astro` → `src/components/game3d/GameExperience.svelte`.
-- Escena: `Game3D.svelte`, `GameScene.svelte`, `CameraRig`, `WorkshopRoom` y estaciones.
-- Motor: `src/lib/game3d/game-state.svelte.ts`, `data.ts`, `orders.ts`, `palette.ts`, `motion.ts`.
-- UI compartida: `src/styles/game.css`.
-- Respaldo 2D: `src/components/game/CandleGame.svelte`.
-- Tests: `src/lib/game3d/orders.test.ts` con Vitest.
+- Página: `src/pages/juego.astro` → `src/components/game/GameExperience.svelte`.
+- Escenario: `WorkshopStage.svelte`, `WorkshopBackdrop.svelte` y las escenas `*Scene`.
+- Controles: `*Panel`, `OrderTicket`, `StationTabs`, `OverviewPanel`.
+- Arte: `Jar2D`, `Pot2D`, `Pitcher2D`, `Fan2D`, `Steam2D`, `CustomerPortrait`, `StationIcon`.
+- Motor: `src/lib/game/game-state.svelte.ts`, `data.ts`, `orders.ts`, `types.ts`.
+- Estilos: `src/styles/game.css`.
+- Tests: `src/lib/game/orders.test.ts` con Vitest.
 
 ## Qué falta
 
 - Retirar `cmd/`, `internal/` y `go.mod` cuando se apruebe la versión Astro.
 - Reemplazar el contenido de ejemplo y las fotos.
 - Implementar “Crear mi vela”, persistencia/puntaje y audio del juego.
-- Reemplazar el blockout 3D por modelos GLB/arte final.
+- Reemplazar los SVG placeholders por arte final si se desea.
 - Configurar el dominio real y el despliegue.

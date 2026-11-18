@@ -11,7 +11,7 @@ description: Modelo de productos y contenido del catálogo de ParafinaGel: schem
 - Schema: `src/content.config.ts`.
 - Consultas y formato: `src/lib/products.ts` y `src/lib/format.ts`.
 - Contacto y WhatsApp: `src/config/site.ts` y `src/lib/whatsapp.ts`.
-- Juego 3D: `src/lib/game3d/data.ts` (pedidos de ejemplo y `productSlug`).
+- Juego 2D: `src/lib/game/data.ts` (pedidos de ejemplo y `productSlug`).
 - Referencia de campos: `references/product-schema.md`.
 
 ## Reglas
@@ -24,7 +24,7 @@ description: Modelo de productos y contenido del catálogo de ParafinaGel: schem
 - Categorías válidas: `velas`, `difusores`, `accesorios`, `kits`. El catálogo se ordena velas → difusores → kits → accesorios.
 - Las imágenes son opcionales mientras no haya fotos; `ProductImage.astro` genera un placeholder SVG por categoría.
 - Cada producto real debe tener al menos una imagen con `alt` descriptivo.
-- Si cambias el slug de un producto, actualiza el `productSlug` del pedido correspondiente en `src/lib/game3d/data.ts`.
+- Si cambias el slug de un producto, actualiza el `productSlug` del pedido correspondiente en `src/lib/game/data.ts`.
 
 ## Imágenes
 

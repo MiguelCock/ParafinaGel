@@ -1,27 +1,26 @@
-# Diseño del juego
+# Diseño del juego 2D
 
-La implementación actual es un vertical slice 3D de 3 pedidos. Este documento sirve como referencia para ampliarlo sin romper el flujo.
+La implementación actual es un vertical slice 2D de 3 pedidos. Este documento sirve como referencia para ampliarlo sin romper el flujo.
 
-## Escena 3D
+## Escenario
 
-- Diorama cozy de un solo taller con cámara fija.
-- Estaciones físicas: mostrador, mesa de cera, mesa de vertido, repisa de enfriado y mesa de acabado.
-- La cámara hace transiciones suaves a cada estación; con movimiento reducido, corta directo.
-- El cliente aparece en el mostrador y se oculta en las estaciones de trabajo para no tapar la acción.
-- El blockout usa primitivas; los modelos finales serán GLB optimizados.
+- Taller ilustrado en SVG/CSS con estantes, ventana, lámpara, mostrador y plantas.
+- Vista general con hotspots para moverse a cada estación.
+- Escenas de papel por estación; la cámara es fija y el cambio es un crossfade.
+- El cliente aparece en el mostrador y en el ticket; no hace falta que esté en todas las escenas.
 
 ## Pantallas actuales
 
 | Pantalla | Contenido | Acción |
 |---|---|---|
-| Inicio | Promesa, duración y resumen | Empezar |
-| Mostrador | Cliente, ticket y saludo | Tomar pedido |
+| Inicio | Promesa, duración e instrucciones | Empezar |
+| Mostrador | Retrato, saludo, ticket | Tomar pedido |
 | Cera | Olla, temperatura, aroma y color | Calentar, elegir, remover 3 veces |
-| Vertido | Frasco, jarra y nivel | Elegir frasco y verter |
+| Vertido | Frasco, jarra, meta y nivel | Elegir frasco y verter |
 | Enfriado | Repisa, ventilador y timer | Abanicar |
 | Acabado | Mecha, etiqueta, tapa y empaque | Completar y entregar |
 | Score | Puntos, estrellas, propina y producto | Siguiente cliente |
-| Fin del día | Ventas, propinas y estrellas | Jugar otra vez |
+| Fin del día | Ventas, propinas, estrellas | Jugar otra vez |
 
 ## Reglas
 
@@ -30,7 +29,7 @@ La implementación actual es un vertical slice 3D de 3 pedidos. Este documento s
 - La temperatura se registra al entrar en el rango; el enfriado es simbólico.
 - El jugador puede revisar estaciones anteriores; la estación activa manda.
 - Textos en español de Colombia, frases cortas.
-- La vela se enciende solo en el resultado/visualización; no simules fuego real.
+- La vela se enciende solo en el resultado visual; no simules fuego real.
 
 ## Puntaje
 
@@ -39,12 +38,19 @@ La implementación actual es un vertical slice 3D de 3 pedidos. Este documento s
 - Total 100; estrellas 5/4/3/2/1.
 - Propina según puntaje y bonus de 5 estrellas.
 
+## UI
+
+- Ticket de papel con cinta y sello “Ejemplo”.
+- Barra de progreso de 5 estaciones y tabs con iconos/checks.
+- Medidores de temperatura/vertido y recibos para score/cierre.
+- Panel lateral en desktop; stack en móvil; un CTA principal por paso.
+
 ## Fase 2: “Crear mi vela”
 
 - Modo libre sin timer: elegir cera, aroma, color, frasco, etiqueta y acabado.
-- Captura del render 3D y tarjeta compartible con el nombre de la combinación.
-- CTA a WhatsApp con la combinación elegida.
+- Tarjeta compartible con la combinación y CTA a WhatsApp.
 - Guardar creaciones en `localStorage`.
+- Posibilidad de usar retratos/escenas AI o arte final en `CustomerPortrait`/escenario.
 
 ## Datos que faltan
 
@@ -52,6 +58,6 @@ La implementación actual es un vertical slice 3D de 3 pedidos. Este documento s
 - Aromas, frascos y productos disponibles.
 - Duración real del curado.
 - Voz del dueño para los textos (tú/usted, tono).
-- Referencias visuales para el arte 3D final.
+- Referencias visuales para el arte final.
 
 Pregunta antes de publicar; no inventes cifras.
