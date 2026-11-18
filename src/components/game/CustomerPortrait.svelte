@@ -10,8 +10,9 @@
   let { customer, size = "md", shape = "circle" }: Props = $props();
 
   let imageFailed = $state(false);
-  const bgId = $derived(`portrait-bg-${customer.id}`);
-  const shirtId = $derived(`portrait-shirt-${customer.id}`);
+  const uid = $props.id();
+  const bgId = `portrait-bg-${uid}`;
+  const shirtId = `portrait-shirt-${uid}`;
 </script>
 
 <div

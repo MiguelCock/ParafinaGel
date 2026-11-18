@@ -1,6 +1,6 @@
 # ParafinaGel
 
-Sitio web del negocio familiar de velas **ParafinaGel**: catálogo, contacto para comprar y un juego 2D cozy para aprender a hacer velas.
+Sitio web del negocio familiar de velas **ParafinaGel**: catálogo, contacto y un juego 2D cozy para diseñar velas y descubrir los **insumos** necesarios para hacerlas.
 
 Construido con **Astro 7** e islas de **Svelte 5**. El juego es 2D con SVG/CSS, sin WebGL. Salida 100 % estática.
 
@@ -28,9 +28,9 @@ src/
   pages/           # rutas por archivo
   layouts/         # BaseLayout con SEO, fuentes y navegación
   components/      # UI en Astro
-  components/game/ # juego 2D: shell, escenario, escenas, paneles y SVG
+  components/game/ # juego 2D: shell, escenario, escenas, editor, paneles y SVG
   content/         # productos del catálogo (Markdown)
-  lib/game/        # motor: pedidos, scoring, estado y datos
+  lib/game/        # motor: briefs, diseño, craft, scoring, receta y estado
   lib/             # lógica de productos, WhatsApp y formato
   styles/          # tokens y estilos globales
 public/            # favicon, robots
@@ -40,13 +40,20 @@ Rutas: `/`, `/productos`, `/productos/[slug]`, `/nosotros`, `/juego`, `/contacto
 
 ## Juego 2D
 
-`/juego` tiene una experiencia cozy ilustrada. Atiendes tres pedidos en el taller: mostrador, cera, vertido, enfriado y acabado. Cada pedido se puntúa por receta, temperatura, vertido y acabado, y termina en propinas y un resumen del día.
+`/juego` tiene una experiencia cozy ilustrada. El jugador escucha un brief, diseña una vela y la fabrica paso a paso. Al final recibe **puntos, estrellas y una receta con la lista de insumos**, no el precio de una vela terminada.
 
-- **Escenario**: ilustración del taller con estaciones clicables y escenas de papel para cada paso.
-- **UI**: ticket de pedido, progreso por estaciones, termómetro, medidor de vertido, enfriado y recibo de propina.
-- **Arte**: SVG/CSS propio para jarras, olla, jarra de vertido, ventilador, vapor, iconos y retratos. `CustomerPortrait` acepta `customer.portrait` opcional para futuros retratos AI o fotos.
-- **Accesibilidad**: botones nativos, foco visible, `aria-live` para cambios de estación y `prefers-reduced-motion`.
-- **Sin WebGL**: funciona en cualquier navegador moderno y no carga Three.js.
+- **Pedido progresivo**: el cliente revela los requisitos poco a poco; “Crear nota” fija el brief.
+- **Cuatro tipos de pedido**: clásica, capas, figura (molde con partes de colores) y gel (transparente con montajes).
+- **Diseñador**: cera, tamaño, recipiente o molde, capas y alturas, colores, aroma, mecha, etiqueta y montajes. Validación en vivo.
+- **Taller**: calentar y remover, verter por capas o partes, centrar la mecha, curar (con burbujas en gel), alinear etiqueta, cortar mecha, tapar y empacar.
+- **Mini-juegos**: la mecha, la etiqueta y el corte se puntúan por precisión. El gel incluye un mini-juego de burbujas.
+- **Modo libre**: sandbox sin pedido ni reloj; se puede ver la receta o probar el taller.
+- **Modo experto**: oculta las pistas numéricas del diseño y del acabado.
+- **Cierre comercial**: receta con cantidades y CTA de WhatsApp para pedir los insumos.
+- **Accesibilidad**: controles nativos, teclado, foco visible, `aria-live` y `prefers-reduced-motion`.
+- **Sin WebGL**: funciona en navegadores modernos y no carga Three.js.
+
+Los tiempos, temperaturas, medidas de mecha y cantidades son **placeholders**. Valídalos con el negocio antes de publicar.
 
 ## Catálogo y placeholders
 
@@ -68,7 +75,7 @@ El schema está en `src/content.config.ts`. Los precios son opcionales: si falta
 3. Agrega imágenes en `src/assets/productos/<slug>/` y referéncialas en `imagenes` con `alt`.
 4. Quita `borrador: true` cuando el contenido sea real.
 5. Ejecuta `npm run check` y revisa la card y el detalle en dev.
-6. Si aparece en el juego, actualiza su `productSlug` en `src/lib/game/data.ts`.
+6. Si el insumo aparece en el juego, actualiza su entrada en `src/lib/game/data.ts` y `supplyCatalog`.
 
 ## Datos por reemplazar
 
@@ -78,11 +85,13 @@ El schema está en `src/content.config.ts`. Los precios son opcionales: si falta
 | Dominio del sitio                    | `astro.config.mjs`                                                              |
 | Catálogo y precios                   | `src/content/productos/*.md`                                                    |
 | Historia y copy de páginas           | `src/pages/nosotros.astro`, `src/pages/index.astro`, `src/pages/contacto.astro` |
-| Pedidos y datos del juego            | `src/lib/game/data.ts` y `src/lib/game/orders.ts`                               |
+| Briefs y materiales del juego        | `src/lib/game/data.ts`                                                          |
+| Reglas y puntaje del juego           | `src/lib/game/scoring.ts`, `src/lib/game/craft.ts`                              |
+| Receta y lista de compras            | `src/lib/game/supplies.ts`                                                      |
 | Escenas, tickets y UI del juego      | `src/components/game/` y `src/styles/game.css`                                  |
 | Paleta, tipografía y tokens          | `src/styles/global.css`                                                         |
 
-El juego usa datos de ejemplo y no incluye temperaturas reales. Valida tiempos, ceras y materiales con el negocio antes de publicar.
+El juego usa datos de ejemplo y no incluye temperaturas reales. Valida tiempos, ceras, mechas, medidas y cantidades con el negocio antes de publicar.
 
 ## Prototipo Go
 
@@ -99,9 +108,10 @@ El juego usa datos de ejemplo y no incluye temperaturas reales. Valida tiempos, 
 
 - [ ] Reemplazar WhatsApp, correo, Instagram y ciudad.
 - [ ] Definir el dominio en `astro.config.mjs`.
+- [ ] Migrar el catálogo de velas terminadas a insumos y materias primas.
 - [ ] Cargar productos reales y quitar `borrador: true`.
+- [ ] Validar briefs, temperaturas, tiempos, mechas y cantidades con el negocio.
 - [ ] Reemplazar los textos marcados como ejemplo.
-- [ ] Validar los datos del juego con el negocio.
 - [ ] Reemplazar los SVG placeholders del juego por arte final si se desea.
 - [ ] Agregar fotos reales y `alt` descriptivos.
 - [ ] Ejecutar `npm test`, `npm run check`, `npm run build` y revisar en 360 px y desktop.

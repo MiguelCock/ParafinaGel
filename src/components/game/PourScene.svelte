@@ -1,6 +1,7 @@
 <script lang="ts">
+  import { pourFills } from "@lib/game/craft";
   import type { GameState } from "@lib/game/game-state.svelte";
-  import Jar2D from "./Jar2D.svelte";
+  import CandlePreview from "./CandlePreview.svelte";
   import Pitcher2D from "./Pitcher2D.svelte";
 
   interface Props {
@@ -8,28 +9,31 @@
   }
 
   let { game }: Props = $props();
+
+  const fills = $derived(pourFills(game.craft));
+  const unit = $derived(game.unit);
 </script>
 
 <div class="pour-scene" data-testid="pour-scene">
   <div class="pour-scene__jar">
-    <div class="pour-scene__target" aria-hidden="true">
-      <span>Meta</span>
-    </div>
-    <Jar2D
-      fill={game.craft.fill}
-      color={game.waxHex}
-      glass={game.glassHex}
-      showWick
+    <CandlePreview
+      design={game.design}
+      {fills}
+      showWick={false}
+      showLabel={false}
     />
   </div>
 
   <div class="pour-scene__pitcher">
-    <Pitcher2D pouring={game.craft.pouring} color={game.waxHex} />
+    <Pitcher2D
+      pouring={game.craft.pouring}
+      color={unit?.colorHex ?? "#e9c9a8"}
+    />
   </div>
 
   <div class="pour-scene__readout">
-    <span>Vertido</span>
-    <strong>{Math.round(game.craft.fill)}%</strong>
+    <span>{unit?.label ?? "Vertido completo"}</span>
+    <strong>{Math.round(unit?.fill ?? 100)}%</strong>
   </div>
 </div>
 
@@ -43,33 +47,11 @@
   }
 
   .pour-scene__jar {
-    position: relative;
     width: min(100%, 11rem);
   }
 
-  .pour-scene__target {
-    position: absolute;
-    top: 38%;
-    right: -1rem;
-    left: -1rem;
-    z-index: 1;
-    border-top: 2px dashed #b4552f;
-    opacity: 0.55;
-    pointer-events: none;
-  }
-
-  .pour-scene__target span {
-    position: absolute;
-    top: -0.75rem;
-    right: 0;
-    padding: 0.1rem 0.35rem;
-    border-radius: 999px;
-    background: var(--color-accent-soft);
-    color: var(--color-accent-strong);
-    font-size: 0.58rem;
-    font-weight: 800;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+  .pour-scene__jar :global(.candle-preview) {
+    width: 100%;
   }
 
   .pour-scene__pitcher {
@@ -85,6 +67,7 @@
     bottom: 0.25rem;
     display: grid;
     gap: 0.1rem;
+    max-width: 11rem;
     padding: 0.45rem 0.65rem;
     border: 1px solid var(--color-border);
     border-radius: 0.7rem;
@@ -97,7 +80,7 @@
     color: var(--color-text-muted);
     font-size: 0.6rem;
     font-weight: 800;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
   }
 
@@ -115,7 +98,11 @@
     }
 
     .pour-scene__pitcher {
-      width: 7.5rem;
+      width: 7rem;
+    }
+
+    .pour-scene__readout {
+      display: none;
     }
   }
 </style>

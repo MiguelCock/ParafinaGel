@@ -1,6 +1,6 @@
 ---
 name: Product catalog
-description: Modelo de productos y contenido del catálogo de ParafinaGel: schema, precios COP, borradores, imágenes, copy en español y CTA de WhatsApp. Úsalo al agregar o editar productos, categorías o el catálogo.
+description: Modelo de productos e insumos del catálogo de ParafinaGel: schema, precios COP, borradores, imágenes, copy en español y CTA de WhatsApp. Úsalo al agregar o editar productos, categorías o el catálogo.
 ---
 
 # Catálogo de productos
@@ -11,7 +11,8 @@ description: Modelo de productos y contenido del catálogo de ParafinaGel: schem
 - Schema: `src/content.config.ts`.
 - Consultas y formato: `src/lib/products.ts` y `src/lib/format.ts`.
 - Contacto y WhatsApp: `src/config/site.ts` y `src/lib/whatsapp.ts`.
-- Juego 2D: `src/lib/game/data.ts` (pedidos de ejemplo y `productSlug`).
+- Juego 2D: `src/lib/game/data.ts` (briefs, materiales y catálogo placeholder de insumos).
+- Receta y lista de compras: `src/lib/game/supplies.ts`.
 - Referencia de campos: `references/product-schema.md`.
 
 ## Reglas
@@ -21,10 +22,10 @@ description: Modelo de productos y contenido del catálogo de ParafinaGel: schem
 - Precios en **pesos colombianos (COP)** como entero, sin decimales ni símbolo en el dato; el formato se aplica al mostrar (`$ 45.000`).
 - Precio y `precioDesde` son opcionales. Si faltan, la UI muestra “Precio por confirmar”. No inventes precios.
 - Los placeholders llevan `borrador: true`; el build de producción los excluye. Para verlos: `PUBLIC_SHOW_DRAFTS=true npm run build`.
-- Categorías válidas: `velas`, `difusores`, `accesorios`, `kits`. El catálogo se ordena velas → difusores → kits → accesorios.
+- Categorías válidas hoy: `velas`, `difusores`, `accesorios`, `kits`. El catálogo se ordena velas → difusores → kits → accesorios. La migración a insumos (ceras, mechas, aromas, colorantes, moldes, recipientes) está pendiente: si se agregan, actualiza el enum del schema, `src/lib/products.ts`, el orden de categorías y el copy.
 - Las imágenes son opcionales mientras no haya fotos; `ProductImage.astro` genera un placeholder SVG por categoría.
 - Cada producto real debe tener al menos una imagen con `alt` descriptivo.
-- Si cambias el slug de un producto, actualiza el `productSlug` del pedido correspondiente en `src/lib/game/data.ts`.
+- El juego usa un catálogo placeholder propio en `src/lib/game/data.ts` (`supplyCatalog`). Cuando exista el catálogo real de insumos, enlaza cada `RecipeLine` con su producto y mantén las cantidades/unidades alineadas.
 
 ## Imágenes
 

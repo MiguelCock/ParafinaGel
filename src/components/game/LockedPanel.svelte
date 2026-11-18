@@ -1,16 +1,15 @@
 <script lang="ts">
   import { stationLabels } from "@lib/game/data";
   import type { GameState } from "@lib/game/game-state.svelte";
-  import type { StationId } from "@lib/game/types";
 
   interface Props {
-    state: GameState;
+    game: GameState;
   }
 
-  let { state }: Props = $props();
+  let { game }: Props = $props();
 
-  const active = $derived(state.phase as StationId);
-  const viewed = $derived(state.view as StationId);
+  const active = $derived(game.activeStation);
+  const viewed = $derived(game.view === "overview" ? active : game.view);
 </script>
 
 <div class="game-station-panel" data-testid="locked-panel">
@@ -24,7 +23,8 @@
   <button
     class="game-action"
     type="button"
-    onclick={() => state.setView(active)}
+    onclick={() => game.setView(active)}
+    data-testid="go-active"
   >
     Ir a {stationLabels[active]}
   </button>

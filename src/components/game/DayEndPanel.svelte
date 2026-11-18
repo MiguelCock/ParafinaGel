@@ -1,15 +1,14 @@
 <script lang="ts">
-  import { formatCOP } from "@lib/format";
   import type { GameState } from "@lib/game/game-state.svelte";
 
   interface Props {
-    state: GameState;
+    game: GameState;
   }
 
-  let { state }: Props = $props();
+  let { game }: Props = $props();
 
-  const promedio = $derived(
-    state.served > 0 ? (state.totalStars / state.served).toFixed(1) : "0.0",
+  const average = $derived(
+    game.served > 0 ? (game.totalStars / game.served).toFixed(1) : "0.0",
   );
 </script>
 
@@ -19,26 +18,26 @@
   <p class="game-eyebrow">Fin del día</p>
   <h3 class="game-title">El taller cerró por hoy</h3>
   <p class="game-text">
-    Atendiste {state.served} pedidos. Mañana llegará gente nueva y el taller tendrá
-    más aromas.
+    Atendiste {game.served} pedidos y armaste sus recetas. Mañana llegarán nuevos
+    briefs y más combinaciones.
   </p>
 
   <div class="summary">
     <div>
-      <span>Ventas</span>
-      <strong>{formatCOP(state.totalPrice)}</strong>
+      <span>Pedidos</span>
+      <strong>{game.served}</strong>
     </div>
     <div>
-      <span>Propinas</span>
-      <strong>{formatCOP(state.totalTips)}</strong>
+      <span>Puntos</span>
+      <strong>{game.totalPoints}</strong>
     </div>
     <div>
       <span>Estrellas</span>
-      <strong>{state.totalStars} ★</strong>
+      <strong>{game.totalStars} ★</strong>
     </div>
     <div>
       <span>Promedio</span>
-      <strong>{promedio} / 5</strong>
+      <strong>{average} / 5</strong>
     </div>
   </div>
 
@@ -47,14 +46,23 @@
   <button
     class="game-action game-primary"
     type="button"
-    onclick={() => state.restart()}
+    onclick={() => game.restart()}
     data-testid="restart"
   >
     Jugar otra vez
   </button>
 
+  <button
+    class="game-action game-action--secondary"
+    type="button"
+    onclick={() => game.startSandbox()}
+    data-testid="day-sandbox"
+  >
+    Crear mi vela
+  </button>
+
   <a class="game-action game-action--secondary" href="/productos/">
-    Volver al catálogo
+    Ver catálogo
   </a>
 </div>
 

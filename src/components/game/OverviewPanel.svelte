@@ -1,46 +1,45 @@
 <script lang="ts">
-  import { stationLabels, stationOrder } from "@lib/game/data";
+  import { orderTypeLabels, stationLabels, stationOrder } from "@lib/game/data";
   import type { GameState } from "@lib/game/game-state.svelte";
-  import type { StationId } from "@lib/game/types";
   import StationIcon from "./StationIcon.svelte";
 
   interface Props {
-    state: GameState;
+    game: GameState;
   }
 
-  let { state }: Props = $props();
+  let { game }: Props = $props();
 
-  const activeStation = $derived<StationId>(
-    state.phase === "intro" ||
-      state.phase === "score" ||
-      state.phase === "dayEnd"
-      ? "counter"
-      : state.phase,
+  const stations = $derived(
+    game.mode === "guided"
+      ? stationOrder
+      : stationOrder.filter((station) => station !== "counter"),
   );
 </script>
 
 <div class="game-station-panel" data-testid="overview-panel">
-  <p class="game-eyebrow">Vista del taller</p>
+  <p class="game-eyebrow">
+    {game.mode === "sandbox" ? "Modo libre" : "Vista del taller"}
+  </p>
   <h3 class="game-title">Elige una estación</h3>
   <p class="game-text">
     Toca un punto del taller o usa los botones para acercarte. La estación
-    activa está marcada en terracota.
+    activa queda marcada en terracota.
   </p>
 
   <div class="overview-grid">
-    {#each stationOrder as station}
+    {#each stations as station}
       <button
         class="overview-card"
-        class:active={activeStation === station}
+        class:active={game.activeStation === station}
         type="button"
-        onclick={() => state.setView(station)}
+        onclick={() => game.setView(station)}
         data-testid={`overview-${station}`}
       >
         <span class="overview-card__icon">
           <StationIcon {station} size={18} />
         </span>
         <span class="overview-card__name">{stationLabels[station]}</span>
-        {#if activeStation === station}
+        {#if game.activeStation === station}
           <span class="overview-card__now">Ahora</span>
         {/if}
       </button>
@@ -48,8 +47,9 @@
   </div>
 
   <div class="game-note">
-    Estación activa:
-    {stationLabels[activeStation]}
+    {game.mode === "guided"
+      ? `Pedido ${game.currentOrderNumber} de ${game.totalBriefs} · ${orderTypeLabels[game.brief.type]}`
+      : "Todo desbloqueado: diseña, prueba el taller y pide tus insumos."}
   </div>
 </div>
 
@@ -120,5 +120,11 @@
     font-weight: 800;
     letter-spacing: 0.06em;
     text-transform: uppercase;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .overview-card {
+      transition: none;
+    }
   }
 </style>

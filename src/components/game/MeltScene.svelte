@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { scentsById, waxColorsById } from "@lib/game/data";
+  import { scentsById, waxColorsById, waxesById } from "@lib/game/data";
+  import { layerSummary } from "@lib/game/design";
   import type { GameState } from "@lib/game/game-state.svelte";
   import Pot2D from "./Pot2D.svelte";
   import Steam2D from "./Steam2D.svelte";
@@ -10,19 +11,38 @@
 
   let { game }: Props = $props();
 
+  const wax = $derived(
+    game.design.waxId ? (waxesById[game.design.waxId] ?? null) : null,
+  );
   const scent = $derived(
-    game.craft.scentId ? scentsById[game.craft.scentId]?.nombre : null,
+    game.design.scentIds[0]
+      ? (scentsById[game.design.scentIds[0]] ?? null)
+      : null,
   );
-  const color = $derived(
-    game.craft.colorId ? waxColorsById[game.craft.colorId]?.nombre : null,
+  const colorText = $derived(
+    game.design.mode === "gel"
+      ? "Gel transparente"
+      : game.design.mode === "figura"
+        ? "Figura por partes"
+        : layerSummary(game.design),
   );
-  const steam = $derived(game.craft.heating || game.craft.temperature > 55);
+  const steam = $derived(
+    game.craft.heating || game.craft.temperature > game.meltMin,
+  );
+  const bottleColor = $derived(
+    game.design.mode === "gel"
+      ? (wax?.hex ?? "#eaf3ee")
+      : game.design.mode === "figura"
+        ? "#d9b45f"
+        : (waxColorsById[game.design.layers[0]?.colorId ?? ""]?.hex ??
+          "#e9c9a8"),
+  );
 </script>
 
 <div class="melt-scene" data-testid="melt-scene">
   <div class="melt-scene__pot">
     <Pot2D
-      wax={game.waxHex}
+      wax={wax?.hex ?? "#e9c9a8"}
       heating={game.craft.heating}
       stirs={game.craft.stirs}
     />
@@ -36,13 +56,13 @@
       <span class="bottle__cap"></span>
       <span class="bottle__body"></span>
       <span class="bottle__label">Aroma</span>
-      <strong>{scent ?? "—"}</strong>
+      <strong>{scent?.nombre ?? "—"}</strong>
     </div>
     <div class="bottle bottle--color">
       <span class="bottle__cap"></span>
-      <span class="bottle__body" style={`background: ${game.waxHex}`}></span>
-      <span class="bottle__label">Color</span>
-      <strong>{color ?? "—"}</strong>
+      <span class="bottle__body" style={`background: ${bottleColor}`}></span>
+      <span class="bottle__label">Diseño</span>
+      <strong class="melt-scene__clamp">{colorText}</strong>
     </div>
     <div class="melt-scene__readout">
       <span>Baño maría</span>
@@ -127,6 +147,14 @@
     color: var(--color-heading);
     font-size: 0.68rem;
     line-height: 1.1;
+  }
+
+  .melt-scene__clamp {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
   }
 
   .melt-scene__readout {

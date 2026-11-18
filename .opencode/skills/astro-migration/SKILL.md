@@ -24,9 +24,9 @@ src/
   pages/           index, productos/index, productos/[slug], nosotros, juego, contacto, 404
   layouts/         BaseLayout.astro
   components/      Nav, Footer, Button, ProductCard, ProductImage, PageHero, HomeHero...
-  components/game/ GameExperience, WorkshopStage, escenas, paneles y SVG del juego
+  components/game/ GameExperience, WorkshopStage, escenas, paneles, BriefTicket, CandlePreview y SVG del juego
   content/         productos/*.md
-  lib/game/        motor: game-state.svelte.ts, data, orders, types
+  lib/game/        motor: types, data, design, craft, scoring, supplies, game-state y tests
   lib/             products.ts, whatsapp.ts, format.ts
   styles/          global.css, game.css
 public/            favicon.svg, robots.txt
@@ -47,7 +47,8 @@ public/            favicon.svg, robots.txt
 - SEO en `BaseLayout`; JSON-LD de producto con `<Fragment slot="head">`.
 - Imágenes reales con `astro:assets` (`<Image />`); hoy `ProductImage.astro` genera placeholders SVG.
 - No agregues Tailwind ni librería de UI. No agregues dependencias pesadas sin justificarlo.
-- El juego tiene reglas propias en el skill `candle-game` (escenario, SVG/CSS, responsive y accesibilidad). Respétalas.
+- El juego 2.0 tiene reglas propias en el skill `candle-game` (brief progresivo, diseño de capas/figuras/gel, mini-juegos, receta y accesibilidad). Respétalas.
+- El cierre del juego es una receta de insumos con CTA a WhatsApp; no agregues precios ni propinas de velas terminadas.
 - `npm run build` incluye `npm run check` (Astro + Svelte). `npm test` corre Vitest.
 - No ejecutes `npm audit fix --force` (rompe versiones por tooling/picomatch).
 
@@ -55,7 +56,9 @@ public/            favicon.svg, robots.txt
 
 - Retirar el prototipo Go cuando el dueño apruebe la versión nueva.
 - Reemplazar datos de contacto, catálogo, textos e imágenes de ejemplo.
-- Fase 2 del juego: “Crear mi vela”, puntaje/persistencia, audio y arte final.
+- Migrar el catálogo de velas terminadas a insumos (ceras, mechas, aromas, colorantes, moldes, recipientes y kits) y ajustar schema, categorías y copy.
+- Juego: validar briefs, tiempos, temperaturas y receta con el negocio; reemplazar el catálogo placeholder de `src/lib/game/data.ts`.
+- Arte final del juego (retratos/escenas) si se desea; persistencia/audio quedan como fase 3.
 - Definir dominio real en `astro.config.mjs`.
 
 Detalle de rutas y equivalencias con Go: `references/mapping.md`.

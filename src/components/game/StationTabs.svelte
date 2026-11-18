@@ -5,39 +5,43 @@
   import StationIcon from "./StationIcon.svelte";
 
   interface Props {
-    state: GameState;
+    game: GameState;
   }
 
-  let { state }: Props = $props();
+  let { game }: Props = $props();
 
-  const phaseIndex = $derived(stationOrder.indexOf(state.phase as StationId));
+  const stations = $derived(
+    game.mode === "guided"
+      ? stationOrder
+      : stationOrder.filter((station) => station !== "counter"),
+  );
 
   function isDone(station: StationId): boolean {
-    if (state.phase === "score" || state.phase === "dayEnd") return true;
-    return stationOrder.indexOf(station) < phaseIndex;
+    if (game.phase === "score" || game.phase === "dayEnd") return true;
+    return stationOrder.indexOf(station) < game.stationIndex;
   }
 </script>
 
 <nav class="station-tabs" aria-label="Estaciones del taller">
   <button
     class="tab tab--overview"
-    class:active={state.view === "overview"}
+    class:active={game.view === "overview"}
     type="button"
-    onclick={() => state.setView("overview")}
+    onclick={() => game.setView("overview")}
     data-testid="tab-overview"
   >
     Taller
   </button>
 
-  {#each stationOrder as station}
+  {#each stations as station}
     <button
       class="tab"
-      class:active={state.view === station}
-      class:current={state.phase === station}
+      class:active={game.view === station}
+      class:current={game.activeStation === station}
       class:done={isDone(station)}
       type="button"
-      onclick={() => state.setView(station)}
-      aria-current={state.phase === station ? "step" : undefined}
+      onclick={() => game.setView(station)}
+      aria-current={game.activeStation === station ? "step" : undefined}
       data-testid={`tab-${station}`}
     >
       <span class="tab__icon">
@@ -120,5 +124,11 @@
     color: #fff9f2;
     font-size: 0.45rem;
     line-height: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tab {
+      transition: none;
+    }
   }
 </style>

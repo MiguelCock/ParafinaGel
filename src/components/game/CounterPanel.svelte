@@ -1,32 +1,21 @@
 <script lang="ts">
   import type { GameState } from "@lib/game/game-state.svelte";
+  import BriefTicket from "./BriefTicket.svelte";
 
   interface Props {
-    state: GameState;
+    game: GameState;
   }
 
-  let { state }: Props = $props();
+  let { game }: Props = $props();
 </script>
 
 <div class="game-station-panel" data-testid="counter-panel">
   <p class="game-eyebrow">Mostrador</p>
-  <h3 class="game-title">Recibe el pedido</h3>
+  <h3 class="game-title">Escucha el pedido</h3>
   <p class="game-text">
-    {state.order.customer.nombre} ya sabe qué quiere. Revisa el ticket y empieza a
-    preparar la vela.
+    {game.brief.customer.nombre} te cuenta lo que busca poco a poco. Pulsa “Continuar”
+    para escuchar cada detalle y luego crea la nota de diseño.
   </p>
 
-  <div class="game-note">
-    Consejo: puedes mirar el ticket en cualquier momento. La estación activa
-    está resaltada en el taller.
-  </div>
-
-  <button
-    class="game-action game-primary"
-    type="button"
-    onclick={() => state.takeOrder()}
-    data-testid="take-order"
-  >
-    Tomar pedido
-  </button>
+  <BriefTicket {game} />
 </div>

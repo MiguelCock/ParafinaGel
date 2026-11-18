@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { GameState } from "@lib/game/game-state.svelte";
+  import CandlePreview from "./CandlePreview.svelte";
   import Fan2D from "./Fan2D.svelte";
-  import Jar2D from "./Jar2D.svelte";
   import Steam2D from "./Steam2D.svelte";
 
   interface Props {
@@ -13,6 +13,7 @@
   const remaining = $derived(
     game.craft.cooled ? "Lista" : `${game.craft.coolingRemaining.toFixed(1)} s`,
   );
+  const gel = $derived(game.design.mode === "gel");
 </script>
 
 <div class="cool-scene" data-testid="cool-scene">
@@ -21,14 +22,14 @@
     <div class="rack__post rack__post--right"></div>
     <div class="rack__shelf rack__shelf--top">
       <div class="rack__jar">
-        <Jar2D
-          fill={game.craft.fill}
-          color={game.waxHex}
-          glass={game.glassHex}
+        <CandlePreview
+          design={game.design}
           showWick
+          showLabel={false}
+          compact
         />
         <div class="rack__steam">
-          <Steam2D active={!game.craft.cooled} />
+          <Steam2D active={!game.craft.cooled} intensity={0.9} />
         </div>
       </div>
     </div>
@@ -43,7 +44,7 @@
     {#if game.craft.cooled}
       <span>Vela lista</span>
     {:else}
-      <span>Enfriando</span>
+      <span>{gel ? "Cuajando el gel" : "Enfriando"}</span>
       <strong>{remaining}</strong>
     {/if}
   </div>
@@ -104,14 +105,18 @@
     position: absolute;
     bottom: 0.55rem;
     left: 50%;
-    width: 7.5rem;
+    width: 8rem;
     transform: translateX(-50%);
+  }
+
+  .rack__jar :global(.candle-preview) {
+    width: 100%;
   }
 
   .rack__steam {
     position: absolute;
     left: 50%;
-    bottom: 6.5rem;
+    bottom: 8rem;
     width: 90px;
     height: 120px;
     transform: translateX(-50%);
@@ -174,7 +179,11 @@
     }
 
     .rack__jar {
-      width: 6rem;
+      width: 6.2rem;
+    }
+
+    .rack__steam {
+      bottom: 6.5rem;
     }
 
     .fan {

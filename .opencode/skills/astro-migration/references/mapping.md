@@ -38,17 +38,22 @@
 ## Juego 2D
 
 - Página: `src/pages/juego.astro` → `src/components/game/GameExperience.svelte`.
+- Shell: HUD, progreso, modo experto, reloj y ayuda.
+- Pedido: `BriefTicket` progresivo y `BriefSummary`.
+- Diseño: `DesignPanel`, `DesignBasics`, `DesignColors`, `ColorDots`.
 - Escenario: `WorkshopStage.svelte`, `WorkshopBackdrop.svelte` y las escenas `*Scene`.
-- Controles: `*Panel`, `OrderTicket`, `StationTabs`, `OverviewPanel`.
-- Arte: `Jar2D`, `Pot2D`, `Pitcher2D`, `Fan2D`, `Steam2D`, `CustomerPortrait`, `StationIcon`.
-- Motor: `src/lib/game/game-state.svelte.ts`, `data.ts`, `orders.ts`, `types.ts`.
+- Vista previa: `CandlePreview` y `MoldPreview`.
+- Controles: `*Panel`, `StationTabs`, `OverviewPanel`, `LockedPanel`, `ShoppingList`.
+- Arte: `Pot2D`, `Pitcher2D`, `Fan2D`, `Steam2D`, `CustomerPortrait`, `StationIcon`.
+- Motor: `src/lib/game/types.ts`, `data.ts`, `design.ts`, `craft.ts`, `scoring.ts`, `supplies.ts`, `game-state.svelte.ts`.
 - Estilos: `src/styles/game.css`.
-- Tests: `src/lib/game/orders.test.ts` con Vitest.
+- Tests: `src/lib/game/game.test.ts` con Vitest.
 
 ## Qué falta
 
 - Retirar `cmd/`, `internal/` y `go.mod` cuando se apruebe la versión Astro.
 - Reemplazar el contenido de ejemplo y las fotos.
-- Implementar “Crear mi vela”, persistencia/puntaje y audio del juego.
-- Reemplazar los SVG placeholders por arte final si se desea.
+- Migrar el catálogo a insumos y enlazar la receta del juego con productos reales.
+- Validar briefs, temperaturas, tiempos, mechas y cantidades con el negocio.
+- Persistencia/audio y arte final del juego (fase 3).
 - Configurar el dominio real y el despliegue.

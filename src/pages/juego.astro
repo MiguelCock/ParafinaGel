@@ -7,16 +7,16 @@ import SectionHeading from "@components/SectionHeading.astro";
 
 const pasos = [
   {
-    title: "Recibe",
-    text: "Escucha al cliente y revisa el ticket con aroma, color, frasco y etiqueta.",
+    title: "Escucha",
+    text: "El cliente revela el brief poco a poco: tipo de vela, colores, aroma, mecha y acabado.",
   },
   {
-    title: "Crea",
-    text: "Calienta la cera, mezcla, vierte y deja enfriar la vela en el taller.",
+    title: "Diseña y crea",
+    text: "Arma capas, figuras o gel; calienta, vierte, coloca la mecha y cuida cada detalle.",
   },
   {
-    title: "Descubre",
-    text: "Entrega el pedido, recibe propina y descubre el producto real del catálogo.",
+    title: "Pide tus insumos",
+    text: "Recibe la receta con cantidades y pide los materiales para hacerla en casa.",
   },
 ];
 ---
@@ -27,8 +27,8 @@ const pasos = [
 >
   <PageHero
     eyebrow="Juego"
-    title="Aprende haciendo."
-    description="Una experiencia cozy en 2D: atiende pedidos, prepara velas y descubre cómo se trabaja en el taller familiar."
+    title="Diseña la vela. Compra los insumos."
+    description="Una experiencia cozy en 2D: escucha un brief, diseña por capas, figuras o gel, y recibe la receta con todo lo que necesitas para hacerla."
     align="center"
   />
 
@@ -36,9 +36,9 @@ const pasos = [
     <div class="container">
       <GameExperience client:visible />
       <p class="game-disclaimer">
-        Juego con contenido de ejemplo. Los tiempos, temperaturas y materiales
-        son aproximados; los datos reales se validarán con el negocio antes de
-        publicar.
+        Juego con contenido de ejemplo. Los tiempos, temperaturas, materiales y
+        cantidades son aproximados; los datos reales se validarán con el negocio
+        antes de publicar.
       </p>
     </div>
   </section>
@@ -47,7 +47,7 @@ const pasos = [
     <div class="container">
       <SectionHeading
         eyebrow="Cómo funciona"
-        title="Tres momentos, una vela"
+        title="Tres momentos, una receta"
         align="center"
       />
 

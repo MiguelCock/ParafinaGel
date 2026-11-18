@@ -1,25 +1,30 @@
 <script lang="ts">
+  import { orderTypeLabels } from "@lib/game/data";
+  import type { Brief } from "@lib/game/types";
   import CustomerPortrait from "./CustomerPortrait.svelte";
-  import type { Customer } from "@lib/game/types";
 
   interface Props {
-    customer: Customer;
-    happy?: boolean;
+    brief: Brief;
+    revealed: number;
+    noted?: boolean;
   }
 
-  let { customer, happy = false }: Props = $props();
+  let { brief, revealed, noted = false }: Props = $props();
+
+  const line = $derived(
+    brief.lines[Math.min(revealed, brief.lines.length) - 1] ?? brief.lines[0],
+  );
 </script>
 
 <div class="counter-scene" data-testid="counter-scene">
   <div class="counter-scene__portrait">
-    <CustomerPortrait {customer} shape="arch" size="lg" />
+    <CustomerPortrait customer={brief.customer} shape="arch" size="lg" />
   </div>
 
   <div class="counter-scene__speech">
-    <p class="counter-scene__quote">
-      “{happy ? "¡Gracias! Quedó hermosa." : customer.saludo}”
-    </p>
-    <p class="counter-scene__name">{customer.nombre}</p>
+    <p class="counter-scene__badge">{orderTypeLabels[brief.type]}</p>
+    <p class="counter-scene__quote">“{line?.text ?? brief.customer.saludo}”</p>
+    <p class="counter-scene__name">{brief.customer.nombre}</p>
   </div>
 
   <div class="counter-scene__desk" aria-hidden="true">
@@ -34,7 +39,7 @@
       </svg>
     </span>
     <span class="counter-scene__note">
-      {happy ? "Pedido entregado" : "Pedido listo para preparar"}
+      {noted ? "Nota creada, ¡a diseñar!" : "Escuchando el pedido…"}
     </span>
   </div>
 </div>
@@ -77,7 +82,16 @@
     transform: rotate(45deg);
   }
 
+  .counter-scene__badge {
+    color: var(--color-accent);
+    font-size: 0.55rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
   .counter-scene__quote {
+    margin-top: 0.15rem;
     color: var(--color-text);
     font-family: var(--font-display);
     font-size: var(--text-lg);

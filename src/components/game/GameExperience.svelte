@@ -1,10 +1,8 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { formatCOP } from "@lib/format";
   import { stationLabels, stationOrder } from "@lib/game/data";
   import { GameState } from "@lib/game/game-state.svelte";
-  import type { StationId } from "@lib/game/types";
-  import OrderTicket from "./OrderTicket.svelte";
+  import BriefSummary from "./BriefSummary.svelte";
   import StationPanel from "./StationPanel.svelte";
   import StationTabs from "./StationTabs.svelte";
   import WorkshopStage from "./WorkshopStage.svelte";
@@ -12,24 +10,50 @@
 
   const game = new GameState();
   let showHelp = $state(false);
+  let shellEl = $state<HTMLElement | null>(null);
+  let panelEl = $state<HTMLElement | null>(null);
+
+  $effect(() => {
+    const phase = game.phase;
+    if (phase === "intro") return;
+
+    if (window.matchMedia("(max-width: 899px)").matches) {
+      if (shellEl) {
+        const top = shellEl.getBoundingClientRect().top + window.scrollY - 70;
+        window.scrollTo({ top, behavior: "instant" });
+      }
+    } else if (panelEl) {
+      panelEl.scrollTo({ top: 0, behavior: "instant" });
+    }
+  });
+
+  const progressStations = $derived(
+    game.mode === "guided" ? stationOrder : stationOrder.slice(1),
+  );
 
   const phaseIndex = $derived(
     game.phase === "intro"
       ? -1
       : game.phase === "score" || game.phase === "dayEnd"
-        ? stationOrder.length
-        : stationOrder.indexOf(game.phase as StationId),
+        ? progressStations.length
+        : progressStations.indexOf(game.activeStation),
   );
 
-  const status = $derived(
-    game.phase === "intro"
-      ? "Taller ParafinaGel. Pulsa Empezar."
-      : game.phase === "score"
-        ? `Pedido entregado. Puntuación ${game.score?.total ?? 0} de 100.`
-        : game.phase === "dayEnd"
-          ? `Fin del día. Propinas ${game.totalTips} pesos.`
-          : `Estación activa: ${stationLabels[game.phase]}.`,
-  );
+  const status = $derived.by(() => {
+    if (game.phase === "intro") {
+      return "Taller ParafinaGel. Elige jugar pedidos o modo libre.";
+    }
+    if (game.phase === "brief") {
+      return `Escuchando a ${game.brief.customer.nombre}.`;
+    }
+    if (game.phase === "score") {
+      return `Resultado listo. ${game.score ? `${Math.round(game.score.total)} de 100 puntos.` : "Receta generada."}`;
+    }
+    if (game.phase === "dayEnd") {
+      return `Fin del día. ${game.served} pedidos y ${game.totalPoints} puntos.`;
+    }
+    return `Estación activa: ${stationLabels[game.activeStation]}.`;
+  });
 
   function openHelp() {
     showHelp = true;
@@ -39,6 +63,11 @@
   function closeHelp() {
     showHelp = false;
     game.paused = document.hidden;
+  }
+
+  function restartGame() {
+    game.restart();
+    closeHelp();
   }
 
   onMount(() => {
@@ -74,7 +103,7 @@
   }}
 />
 
-<div class="game-shell" data-testid="game2d">
+<div class="game-shell" bind:this={shellEl} data-testid="game2d">
   <p class="visually-hidden" aria-live="polite">{status}</p>
 
   <header class="game-hud">
@@ -83,15 +112,34 @@
       <span>Taller ParafinaGel</span>
     </div>
 
-    <div class="game-hud__meta" aria-label="Progreso del día">
-      <span class="hud-chip">Día 1</span>
-      <span class="hud-chip">
-        Pedido {game.currentOrderNumber}/{game.totalOrders}
-      </span>
-      <span class="hud-chip">Propinas {formatCOP(game.totalTips)}</span>
+    <div class="game-hud__meta" aria-label="Progreso">
+      {#if game.mode === "guided"}
+        <span class="hud-chip">Día 1</span>
+        <span class="hud-chip">
+          Pedido {game.currentOrderNumber}/{game.totalBriefs}
+        </span>
+        <span class="hud-chip">{game.totalPoints} pts</span>
+      {:else}
+        <span class="hud-chip hud-chip--sage">Modo libre</span>
+        <span class="hud-chip">Sin reloj</span>
+      {/if}
     </div>
 
     <div class="game-hud__actions">
+      {#if game.mode === "sandbox" && game.phase !== "intro"}
+        <button type="button" onclick={() => game.exitSandbox()}>
+          Salir
+        </button>
+      {/if}
+      <button
+        type="button"
+        class:active={game.expert}
+        aria-pressed={game.expert}
+        onclick={() => game.toggleExpert()}
+        data-testid="toggle-expert"
+      >
+        Experto
+      </button>
       <button type="button" onclick={openHelp} data-testid="open-help">
         Cómo jugar
       </button>
@@ -99,8 +147,11 @@
   </header>
 
   <div class="game-progress" aria-hidden="true">
-    {#each stationOrder as station, index}
-      <span class:done={index < phaseIndex} class:current={index === phaseIndex}
+    {#each progressStations as station, index}
+      <span
+        class:done={index < phaseIndex}
+        class:current={index === phaseIndex}
+        title={stationLabels[station]}
       ></span>
     {/each}
   </div>
@@ -111,34 +162,35 @@
     <aside
       class="game-panel"
       class:game-panel--intro={game.phase === "intro"}
+      bind:this={panelEl}
       aria-label="Pedido y estación"
     >
       {#if game.phase === "intro"}
         <div class="game-panel__intro">
           <p class="game-eyebrow">Cómo jugar</p>
-          <h3 class="game-title">Un pedido, cinco estaciones</h3>
+          <h3 class="game-title">Diseña, crea y pide tus insumos</h3>
           <ol>
-            <li>Recibe el pedido en el mostrador.</li>
-            <li>Calienta la cera, elige aroma y color.</li>
-            <li>Elige el frasco y vierte hasta la meta.</li>
-            <li>Deja enfriar y termina los detalles.</li>
-            <li>Entrega la vela y recibe propina.</li>
+            <li>Escucha el brief y crea la nota.</li>
+            <li>Diseña la vela: capas, figura o gel.</li>
+            <li>Calienta, vierte y coloca la mecha.</li>
+            <li>Espera el curado y cuida el acabado.</li>
+            <li>Recibe la receta y pide los materiales.</li>
           </ol>
           <p class="game-text">
-            Esta es una versión de ejemplo. Los tiempos y temperaturas son
-            aproximados y se validarán con el taller.
+            Los pedidos son de ejemplo. Temperaturas, tiempos y materiales se
+            validarán con el taller antes de publicar.
           </p>
         </div>
       {:else}
-        {#if game.phase !== "dayEnd" && game.phase !== "score"}
-          <OrderTicket order={game.order} phase={game.phase} />
+        {#if game.mode === "guided" && game.noted && game.phase !== "score" && game.phase !== "dayEnd"}
+          <BriefSummary {game} />
         {/if}
 
         {#if game.phase !== "score" && game.phase !== "dayEnd"}
-          <StationTabs state={game} />
+          <StationTabs {game} />
         {/if}
 
-        <StationPanel state={game} />
+        <StationPanel {game} />
       {/if}
     </aside>
   </div>
@@ -153,23 +205,29 @@
   >
     <div class="game-help__card">
       <p class="game-eyebrow">Cómo jugar</p>
-      <h3 id="help-title" class="game-title">Un pedido, cinco estaciones</h3>
+      <h3 id="help-title" class="game-title">Siete estaciones, una receta</h3>
       <ol>
-        <li><strong>Mostrador:</strong> revisa el ticket y toma el pedido.</li>
-        <li><strong>Cera:</strong> calienta, elige aroma/color y remueve.</li>
+        <li><strong>Mostrador:</strong> escucha el brief y crea la nota.</li>
         <li>
-          <strong>Vertido:</strong> elige el frasco y vierte hasta la meta.
+          <strong>Diseño:</strong> elige cera, recipiente o molde, capas, figura,
+          gel, aroma, mecha y etiqueta.
+        </li>
+        <li><strong>Cera:</strong> calienta despacio y remueve tres veces.</li>
+        <li>
+          <strong>Vertido:</strong> llena cada capa o parte hasta la meta.
+        </li>
+        <li><strong>Mecha:</strong> muévela al centro con las flechas.</li>
+        <li>
+          <strong>Curado:</strong> espera, abanica y quita burbujas si es gel.
         </li>
         <li>
-          <strong>Enfriado:</strong> abanica y espera a que la vela esté lista.
-        </li>
-        <li>
-          <strong>Acabado:</strong> recorta, etiqueta, tapa, empaca y entrega.
+          <strong>Acabado:</strong> alinea la etiqueta, corta la mecha, tapa y empaca.
         </li>
       </ol>
       <p class="game-text">
-        Puedes volver al taller con “Ver taller” y mirar las estaciones
-        completadas sin perder el pedido.
+        Al final obtienes puntos, estrellas y la receta con la lista de insumos.
+        En <strong>Modo libre</strong> puedes diseñar sin pedido ni reloj. El
+        botón <strong>Experto</strong> oculta las pistas numéricas del acabado.
       </p>
       <button
         class="game-action game-primary"
@@ -178,6 +236,14 @@
         data-testid="close-help"
       >
         Entendido
+      </button>
+      <button
+        class="game-action game-action--secondary game-action--small"
+        type="button"
+        onclick={restartGame}
+        data-testid="restart-game"
+      >
+        Reiniciar día
       </button>
     </div>
   </div>
@@ -240,6 +306,12 @@
     white-space: nowrap;
   }
 
+  .hud-chip--sage {
+    border-color: var(--color-sage);
+    background: var(--color-sage-soft);
+    color: var(--color-sage);
+  }
+
   .game-hud__actions {
     display: flex;
     gap: 0.3rem;
@@ -259,6 +331,12 @@
   .game-hud__actions button:hover {
     border-color: var(--color-accent);
     color: var(--color-accent);
+  }
+
+  .game-hud__actions button.active {
+    border-color: var(--color-accent);
+    background: var(--color-accent-soft);
+    color: var(--color-accent-strong);
   }
 
   .game-progress {
@@ -335,7 +413,7 @@
   .game-help__card {
     display: grid;
     gap: 0.6rem;
-    width: min(100%, 28rem);
+    width: min(100%, 30rem);
     max-height: 90vh;
     overflow-y: auto;
     padding: 1.2rem;
@@ -347,12 +425,12 @@
 
   @media (min-width: 900px) {
     .game-body {
-      grid-template-columns: minmax(0, 1fr) 380px;
-      min-height: min(78vh, 760px);
+      grid-template-columns: minmax(0, 1fr) 400px;
+      min-height: min(80vh, 780px);
     }
 
     .game-panel {
-      max-height: min(78vh, 760px);
+      max-height: min(80vh, 780px);
       overflow-y: auto;
       border-top: 0;
       border-left: 1px solid var(--color-border);
@@ -372,6 +450,10 @@
 
     .game-panel {
       padding: 0.7rem;
+    }
+
+    .hud-chip {
+      font-size: 0.6rem;
     }
   }
 

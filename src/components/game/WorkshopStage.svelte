@@ -1,14 +1,16 @@
 <script lang="ts">
+  import { orderTypeLabels, stationLabels, stationOrder } from "@lib/game/data";
   import type { GameState } from "@lib/game/game-state.svelte";
-  import { stationLabels, stationOrder } from "@lib/game/data";
   import type { StationId } from "@lib/game/types";
   import CoolScene from "./CoolScene.svelte";
   import CounterScene from "./CounterScene.svelte";
   import CustomerPortrait from "./CustomerPortrait.svelte";
+  import DesignScene from "./DesignScene.svelte";
   import FinishScene from "./FinishScene.svelte";
   import MeltScene from "./MeltScene.svelte";
   import PourScene from "./PourScene.svelte";
   import StationIcon from "./StationIcon.svelte";
+  import WickScene from "./WickScene.svelte";
   import WorkshopBackdrop from "./WorkshopBackdrop.svelte";
 
   interface Props {
@@ -18,23 +20,33 @@
   let { game }: Props = $props();
 
   const hotspots: { station: StationId; left: string; top: string }[] = [
-    { station: "melt", left: "16%", top: "47%" },
+    { station: "design", left: "20%", top: "30%" },
+    { station: "melt", left: "14%", top: "48%" },
     { station: "pour", left: "50%", top: "58%" },
-    { station: "cool", left: "84%", top: "46%" },
-    { station: "finish", left: "50%", top: "26%" },
+    { station: "wick", left: "70%", top: "38%" },
+    { station: "cool", left: "85%", top: "48%" },
+    { station: "finish", left: "50%", top: "25%" },
     { station: "counter", left: "50%", top: "82%" },
   ];
 
   const hints: Record<StationId, string> = {
-    counter: "Revisa el ticket y toma el pedido.",
-    melt: "Calienta, elige aroma y color, y remueve.",
-    pour: "Elige el frasco y vierte hasta la meta.",
-    cool: "Abanica para enfriar más rápido.",
-    finish: "Recorta, etiqueta, tapa y empaca.",
+    counter: "Escucha los detalles y crea la nota de diseño.",
+    design: "Elige cera, forma, colores, aroma, mecha y etiqueta.",
+    melt: "Calienta despacio y remueve tres veces.",
+    pour: "Llena cada capa o parte hasta la zona verde.",
+    wick: "Mueve la mecha al centro de la pieza.",
+    cool: "Espera el curado; en gel, quita las burbujas.",
+    finish: "Alinea la etiqueta, corta la mecha y empaca.",
   };
 
   const scene = $derived(
     game.view === "overview" ? null : (game.view as StationId),
+  );
+
+  const visibleHotspots = $derived(
+    game.mode === "guided"
+      ? hotspots
+      : hotspots.filter((spot) => spot.station !== "counter"),
   );
 </script>
 
@@ -48,7 +60,7 @@
       Taller ParafinaGel
     </span>
 
-    {#if game.view !== "overview"}
+    {#if game.view !== "overview" && game.phase !== "intro"}
       <button
         class="stage__back"
         type="button"
@@ -64,30 +76,40 @@
     <div class="stage__intro">
       <div class="stage__intro-card">
         <p class="game-eyebrow">Una tarde en el taller</p>
-        <h3>Tu primera vela</h3>
+        <h3>Diseña la vela. Compra los insumos.</h3>
         <p>
-          Atiende tres pedidos, prepara cada vela y descubre cómo se trabaja en
-          el taller familiar.
+          Escucha un brief, arma la vela por capas, figura o gel, y recibe la
+          receta con todo lo que necesitas para hacerla.
         </p>
-        <button
-          class="game-action game-primary"
-          type="button"
-          onclick={() => game.start()}
-          data-testid="start-game"
-        >
-          Empezar
-        </button>
+        <div class="stage__intro-actions">
+          <button
+            class="game-action game-primary"
+            type="button"
+            onclick={() => game.startGuided()}
+            data-testid="start-game"
+          >
+            Jugar pedidos
+          </button>
+          <button
+            class="game-action game-action--secondary"
+            type="button"
+            onclick={() => game.startSandbox()}
+            data-testid="start-sandbox"
+          >
+            Modo libre
+          </button>
+        </div>
         <p class="stage__intro-note">
-          Revisa el ticket y usa las pestañas para moverte entre estaciones.
+          Cuatro pedidos · clásica, capas, figura y gel · sin prisa.
         </p>
       </div>
     </div>
   {:else if game.view === "overview"}
     <div class="stage__overview">
-      {#each hotspots as spot}
+      {#each visibleHotspots as spot}
         <button
           class="hotspot"
-          class:active={game.phase === spot.station}
+          class:active={game.activeStation === spot.station}
           type="button"
           style={`left: ${spot.left}; top: ${spot.top}`}
           onclick={() => game.setView(spot.station)}
@@ -98,16 +120,24 @@
         </button>
       {/each}
 
-      {#if game.phase !== "dayEnd"}
+      {#if game.mode === "guided" && game.phase !== "dayEnd"}
         <div class="stage__customer">
-          <CustomerPortrait customer={game.order.customer} size="sm" />
+          <CustomerPortrait customer={game.brief.customer} size="sm" />
           <div>
-            <strong>{game.order.customer.nombre}</strong>
+            <strong>{game.brief.customer.nombre}</strong>
             <span>
               {game.phase === "score"
                 ? "Pedido entregado"
-                : `Pedido ${game.currentOrderNumber} de ${game.totalOrders}`}
+                : `Pedido ${game.currentOrderNumber} de ${game.totalBriefs}`}
             </span>
+          </div>
+        </div>
+      {:else if game.mode === "sandbox"}
+        <div class="stage__customer">
+          <span class="stage__sandbox-dot" aria-hidden="true">✦</span>
+          <div>
+            <strong>Modo libre</strong>
+            <span>Diseña sin pedido ni reloj</span>
           </div>
         </div>
       {/if}
@@ -115,7 +145,9 @@
       <p class="stage__hint">
         {game.phase === "dayEnd"
           ? "El taller cerró por hoy."
-          : "Toca una estación para acercarte."}
+          : game.mode === "sandbox"
+            ? "Toca una estación o vuelve al diseño."
+            : "Toca una estación para acercarte."}
       </p>
     </div>
   {:else if scene}
@@ -125,21 +157,37 @@
           <StationIcon station={scene} size={20} />
         </span>
         <div>
-          <p class="game-eyebrow">Estación</p>
-          <h3>{stationLabels[scene]}</h3>
+          <p class="game-eyebrow">
+            {game.phase === "score"
+              ? "Pedido entregado"
+              : game.mode === "sandbox"
+                ? "Modo libre"
+                : "Estación"}
+          </p>
+          <h3>{game.phase === "score" ? "Resultado" : stationLabels[scene]}</h3>
         </div>
+        {#if game.mode === "guided" && scene !== "counter"}
+          <span class="stage__scene-type">
+            {orderTypeLabels[game.design.mode]}
+          </span>
+        {/if}
       </div>
 
       <div class="stage__scene-body">
         {#if scene === "counter"}
           <CounterScene
-            customer={game.order.customer}
-            happy={game.phase === "score"}
+            brief={game.brief}
+            revealed={game.revealed}
+            noted={game.noted}
           />
+        {:else if scene === "design"}
+          <DesignScene {game} />
         {:else if scene === "melt"}
           <MeltScene {game} />
         {:else if scene === "pour"}
           <PourScene {game} />
+        {:else if scene === "wick"}
+          <WickScene {game} />
         {:else if scene === "cool"}
           <CoolScene {game} />
         {:else if scene === "finish"}
@@ -147,7 +195,11 @@
         {/if}
       </div>
 
-      <p class="stage__hint">{hints[scene]}</p>
+      <p class="stage__hint">
+        {game.phase === "score"
+          ? "Así queda tu vela · receta lista para pedir insumos"
+          : hints[scene]}
+      </p>
     </div>
   {/if}
 </section>
@@ -182,7 +234,7 @@
     top: 0.7rem;
     right: 0.7rem;
     left: 0.7rem;
-    z-index: 2;
+    z-index: 3;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -283,7 +335,7 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    max-width: 13rem;
+    max-width: 14rem;
     padding: 0.4rem 0.6rem 0.4rem 0.4rem;
     border: 1px solid rgba(143, 95, 64, 0.18);
     border-radius: 0.9rem;
@@ -310,6 +362,17 @@
     font-weight: 700;
   }
 
+  .stage__sandbox-dot {
+    display: grid;
+    place-items: center;
+    width: 2.2rem;
+    height: 2.2rem;
+    border-radius: 50%;
+    background: #e4eadf;
+    color: #4f6247;
+    font-size: 1rem;
+  }
+
   .stage__hint {
     position: absolute;
     bottom: 0.5rem;
@@ -334,7 +397,7 @@
   .stage__intro {
     position: absolute;
     inset: 0;
-    z-index: 3;
+    z-index: 4;
     display: grid;
     place-items: center;
     padding: 1rem;
@@ -346,7 +409,7 @@
     display: grid;
     justify-items: start;
     gap: 0.55rem;
-    width: min(100%, 24rem);
+    width: min(100%, 25rem);
     padding: 1.25rem;
     border: 1px solid var(--color-border);
     border-radius: 1rem;
@@ -364,14 +427,24 @@
     font-size: var(--text-sm);
   }
 
+  .stage__intro-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    width: 100%;
+  }
+
+  .stage__intro-actions :global(.game-action) {
+    flex: 1 1 8rem;
+  }
+
   .stage__intro-note {
     font-size: var(--text-xs) !important;
-    opacity: 0.8;
   }
 
   .stage__scene {
     position: absolute;
-    inset: 3.2rem 8% 2.4rem;
+    inset: 3.2rem 7% 2.4rem;
     z-index: 2;
     display: grid;
     grid-template-rows: auto minmax(0, 1fr) auto;
@@ -410,10 +483,23 @@
     line-height: 1;
   }
 
+  .stage__scene-type {
+    margin-left: auto;
+    padding: 0.2rem 0.55rem;
+    border: 1px solid var(--color-accent);
+    border-radius: 999px;
+    color: var(--color-accent);
+    font-size: 0.58rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
   .stage__scene-body {
     display: grid;
     align-items: center;
     min-height: 0;
+    overflow: auto;
   }
 
   @media (max-width: 899px) {
@@ -433,7 +519,7 @@
 
   @media (max-width: 520px) {
     .stage {
-      min-height: 380px;
+      min-height: 360px;
     }
 
     .stage__brand {
@@ -441,8 +527,14 @@
     }
 
     .hotspot {
-      padding: 0.35rem 0.5rem;
-      font-size: 0.6rem;
+      gap: 0.2rem;
+      padding: 0.3rem 0.42rem;
+      font-size: 0.55rem;
+    }
+
+    .hotspot :global(svg) {
+      width: 15px;
+      height: 15px;
     }
 
     .stage__scene {
@@ -453,8 +545,16 @@
       font-size: var(--text-xl);
     }
 
+    .stage__scene-type {
+      display: none;
+    }
+
     .stage__hint {
       display: none;
+    }
+
+    .stage__intro-card h3 {
+      font-size: var(--text-2xl);
     }
   }
 

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { labelsById } from "@lib/game/data";
   import type { GameState } from "@lib/game/game-state.svelte";
-  import Jar2D from "./Jar2D.svelte";
+  import CandlePreview from "./CandlePreview.svelte";
 
   interface Props {
     game: GameState;
@@ -9,29 +9,33 @@
 
   let { game }: Props = $props();
 
-  const labelName = $derived(
-    game.craft.labelId ? labelsById[game.craft.labelId]?.nombre : null,
+  const label = $derived(
+    game.design.labelId ? (labelsById[game.design.labelId] ?? null) : null,
   );
+  const finished = $derived(game.phase === "score");
 </script>
 
 <div class="finish-scene" data-testid="finish-scene">
   <div class="finish-scene__mat">
-    <Jar2D
-      fill={game.craft.fill}
-      color={game.waxHex}
-      glass={game.glassHex}
+    <CandlePreview
+      design={game.design}
       showWick
-      showLabel={game.craft.labelId !== null}
-      labelColor={game.labelHex}
-      showLid={game.craft.lidOn}
+      showLabel={game.craft.label.placed}
+      placement={game.craft.label}
+      showFlame={finished}
+      trimMm={game.craft.wick.trimmed ? game.craft.wick.trimMm : undefined}
     />
     <span class="finish-scene__label-tag" class:done={game.canFinish}>
-      {game.canFinish ? "Lista para entregar" : "En acabado"}
+      {finished
+        ? "Vela terminada"
+        : game.canFinish
+          ? "Lista para entregar"
+          : "En acabado"}
     </span>
   </div>
 
   <div class="finish-scene__tools">
-    <div class="tool" class:done={game.craft.wickTrimmed}>
+    <div class="tool" class:done={game.craft.wick.trimmed}>
       <span class="tool__icon" aria-hidden="true">
         <svg
           viewBox="0 0 24 24"
@@ -44,16 +48,21 @@
       </span>
       <span class="tool__name">Mecha</span>
       <span class="tool__state">
-        {game.craft.wickTrimmed ? "Recortada" : "Pendiente"}
+        {game.craft.wick.trimmed ? `${game.craft.wick.trimMm} mm` : "Pendiente"}
       </span>
     </div>
 
-    <div class="tool" class:done={game.craft.labelId !== null}>
+    <div class="tool" class:done={game.craft.label.placed}>
       <span class="tool__icon" aria-hidden="true">
-        <span class="tool__swatch" style={`--swatch: ${game.labelHex}`}></span>
+        <span
+          class="tool__swatch"
+          style={`--swatch: ${label?.color ?? "#fbf3e9"}`}
+        ></span>
       </span>
       <span class="tool__name">Etiqueta</span>
-      <span class="tool__state">{labelName ?? "Pendiente"}</span>
+      <span class="tool__state">
+        {game.craft.label.placed ? (label?.nombre ?? "Puesta") : "Pendiente"}
+      </span>
     </div>
 
     <div class="tool" class:done={game.craft.lidOn}>
@@ -121,7 +130,7 @@
     border-radius: 0.8rem;
   }
 
-  .finish-scene__mat :global(.jar) {
+  .finish-scene__mat :global(.candle-preview) {
     width: min(100%, 9rem);
   }
 
@@ -210,11 +219,11 @@
     }
 
     .finish-scene__mat {
-      min-height: 9rem;
+      min-height: 7rem;
     }
 
-    .finish-scene__mat :global(.jar) {
-      width: 6.5rem;
+    .finish-scene__mat :global(.candle-preview) {
+      width: 5.5rem;
     }
 
     .finish-scene__tools {
