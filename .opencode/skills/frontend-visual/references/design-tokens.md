@@ -42,3 +42,10 @@ Fuente de verdad: `src/styles/global.css`.
 - El botón de WhatsApp usa `--color-on-whatsapp` para el texto; el contraste cambia entre temas.
 - No agregues una librería de UI ni Tailwind sin acordarlo.
 - Cualquier token nuevo debe tener su equivalente en modo oscuro.
+
+## Juego 3D
+
+- La escena 3D vive en `src/lib/game3d/palette.ts` porque Three.js no puede leer variables CSS.
+- Mantén esa paleta alineada con los tokens del sitio: fondo `#f7eee1`, pared `#f2e4d4`, madera `#b98963`, terracota `#b4552f`, salvia `#6f8165`, crema `#fff9f2`.
+- El taller 3D es siempre cálido/claro; no lo cambies a modo oscuro sin una paleta y una revisión de contraste propias.
+- La UI del juego usa `src/styles/game.css` y clases `.game-*`; no mezcles estilos del sitio dentro de la escena.

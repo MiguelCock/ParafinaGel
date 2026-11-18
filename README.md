@@ -1,8 +1,8 @@
 # ParafinaGel
 
-Sitio web del negocio familiar de velas **ParafinaGel**: catálogo, contacto para comprar y un mini-juego para aprender a hacer velas.
+Sitio web del negocio familiar de velas **ParafinaGel**: catálogo, contacto para comprar y un juego 3D cozy para aprender a hacer velas.
 
-Construido con **Astro 7** e islas de **Svelte 5**. Salida 100 % estática.
+Construido con **Astro 7**, islas de **Svelte 5** y **Threlte / Three.js** para el juego. Salida 100 % estática.
 
 ## Requisitos
 
@@ -14,9 +14,10 @@ Construido con **Astro 7** e islas de **Svelte 5**. Salida 100 % estática.
 ```bash
 npm install
 npm run dev        # http://localhost:4321
-npm run build      # astro check + build estático en dist/
+npm run build      # check + build estático en dist/
 npm run preview    # previsualiza dist/
-npm run check      # tipos y contenido
+npm run check      # astro check + svelte-check
+npm test           # tests del motor del juego
 npm run format     # Prettier (Astro, Svelte, TS, CSS, MD)
 ```
 
@@ -26,14 +27,28 @@ npm run format     # Prettier (Astro, Svelte, TS, CSS, MD)
 src/
   pages/           # rutas por archivo
   layouts/         # BaseLayout con SEO, fuentes y navegación
-  components/      # UI en Astro + game/ (isla Svelte)
+  components/      # UI en Astro
+  components/game3d/  # isla 3D: escena, estaciones, paneles y HUD
+  components/game/    # juego 2D de respaldo
   content/         # productos del catálogo (Markdown)
-  lib/             # lógica de productos, WhatsApp y juego
+  lib/game3d/      # motor: pedidos, scoring, estado y datos
+  lib/             # lógica de productos, WhatsApp y formato
   styles/          # tokens y estilos globales
 public/            # favicon, robots
 ```
 
 Rutas: `/`, `/productos`, `/productos/[slug]`, `/nosotros`, `/juego`, `/contacto` y 404. `/about` redirige a `/nosotros`.
+
+## Juego 3D
+
+`/juego` tiene una experiencia 3D con cámara fija tipo diorama. Atiendes tres pedidos en el taller: mostrador, cera, vertido, enfriado y acabado. Cada pedido se puntúa por receta, temperatura, vertido y acabado, y termina en propinas y un resumen del día.
+
+- **Modo 3D / Modo ligero**: si el navegador no soporta WebGL, entra directo al juego 2D de respaldo. También puedes cambiar manualmente.
+- **Calidad**: en móvil inicia en “Baja” (sin sombras, menor DPR). Puedes cambiarla desde el HUD.
+- **Rendimiento**: en desarrollo hay un overlay con FPS, draw calls y triángulos. El juego solo carga en `/juego`.
+- **Peso**: el chunk del juego ronda 850 KB minificado (~217 KB gzip) por Three.js/Threlte; el resto del sitio no carga ese peso.
+- **Contenido**: los pedidos son de ejemplo y `productSlug` enlaza al catálogo real. Las temperaturas y tiempos son aproximados; valídalos antes de publicar.
+- **Arte**: esta fase usa primitivas procedurales (blockout). Los modelos GLB y el arte final llegan en una fase posterior.
 
 ## Catálogo y placeholders
 
@@ -64,7 +79,7 @@ El schema está en `src/content.config.ts`. Los precios son opcionales: si falta
 | Dominio del sitio                    | `astro.config.mjs`                                                              |
 | Catálogo y precios                   | `src/content/productos/*.md`                                                    |
 | Historia y copy de páginas           | `src/pages/nosotros.astro`, `src/pages/index.astro`, `src/pages/contacto.astro` |
-| Juego y tips educativos              | `src/lib/game/steps.ts` y `src/components/game/`                                |
+| Juego y tips educativos              | `src/lib/game3d/data.ts`, `src/lib/game3d/orders.ts` y `src/components/game3d/` |
 | Paleta, tipografía y tokens          | `src/styles/global.css`                                                         |
 
 El juego usa datos de ejemplo y no incluye temperaturas reales. Valida tiempos, ceras y materiales con el negocio antes de publicar.
@@ -76,8 +91,9 @@ El juego usa datos de ejemplo y no incluye temperaturas reales. Valida tiempos, 
 ## Notas
 
 - El sitio no tiene backend ni checkout. El CTA de compra es WhatsApp.
-- `npm audit` reporta vulnerabilidades altas en dependencias de build (`picomatch`). No ejecutes `npm audit fix --force`: puede romper las versiones de Astro/Svelte. No afecta el sitio estático.
+- `npm audit` reporta vulnerabilidades altas en dependencias de build (`picomatch` y tooling). No ejecutes `npm audit fix --force`: puede romper las versiones de Astro/Svelte/Threlte. No afecta el sitio estático.
 - La accesibilidad se verificó con axe (WCAG 2.1 AA) en las páginas principales, en modo claro y oscuro.
+- `npm test` cubre el motor puro del juego; `npm run check` valida Astro y Svelte.
 
 ## Antes de publicar
 
@@ -86,5 +102,6 @@ El juego usa datos de ejemplo y no incluye temperaturas reales. Valida tiempos, 
 - [ ] Cargar productos reales y quitar `borrador: true`.
 - [ ] Reemplazar los textos marcados como ejemplo.
 - [ ] Validar los datos del juego con el negocio.
+- [ ] Reemplazar el blockout 3D por modelos/arte aprobados.
 - [ ] Agregar fotos reales y `alt` descriptivos.
-- [ ] Ejecutar `npm run check`, `npm run build` y revisar en 360 px y desktop.
+- [ ] Ejecutar `npm test`, `npm run check`, `npm run build` y revisar en 360 px y desktop.

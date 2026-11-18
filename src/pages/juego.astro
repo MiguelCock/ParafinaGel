@@ -1,7 +1,7 @@
 ---
 import BaseLayout from "@layouts/BaseLayout.astro";
 import Button from "@components/Button.astro";
-import CandleGame from "@components/game/CandleGame.svelte";
+import GameExperience from "@components/game3d/GameExperience.svelte";
 import PageHero from "@components/PageHero.astro";
 import SectionHeading from "@components/SectionHeading.astro";
 import { getProductos } from "@lib/products";
@@ -21,16 +21,16 @@ const productos = (await getProductos())
 
 const pasos = [
   {
-    title: "Elige",
-    text: "Escoge uno de los productos de ejemplo y observa cómo cambia la vela.",
+    title: "Recibe",
+    text: "Escucha al cliente y revisa el ticket con aroma, color, frasco y etiqueta.",
   },
   {
     title: "Crea",
-    text: "Remueve la cera, viértela y deja que repose paso a paso.",
+    text: "Calienta la cera, mezcla, vierte y deja enfriar la vela en el taller.",
   },
   {
     title: "Descubre",
-    text: "Termina con una recomendación y un enlace al producto real.",
+    text: "Entrega el pedido, recibe propina y descubre el producto real del catálogo.",
   },
 ];
 ---
@@ -42,16 +42,17 @@ const pasos = [
   <PageHero
     eyebrow="Juego"
     title="Aprende haciendo."
-    description="Un recorrido corto por el proceso de hacer una vela. Elige un aroma, crea tu pieza y descubre qué producto va contigo."
+    description="Una experiencia cozy en 3D: atiende pedidos, prepara velas y descubre cómo se trabaja en el taller familiar."
     align="center"
   />
 
   <section class="section game-section">
     <div class="container">
-      <CandleGame client:visible productos={productos} />
+      <GameExperience client:only="svelte" productos={productos} />
       <p class="game-disclaimer">
-        Prototipo con contenido de ejemplo. Las temperaturas, tiempos y
-        materiales reales se validarán con el negocio antes de publicar.
+        Prototipo 3D con contenido de ejemplo. Los tiempos, temperaturas y
+        materiales son aproximados; los datos reales se validarán con el negocio
+        antes de publicar. Si tu dispositivo va lento, usa “Modo ligero”.
       </p>
     </div>
   </section>

@@ -29,6 +29,7 @@ Objetivo: que el sitio se vea como una marca de velas artesanales cuidada, no co
 - **Imágenes**: `astro:assets` (`<Image />`) para fotos reales, con `alt` descriptivo y dimensiones.
 - **Modo oscuro**: tokens en `@media (prefers-color-scheme: dark)`; revisa ambos temas.
 - **Astro/Svelte**: estilos scoped por componente. No uses `is:global` salvo que sea realmente global.
+- **Juego 3D**: su UI usa `src/styles/game.css` y clases `.game-*`; la escena es cálida y no sigue el modo oscuro. Revisa el skill `candle-game` antes de tocar el canvas.
 
 ## Anti-patrones
 
