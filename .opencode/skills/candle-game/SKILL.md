@@ -1,121 +1,114 @@
 ---
 name: Candle game
-description: Diseñar, implementar o modificar el juego 2D cozy de ParafinaGel (Astro + Svelte 5): pedido progresivo, diseñador de capas/figuras/gel, mini-juegos, receta de insumos, sandbox, SVG/CSS, responsive y accesibilidad. Úsalo al tocar el juego, sus escenas, paneles, motor o scoring.
+description: Diseñar, implementar o modificar el juego 2D WebGL de ParafinaGel con PixiJS 8: pedido progresivo, diseñador de capas/figuras/gel, simulación de líquido viscoso, retos manuales, receta de insumos, sandbox, responsive y accesibilidad.
 ---
 
-# Juego 2D de velas
+# Juego 2D WebGL de velas
 
 ## Norte del producto
 
-El sitio vende **insumos y materias primas**, no velas terminadas. El juego es la forma de que la clienta descubra qué vela podría hacer y qué materiales necesita. El cierre siempre es **receta + lista de insumos + WhatsApp**, nunca precio o propina de una vela terminada.
+El sitio vende **insumos y materias primas**, no velas terminadas. El juego permite descubrir qué vela se puede hacer y qué materiales se necesitan. El cierre es **receta + lista de insumos + WhatsApp**, sin precio ni propina de vela terminada.
 
 ## Dónde vive
 
 - Página: `src/pages/juego.astro`.
-- Shell: `src/components/game/GameExperience.svelte` (HUD, progreso, reloj, modo experto, ayuda).
-- Escenario: `WorkshopStage.svelte`, `WorkshopBackdrop.svelte`, `CounterScene`, `DesignScene`, `MeltScene`, `PourScene`, `WickScene`, `CoolScene`, `FinishScene`.
-- Pedido: `BriefTicket` (progresivo) y `BriefSummary` (nota fija).
+- Shell: `src/components/game/GameExperience.svelte` (HUD, progreso, reloj, experto, ayuda).
+- Escenario: `WorkshopStage.svelte`, `WorkshopBackdrop.svelte`, `StageCanvas.svelte`.
+- Render WebGL: `src/lib/game/render/`:
+  - `stage-renderer.ts`: `Application` de PixiJS, escenario virtual 1000×640, input y cambio de escena.
+  - `scene.ts`: interfaz `StageScene`.
+  - `candle-rig.ts`: frasco/moldes, capas, gel, mecha, etiqueta, llama.
+  - `palette.ts`: colores para WebGL (no lee CSS vars).
+  - `scenes/design-scene.ts`, `melt-scene.ts`, `pour-scene.ts`, `wick-scene.ts`, `cool-scene.ts`, `finish-scene.ts`.
+- Pedido: `BriefTicket`, `BriefSummary`, `CounterScene`.
 - Diseño: `DesignPanel`, `DesignBasics`, `DesignColors`, `ColorDots`.
-- Vista previa: `CandlePreview` (capas, gel, etiqueta, mecha) y `MoldPreview` (partes de figura).
-- Controles: `*Panel.svelte`, `StationTabs`, `OverviewPanel`, `LockedPanel`, `ShoppingList`.
-- Arte: `Pot2D`, `Pitcher2D`, `Fan2D`, `Steam2D`, `CustomerPortrait`, `StationIcon`.
-- Motor: `src/lib/game/` (`types`, `data`, `design`, `craft`, `scoring`, `supplies`, `game-state.svelte.ts`, `game.test.ts`).
-- Estilos compartidos: `src/styles/game.css`.
+- Paneles: `MeltPanel`, `PourPanel`, `WickPanel`, `CoolPanel`, `FinishPanel`, `ScorePanel`, `ShoppingList`.
+- Fallback: `CandlePreview` y `MoldPreview` (SVG) si no hay WebGL.
+- Motor: `src/lib/game/` (`types`, `data`, `design`, `craft`, `liquid`, `scoring`, `supplies`, `portrait`, `game-state.svelte.ts`, `game.test.ts`).
+- Estilos: `src/styles/game.css`.
 
 ## Flujo
 
 `brief → design → melt → pour → wick → cool → finish → score`
 
-1. **Mostrador / brief**: el cliente habla por líneas. Cada “Continuar” revela un detalle y añade requisitos. Al final “Crear nota”.
-2. **Diseño**: tipo (clásica, capas, figura, gel), cera, tamaño, recipiente o molde, capas/partes/montajes, aroma, mecha y etiqueta.
-3. **Cera**: calentar y remover 3 veces. El rango depende de la cera; la temperatura se registra al estar dentro.
-4. **Vertido**: una unidad por capa o parte de figura; llenar a la meta, terminar y esperar el cuajado entre capas.
-5. **Mecha**: mini-juego de centrado con flechas.
-6. **Curado**: esperar/abanicar; en gel, quitar burbujas.
-7. **Acabado**: alinear etiqueta (x/y/giro), cortar mecha a la medida, tapa y empaque.
-8. **Score**: puntos, estrellas, receta e insumos; CTA a WhatsApp. Sin precio ni propina.
+1. **Mostrador**: el cliente revela el pedido por líneas. “Crear nota” fija el brief.
+2. **Diseño**: tipo, cera, tamaño, recipiente/molde, capas/partes/montajes, aroma, mecha y etiqueta.
+3. **Cera**: mantener la palanca para calentar; arrastrar la cuchara en círculos.
+4. **Vertido**: arrastrar la jarra sobre la boca; el líquido cae, se ondula y llena. Soltar cierra la capa.
+5. **Mecha**: arrastrar la mecha al centro de la vista superior.
+6. **Curado**: tocar el ventilador; en gel, tocar las burbujas.
+7. **Acabado**: arrastrar etiqueta y tirador, cortar la mecha sobre la vela, tocar tapa y empaque.
+8. **Score**: puntos, estrellas, receta e insumos; WhatsApp.
 
-## Tipos de pedido
+## WebGL y PixiJS
 
-| Tipo | Requisitos |
-|---|---|
-| `clasico` | Una capa de color, recipiente, aroma, mecha, etiqueta. |
-| `capas` | 2–4 capas con colores ordenados y alturas; espera entre capas. |
-| `figura` | Molde con partes (`mold.parts`) y un color por parte. |
-| `gel` | Cera gel, recipiente transparente, montajes suspendidos y burbujas. |
+- **Solo PixiJS 8**, no Three.js/Threlte ni WebGL crudo.
+- `StageCanvas` importa el renderer con `import()` dinámico en `onMount`; nunca en SSR.
+- El escenario virtual mide 1000×640 y se escala con letterboxing. Todas las escenas comparten coordenadas.
+- El canvas vive dentro de `role="application"` focusable. El teclado es la alternativa accesible; el panel explica los gestos.
+- El canvas usa `pointerdown/move/up`; el renderer convierte coordenadas de cliente a virtuales.
+- `prefers-reduced-motion` reduce ondas, vapor, ventilador y llama.
+- Si `webglAvailable()` falla o `Application.init` lanza, se muestra `CandlePreview` y “Ver receta sin taller”.
 
-Los cuatro briefs viven en `data.ts` con `lines` (diálogo + notas) y `target` (solución esperada).
+## Retos manuales
 
-## Modelo de datos
+- **Cera**: `pointerDown` en la palanca inicia calor; `pointerUp` lo detiene. Arrastrar sobre la olla acumula ángulo y llama `game.stir()` cada 1.6π. Teclado: Espacio y flechas.
+- **Vertido**: arrastrar la jarra; `game.setPourOffset` alinea. Si `|offset| <= 0.32`, el tick llena la unidad; si no, acumula `spill`. Al soltar, `game.releasePour()` cierra la capa si hay suficiente cera. Teclado: flechas + Espacio.
+- **Mecha**: arrastrar en la vista superior; `game.setWickPosition` y `placeWick`. Teclado: flechas + Enter.
+- **Curado**: clic en el ventilador (`game.fan()`); burbujas de gel (`game.popBubble()`). Teclado: Espacio y B.
+- **Acabado**: etiqueta arrastrable con tirador de giro; corte de mecha con regla; tapa y empaque clicables. Teclado: 1 etiqueta, 2 mecha, 3 tapa, 4 empaque, flechas, Mayús + flechas, Enter.
+- No reintroduzcas sliders/botones para estos retos. Los botones de navegación, selección de materiales y CTA sí se quedan.
 
-- `CandleDesign`: `mode`, `waxId`, `vesselId`, `moldId`, `sizeId`, `scentIds`, `layers`, `figureColors`, `inclusions`, `wickId`, `labelId`, `lidOn`, `wrapped`.
-- `LayerDesign`: `id`, `colorId`, `height`; las capas suman 100%.
-- `PourUnit`: unidad de vertido derivada del diseño; `fill`, `target`, `done`, `accuracy`.
-- `Craft`: temperatura, unidades, película entre capas, curado, burbujas, mecha, etiqueta, tapa y empaque.
-- `BriefTarget`: valores esperados para puntuar el diseño.
-- `RecipeLine`: insumo, cantidad y unidad para la lista de compras.
+## Líquido y puntaje
 
-## Reglas del motor
+- `liquid.ts` es puro y determinista: superficie de 28 puntos con onda amortiguada, partículas de salpicadura y burbujas.
+- El estado del juego acumula `mix` (temperatura alta) y `spill` (jarra fuera de la boca) en `Craft`.
+- `scoring.ts` reparte 40 puntos de taller: temperatura 8, vertido 10, mezcla 4, derrame 3, mecha 6, etiqueta 3, corte 2, gel 4.
+- `CandleRig` muestra una banda mezclada en la interfaz de capas cuando `mix > 0`.
+- `Craft` también guarda `pourOffset`, `gelBubbles`, `gelPopped`, mecha y etiqueta.
+- El diseño vale 60 (tipo, cera, forma, aroma, color/montajes, mecha, etiqueta).
 
-- Validación en `design.ts`: estructura, compatibilidad gel/recipiente, partes completas, capas y advertencia de mecha por diámetro.
-- Puntaje en `scoring.ts`: diseño 60 (tipo 10, cera 8, forma 8, aroma 10, color 10–14, mecha 5, etiqueta 5) + taller 40 (temperatura 8, vertido 12, mecha 8, etiqueta 4, corte 3, gel 5).
-- Estrellas: ≥90 = 5, ≥75 = 4, ≥55 = 3, ≥35 = 2, resto 1. Puntos = total + estrellas × 10.
-- Receta en `supplies.ts`: cera en gramos, aroma en ml, colorante en gotas, mecha, recipiente/molde, montajes, etiqueta, tapa/empaque y herramientas.
-- Sin fail state: un error baja el puntaje, no termina la partida. El objetivo es aprender.
-- El reloj es `requestAnimationFrame` con delta limitado; `visibilitychange` pausa los timers.
-- No uses `Math.random` en el motor; los briefs son fijos y testeables.
+## Retratos
+
+- `src/lib/game/portrait.ts` genera el SVG por capas: fondo, pelo trasero, cuerpo, cara, pelo frontal y rasgos.
+- El pelo largo va **detrás** de la cara y el flequillo delante: no dibujes todo el pelo después de la cara.
+- `CustomerPortrait` usa `{@html portraitSvg(...)}` con ids únicos (`$props.id()`).
 
 ## UI y accesibilidad
 
-- Estética de papel/editorial: crema, terracota, salvia, ámbar, tinta.
-- Un CTA principal por paso; estados `disabled` claros; notas y advertencias visibles.
-- Desktop: escenario + panel lateral (400 px); móvil: HUD, escenario ~360 px, ticket, tabs y controles apilados.
-- Los mini-juegos deben funcionar con botones/ranges nativos, no solo con arrastre.
-- Respeta `prefers-reduced-motion` (llama, vapor, ventilador, burbujas, transiciones).
-- axe (WCAG 2.1 AA) debe pasar en `/juego` en claro, oscuro y móvil.
-- Nada de scroll horizontal en 360, 390, 768 o 1280 px.
-- El panel lateral resetea su scroll al cambiar de fase; en móvil se vuelve al inicio del juego.
-
-## Modo libre
-
-- `GameState.startSandbox()`: sin brief ni reloj, todo desbloqueado.
-- Se puede cambiar de tipo con `setMode`; los materiales se reinician.
-- “Ver mi receta” muestra la lista de insumos sin taller.
-- “Probar el taller” ejecuta el flujo completo y puntúa contra un diseño libre (60 de diseño).
-- “Salir” vuelve a la portada guiada.
-
-## Modo experto
-
-- `game.expert` oculta pistas numéricas del diseño y del acabado.
-- No cambia el scoring; es una ayuda visual opcional.
+- Estética papel/editorial: crema, terracota, salvia, ámbar, tinta.
+- Desktop: escenario + panel lateral (400 px). Móvil: HUD, canvas ~360 px, ticket, tabs y controles apilados.
+- Un CTA principal por paso. Paneles breves: instrucciones + estado + navegación.
+- axe (WCAG 2.1 AA) debe pasar en `/juego` claro, oscuro y móvil.
+- Sin scroll horizontal en 360/390/768/1280.
+- Los controles del canvas deben tener foco visible, `aria-label` y explicación textual en el panel.
 
 ## Verificación
 
-- `npm test` (Vitest) cubre briefs, validación, capas, scoring, precisión y receta.
+- `npm test` cubre briefs, validación, capas, scoring, receta y líquido.
 - `npm run check`, `npm run build`.
-- Flujo completo de 4 pedidos + sandbox + receta.
-- axe en claro/oscuro/móvil; overflow en 360/390/768/1280.
-- Revisa que la receta incluya cera, aroma, color(es), mecha, recipiente/molde, montajes y etiqueta.
+- Flujo completo de los 4 tipos + sandbox + fallback sin WebGL.
+- Pruebas de captura con Puppeteer/Brave y flags WebGL (`--enable-webgl --ignore-gpu-blocklist --use-angle=swiftshader --enable-unsafe-swiftshader`).
+- Capturas de retratos, olla/cuchara, jarra/chorro, etiqueta/mecha y score.
 
-## Fase 3 posible
+## Fase 3
 
 - Mezclador de colores y laboratorio de aromas.
-- Reto de presupuesto con precios reales de insumos.
+- Reto de presupuesto con precios reales.
 - Prueba de quemado según mecha.
-- Sets de regalo y retos de temporada.
-- Guardar recetas en `localStorage` y código compartible.
-- Integración real del catálogo de insumos.
+- Sets de regalo, retos de temporada y recetario persistente.
+- Enlace real del catálogo de insumos.
 
 ## Checklist
 
 - [ ] `npm test` y `npm run check` pasan.
 - [ ] Flujo de los 4 tipos + sandbox.
-- [ ] La receta y el CTA de WhatsApp aparecen al final.
-- [ ] Sin precios ni propinas de vela terminada.
-- [ ] 360 px sin scroll horizontal; controles alcanzables.
-- [ ] Sin errores de consola.
+- [ ] Retos manuales con teclado y puntero.
+- [ ] Simulación visible y `mix`/`spill` en el score.
+- [ ] Receta y CTA de WhatsApp al final.
+- [ ] Sin precios ni propinas.
+- [ ] 360 px sin scroll horizontal.
 - [ ] axe 0 violaciones en claro/oscuro/móvil.
-- [ ] Respeta movimiento reducido y teclado.
-- [ ] Los datos placeholder están marcados como ejemplo.
+- [ ] Fallback sin WebGL.
 
 Diseño de referencia: `references/game-design.md`.

@@ -1,8 +1,8 @@
 # ParafinaGel
 
-Sitio web del negocio familiar de velas **ParafinaGel**: catálogo, contacto y un juego 2D cozy para diseñar velas y descubrir los **insumos** necesarios para hacerlas.
+Sitio web del negocio familiar de velas **ParafinaGel**: catálogo, contacto y un juego **2D WebGL** para diseñar velas y descubrir los **insumos** necesarios para hacerlas.
 
-Construido con **Astro 7** e islas de **Svelte 5**. El juego es 2D con SVG/CSS, sin WebGL. Salida 100 % estática.
+Construido con **Astro 7**, islas de **Svelte 5** y **PixiJS 8** para el escenario del juego. Salida 100 % estática.
 
 ## Requisitos
 
@@ -28,30 +28,36 @@ src/
   pages/           # rutas por archivo
   layouts/         # BaseLayout con SEO, fuentes y navegación
   components/      # UI en Astro
-  components/game/ # juego 2D: shell, escenario, escenas, editor, paneles y SVG
+  components/game/ # shell, escenario, paneles, brief y fallback SVG
   content/         # productos del catálogo (Markdown)
-  lib/game/        # motor: briefs, diseño, craft, scoring, receta y estado
-  lib/             # lógica de productos, WhatsApp y formato
+  lib/game/        # motor: briefs, diseño, craft, líquido, scoring y receta
+  lib/game/render/ # PixiJS: stage, escenas, candle rig y paleta
+  lib/             # productos, WhatsApp y formato
   styles/          # tokens y estilos globales
 public/            # favicon, robots
 ```
 
 Rutas: `/`, `/productos`, `/productos/[slug]`, `/nosotros`, `/juego`, `/contacto` y 404. `/about` redirige a `/nosotros`.
 
-## Juego 2D
+## Juego 2D WebGL
 
-`/juego` tiene una experiencia cozy ilustrada. El jugador escucha un brief, diseña una vela y la fabrica paso a paso. Al final recibe **puntos, estrellas y una receta con la lista de insumos**, no el precio de una vela terminada.
+`/juego` tiene una experiencia cozy ilustrada. El jugador escucha un brief, diseña una vela y la fabrica con retos manuales. Al final recibe **puntos, estrellas y una receta con la lista de insumos**, no el precio de una vela terminada.
 
+- **Escenario WebGL**: PixiJS 8 renderiza las estaciones; los paneles siguen en Svelte/DOM.
 - **Pedido progresivo**: el cliente revela los requisitos poco a poco; “Crear nota” fija el brief.
-- **Cuatro tipos de pedido**: clásica, capas, figura (molde con partes de colores) y gel (transparente con montajes).
+- **Cuatro tipos**: clásica, capas, figura (molde con partes de colores) y gel (transparente con montajes).
 - **Diseñador**: cera, tamaño, recipiente o molde, capas y alturas, colores, aroma, mecha, etiqueta y montajes. Validación en vivo.
-- **Taller**: calentar y remover, verter por capas o partes, centrar la mecha, curar (con burbujas en gel), alinear etiqueta, cortar mecha, tapar y empacar.
-- **Mini-juegos**: la mecha, la etiqueta y el corte se puntúan por precisión. El gel incluye un mini-juego de burbujas.
+- **Cera manual**: mantén la palanca para calentar y arrastra la cuchara en círculos.
+- **Vertido manual**: arrastra la jarra sobre la boca del frasco y suelta para cerrar la capa.
+- **Mecha manual**: arrastra la mecha al centro de la vista superior.
+- **Curado**: toca el ventilador; en gel, toca las burbujas dentro de la vela.
+- **Acabado manual**: arrastra la etiqueta y su tirador, corta la mecha sobre la vela, toca la tapa y el empaque.
+- **Simulación de líquido viscoso**: superficie ondulada, capas, película, salpicaduras, mezcla por temperatura y burbujas de gel. Afecta el puntaje (`Mezcla` y `Derrame`).
+- **Puntaje**: diseño 60 + taller 40, estrellas y puntos. Sin precio ni propina.
 - **Modo libre**: sandbox sin pedido ni reloj; se puede ver la receta o probar el taller.
-- **Modo experto**: oculta las pistas numéricas del diseño y del acabado.
-- **Cierre comercial**: receta con cantidades y CTA de WhatsApp para pedir los insumos.
-- **Accesibilidad**: controles nativos, teclado, foco visible, `aria-live` y `prefers-reduced-motion`.
-- **Sin WebGL**: funciona en navegadores modernos y no carga Three.js.
+- **Modo experto**: oculta las pistas numéricas.
+- **Fallback**: si el navegador no soporta WebGL, muestra el diseño en SVG y permite ver la receta.
+- **Accesibilidad**: canvas focusable, controles de teclado, `aria-live`, foco visible y `prefers-reduced-motion`.
 
 Los tiempos, temperaturas, medidas de mecha y cantidades son **placeholders**. Valídalos con el negocio antes de publicar.
 
@@ -87,8 +93,12 @@ El schema está en `src/content.config.ts`. Los precios son opcionales: si falta
 | Historia y copy de páginas           | `src/pages/nosotros.astro`, `src/pages/index.astro`, `src/pages/contacto.astro` |
 | Briefs y materiales del juego        | `src/lib/game/data.ts`                                                          |
 | Reglas y puntaje del juego           | `src/lib/game/scoring.ts`, `src/lib/game/craft.ts`                              |
+| Simulación de líquido                | `src/lib/game/liquid.ts`                                                        |
+| Escenas WebGL                        | `src/lib/game/render/`                                                          |
+| Paleta del escenario                 | `src/lib/game/render/palette.ts`                                                |
+| Retratos                             | `src/lib/game/portrait.ts`                                                      |
 | Receta y lista de compras            | `src/lib/game/supplies.ts`                                                      |
-| Escenas, tickets y UI del juego      | `src/components/game/` y `src/styles/game.css`                                  |
+| Paneles y UI del juego               | `src/components/game/` y `src/styles/game.css`                                  |
 | Paleta, tipografía y tokens          | `src/styles/global.css`                                                         |
 
 El juego usa datos de ejemplo y no incluye temperaturas reales. Valida tiempos, ceras, mechas, medidas y cantidades con el negocio antes de publicar.
@@ -100,7 +110,8 @@ El juego usa datos de ejemplo y no incluye temperaturas reales. Valida tiempos, 
 ## Notas
 
 - El sitio no tiene backend ni checkout. El CTA de compra es WhatsApp.
-- `npm audit` reporta vulnerabilidades altas en dependencias de build (`picomatch` y tooling). No ejecutes `npm audit fix --force`: puede romper las versiones de Astro/Svelte. No afecta el sitio estático.
+- PixiJS se importa dinámicamente solo en `/juego`; el resto del sitio no carga el motor. El chunk WebGL ronda 180–230 KB gzip.
+- No ejecutes `npm audit fix --force`: puede romper las versiones de Astro/Svelte.
 - La accesibilidad se verificó con axe (WCAG 2.1 AA) en las páginas principales y en `/juego`, en modo claro y oscuro.
 - `npm test` cubre el motor puro del juego; `npm run check` valida Astro y Svelte.
 
@@ -112,6 +123,7 @@ El juego usa datos de ejemplo y no incluye temperaturas reales. Valida tiempos, 
 - [ ] Cargar productos reales y quitar `borrador: true`.
 - [ ] Validar briefs, temperaturas, tiempos, mechas y cantidades con el negocio.
 - [ ] Reemplazar los textos marcados como ejemplo.
-- [ ] Reemplazar los SVG placeholders del juego por arte final si se desea.
+- [ ] Reemplazar los retratos/escenas placeholder por arte final si se desea.
 - [ ] Agregar fotos reales y `alt` descriptivos.
 - [ ] Ejecutar `npm test`, `npm run check`, `npm run build` y revisar en 360 px y desktop.
+- [ ] Verificar WebGL en móvil y el fallback sin WebGL.

@@ -14,6 +14,7 @@ import {
   setLayerCount,
   validateDesign,
 } from "./design";
+import { createLiquidState, stepLiquid, surfaceAt } from "./liquid";
 import { scoreCandle, scoreDesign, starsFor } from "./scoring";
 import { buildRecipe } from "./supplies";
 import type { Brief, CandleDesign, Craft } from "./types";
@@ -257,6 +258,67 @@ describe("craft execution", () => {
     expect(result.sandbox).toBe(true);
     expect(result.design.total).toBe(60);
     expect(result.total).toBe(100);
+  });
+
+  it("penalizes mixed layers and spilled wax", () => {
+    const design = designForBrief(briefs[1]);
+    const craft = perfectCraft(design);
+    craft.mix = 1;
+    craft.spill = 1;
+
+    const execution = scoreCandle(design, briefs[1].target, craft).execution;
+
+    expect(execution.mix).toBe(0);
+    expect(execution.spill).toBe(0);
+    expect(execution.total).toBe(33);
+  });
+});
+
+describe("liquid simulation", () => {
+  it("starts flat and finite", () => {
+    const liquid = createLiquidState();
+    expect(liquid.surface).toHaveLength(28);
+    expect(liquid.surface.every((value) => Number.isFinite(value))).toBe(true);
+    expect(liquid.bubbles).toHaveLength(5);
+  });
+
+  it("creates ripples and splashes while pouring", () => {
+    const liquid = createLiquidState(3);
+    for (let i = 0; i < 30; i += 1) {
+      stepLiquid(liquid, 1 / 60, {
+        pouring: true,
+        offset: 0.1,
+        heat: 0.6,
+        fill: 0.4,
+        gel: false,
+        reducedMotion: false,
+      });
+    }
+
+    expect(liquid.particles.length).toBeGreaterThan(0);
+    expect(liquid.surface.some((value) => Math.abs(value) > 0.001)).toBe(true);
+    expect(Math.abs(surfaceAt(liquid, 0.5))).toBeLessThanOrEqual(1);
+  });
+
+  it("is deterministic with the same seed and input", () => {
+    const a = createLiquidState(9);
+    const b = createLiquidState(9);
+    const input = {
+      pouring: true,
+      offset: -0.2,
+      heat: 0.4,
+      fill: 0.5,
+      gel: true,
+      reducedMotion: false,
+    };
+
+    for (let i = 0; i < 20; i += 1) {
+      stepLiquid(a, 1 / 60, input);
+      stepLiquid(b, 1 / 60, input);
+    }
+
+    expect(a.particles.length).toBe(b.particles.length);
+    expect(a.surface).toEqual(b.surface);
   });
 });
 

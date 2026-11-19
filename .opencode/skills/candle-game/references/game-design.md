@@ -1,77 +1,76 @@
-# Diseño del juego 2D
+# Diseño del juego 2D WebGL
 
-La implementación actual es la versión 2.0: cuatro briefs, diseñador de velas, taller con mini-juegos, sandbox y receta de insumos.
+La implementación actual es la versión 2.1: cuatro briefs, diseñador, taller manual, simulación de líquido, sandbox y receta de insumos.
 
 ## Escenario
 
-- Taller ilustrado en SVG/CSS con estantes, ventana, lámpara, mostrador y plantas.
-- Vista general con hotspots para moverse a cada estación.
-- Escenas de papel por estación; cámara fija y crossfade.
-- El cliente aparece en el mostrador, en el ticket y en la escena de brief.
+- PixiJS 8 renderiza el escenario en WebGL dentro de un canvas.
+- Escenario virtual 1000×640 escalado con letterboxing.
+- Escenas: mostrador (DOM), diseño, cera, vertido, mecha, curado y acabado (WebGL).
+- El fondo ilustrado del taller sigue en DOM/SVG; las estaciones interactivas son WebGL.
+- La UI de paneles sigue en Svelte para accesibilidad y fácil iteración.
 
 ## Pantallas
 
 | Pantalla | Contenido | Acción |
 |---|---|---|
-| Inicio | Promesa, duración, modo guiado y modo libre | Jugar pedidos / Modo libre |
-| Mostrador | Retrato, diálogo progresivo, notas y progreso | Continuar / Mostrar todo / Crear nota |
-| Diseño | Tipo, cera, tamaño, forma, colores, aroma, mecha y etiqueta | Ir al taller / Ver receta (sandbox) |
-| Cera | Olla, temperatura, rango y removidos | Calentar, remover, continuar |
-| Vertido | Unidad actual, meta, jarra y lista de capas/partes | Verter, terminar, esperar película |
-| Mecha | Vista superior y pad de flechas | Centrar y colocar |
-| Curado | Repisa, ventilador, timer y burbujas de gel | Abanicar, quitar burbujas |
-| Acabado | Etiqueta x/y/giro, corte de mecha, tapa y empaque | Aplicar, cortar, cerrar y entregar |
-| Score | Puntos, estrellas, desglose, receta e insumos | WhatsApp / siguiente cliente |
-| Fin del día | Pedidos, puntos, estrellas y promedio | Jugar otra vez / Modo libre |
+| Inicio | Promesa, modo guiado/libre | Jugar pedidos / Modo libre |
+| Mostrador | Retrato, diálogo progresivo, notas | Continuar / Mostrar todo / Crear nota |
+| Diseño | Tipo, cera, forma, colores, aroma, mecha y etiqueta | Ir al taller / Ver receta |
+| Cera | Olla, palanca, cuchara, temperatura | Mantener calor / girar cuchara |
+| Vertido | Jarra, líquido, capas, meta | Arrastrar jarra / soltar |
+| Mecha | Vista superior y guía central | Arrastrar mecha |
+| Curado | Vela, ventilador, burbujas de gel | Tocar ventilador/burbujas |
+| Acabado | Etiqueta, regla, mecha, tapa y empaque | Arrastrar, cortar, tocar |
+| Score | Puntos, estrellas, mezcla/derrame, receta | WhatsApp / siguiente |
+| Fin del día | Pedidos, puntos, estrellas, promedio | Repetir / Modo libre |
 
 ## Reglas
 
-- Feedback inmediato y positivo; un paso mal hecho se corrige, no termina la partida.
-- Puntaje por precisión y por cumplir el brief, no por velocidad.
-- El brief se revela poco a poco; la nota final queda visible en un `<details>`.
+- El brief se revela poco a poco; “Crear nota” fija los requisitos.
 - El jugador puede revisar estaciones anteriores, pero no editarlas.
-- Textos en español de Colombia, frases cortas.
-- La vela se enciende solo en el resultado visual; no simules fuego real.
+- Feedback inmediato y positivo; los errores bajan el puntaje, no terminan la partida.
+- Todo reto manual tiene equivalente de teclado.
+- La vela se enciende solo en el resultado; no simules fuego real.
 - Nada de precios ni propinas: el negocio vende insumos.
 
 ## Puntaje
 
-Diseño (60):
+Diseño (60): tipo 10, cera 8, forma 8, aroma 10, color/montajes 14, mecha 5, etiqueta 5.
 
-- Tipo 10, cera 8, forma 8, aroma 10, color/montajes 14, mecha 5, etiqueta 5.
+Taller (40): temperatura 8, vertido 10, mezcla 4, derrame 3, mecha 6, etiqueta 3, corte 2, gel 4.
 
-Taller (40):
+Estrellas: ≥90 = 5, ≥75 = 4, ≥55 = 3, ≥35 = 2, resto 1. Puntos = total + estrellas × 10.
 
-- Temperatura 8, vertido 12, mecha 8, etiqueta 4, corte 3, gel 5.
+## Líquido
 
-Estrellas: ≥90 = 5, ≥75 = 4, ≥55 = 3, ≥35 = 2, resto 1.
-Puntos = total + estrellas × 10.
+- `liquid.ts` simula una superficie de 28 puntos con onda amortiguada, partículas y burbujas.
+- `Craft.mix` sube si se vierte por encima de `meltMax - 4`; `Craft.spill` sube si la jarra está fuera de la boca o se desborda.
+- `CandleRig` dibuja una banda mezclada en la interfaz de capas y una superficie visible.
+- `Craft.pourOffset` controla la jarra; `releasePour()` cierra la capa si hay suficiente cera.
 
 ## Mini-juegos
 
-- **Mecha**: vista superior; flechas de 4 px. Éxito = distancia al centro. `wickAccuracy`.
-- **Etiqueta**: ejes x/y y giro; guía visual. `labelAccuracy` combina los tres desvíos.
-- **Corte**: rango de 2–12 mm; objetivo placeholder 5 mm. `trimAccuracy`.
-- **Burbujas**: cinco burbujas de gel; cada clic suma. El puntaje de gel es proporcional.
+- **Cera**: palanca hold + cuchara circular; 1.6π por remoción.
+- **Vertido**: jarra arrastrable; alineación ±0.32; el líquido llena o derrama.
+- **Mecha**: distancia al centro; `wickAccuracy`.
+- **Etiqueta**: x/y/giro; `labelAccuracy`.
+- **Corte**: 2–12 mm, objetivo placeholder 5 mm; `trimAccuracy`.
+- **Gel**: cinco burbujas; cada una suma.
 
-## Receta
+## Retratos
 
-- Cera: 90% del tamaño en gramos, redondeado a 5 g.
-- Aroma: 8% del peso de cera en ml.
-- Colorante: 4 gotas por color único.
-- Mecha: 1 unidad (2 si es doble).
-- Recipiente o molde, montajes, etiqueta, tapa y empaque.
-- Herramientas: termómetro y jarra.
-- El mensaje de WhatsApp incluye resumen del diseño y lista de insumos.
+- `portrait.ts` devuelve SVG por capas: pelo trasero, cuerpo, cara, pelo frontal y rasgos.
+- Sofía/Lucía llevan el pelo largo detrás de la cara.
+- `CustomerPortrait` usa ids únicos y `{@html}`.
 
 ## Datos que faltan
 
 - Catálogo real de insumos, precios y disponibilidad.
-- Ceras que usa el negocio y temperaturas reales.
+- Ceras y temperaturas reales.
 - Rangos de mecha por diámetro y medida de corte.
 - Aromas, colorantes, moldes y recipientes disponibles.
 - Tiempos reales de curado.
-- Voz del dueño para los textos (tú/usted, tono).
-- Referencias visuales para el arte final.
+- Voz del dueño y referencias visuales para arte final.
 
-Pregunta antes de publicar; no inventes cifras.
+No inventes cifras; valida con el negocio.

@@ -8,7 +8,7 @@
 | `/productos/` | `src/pages/productos/index.astro` | Grid completo; estado vacío en producción sin borradores |
 | `/productos/[slug]/` | `src/pages/productos/[slug].astro` | `getStaticPaths`, JSON-LD, relacionados |
 | `/nosotros/` | `src/pages/nosotros.astro` | Historia, valores y proceso |
-| `/juego/` | `src/pages/juego.astro` | Juego 2D con `client:visible` |
+| `/juego/` | `src/pages/juego.astro` | Juego 2D WebGL con `client:visible` |
 | `/contacto/` | `src/pages/contacto.astro` | WhatsApp, correo, Instagram y FAQ |
 | `/404` | `src/pages/404.astro` | Página no encontrada |
 | `/about` | `astro.config.mjs` | Redirect a `/nosotros` |
@@ -35,17 +35,18 @@
 - Las imágenes reales van en `src/assets/productos/<slug>/` y se referencian con `imagenes: [{ src, alt }]`.
 - Los helpers de `src/lib/products.ts` ordenan por categoría (velas, difusores, kits, accesorios) y filtran borradores en producción.
 
-## Juego 2D
+## Juego 2D WebGL
 
 - Página: `src/pages/juego.astro` → `src/components/game/GameExperience.svelte`.
-- Shell: HUD, progreso, modo experto, reloj y ayuda.
-- Pedido: `BriefTicket` progresivo y `BriefSummary`.
+- Shell/paneles: Svelte/DOM.
+- Canvas: `StageCanvas.svelte` + `src/lib/game/render/stage-renderer.ts` (PixiJS 8).
+- Escenas WebGL: `src/lib/game/render/scenes/` (design, melt, pour, wick, cool, finish).
+- Rig de vela: `src/lib/game/render/candle-rig.ts`; paleta: `palette.ts`.
+- Pedido: `BriefTicket`, `BriefSummary`, `CounterScene`.
 - Diseño: `DesignPanel`, `DesignBasics`, `DesignColors`, `ColorDots`.
-- Escenario: `WorkshopStage.svelte`, `WorkshopBackdrop.svelte` y las escenas `*Scene`.
-- Vista previa: `CandlePreview` y `MoldPreview`.
-- Controles: `*Panel`, `StationTabs`, `OverviewPanel`, `LockedPanel`, `ShoppingList`.
-- Arte: `Pot2D`, `Pitcher2D`, `Fan2D`, `Steam2D`, `CustomerPortrait`, `StationIcon`.
-- Motor: `src/lib/game/types.ts`, `data.ts`, `design.ts`, `craft.ts`, `scoring.ts`, `supplies.ts`, `game-state.svelte.ts`.
+- Paneles: `MeltPanel`, `PourPanel`, `WickPanel`, `CoolPanel`, `FinishPanel`, `ScorePanel`, `ShoppingList`.
+- Fallback: `CandlePreview` y `MoldPreview`.
+- Motor: `src/lib/game/types.ts`, `data.ts`, `design.ts`, `craft.ts`, `liquid.ts`, `scoring.ts`, `supplies.ts`, `portrait.ts`, `game-state.svelte.ts`.
 - Estilos: `src/styles/game.css`.
 - Tests: `src/lib/game/game.test.ts` con Vitest.
 
@@ -54,6 +55,7 @@
 - Retirar `cmd/`, `internal/` y `go.mod` cuando se apruebe la versión Astro.
 - Reemplazar el contenido de ejemplo y las fotos.
 - Migrar el catálogo a insumos y enlazar la receta del juego con productos reales.
-- Validar briefs, temperaturas, tiempos, mechas y cantidades con el negocio.
+- Validar briefs, temperaturas, tiempos, mechas, líquido y cantidades con el negocio.
 - Persistencia/audio y arte final del juego (fase 3).
+- Probar WebGL en móvil y el fallback sin WebGL.
 - Configurar el dominio real y el despliegue.

@@ -1,15 +1,6 @@
 <script lang="ts">
-  import { labels } from "@lib/game/data";
-  import {
-    LABEL_MAX_ROTATION,
-    LABEL_MAX_X,
-    LABEL_MAX_Y,
-    TRIM_MAX_MM,
-    TRIM_MIN_MM,
-    TRIM_TARGET_MM,
-    labelAccuracy,
-    trimAccuracy,
-  } from "@lib/game/craft";
+  import { labelsById } from "@lib/game/data";
+  import { labelAccuracy, trimAccuracy } from "@lib/game/craft";
   import type { GameState } from "@lib/game/game-state.svelte";
 
   interface Props {
@@ -18,6 +9,9 @@
 
   let { game }: Props = $props();
 
+  const label = $derived(
+    game.design.labelId ? (labelsById[game.design.labelId] ?? null) : null,
+  );
   const labelQuality = $derived(
     !game.craft.label.placed
       ? "Sin aplicar"
@@ -38,16 +32,12 @@
   );
 </script>
 
-<div
-  class="game-station-panel finish-panel"
-  class:expert={game.expert}
-  data-testid="finish-panel"
->
-  <p class="game-eyebrow">Acabado</p>
+<div class="game-station-panel" data-testid="finish-panel">
+  <p class="game-eyebrow">Acabado manual</p>
   <h3 class="game-title">Los últimos detalles</h3>
   <p class="game-text">
-    Alinea la etiqueta con la guía, corta la mecha a la medida y cierra la
-    pieza. Si algo queda torcido, puedes ajustarlo antes de entregar.
+    Arrastra la etiqueta sobre la vela y gira el tirador. Corta la mecha
+    arrastrando sobre ella. Toca la tapa y el empaque para cerrar la pieza.
   </p>
 
   <div class="finish-block">
@@ -55,74 +45,16 @@
       <p class="finish-block__title">Etiqueta</p>
       <span class="game-badge">{labelQuality}</span>
     </div>
-
-    <div class="game-grid-2">
-      {#each labels as item}
-        <button
-          class="game-choice"
-          class:game-choice--selected={game.design.labelId === item.id}
-          type="button"
-          onclick={() => game.selectLabel(item.id)}
-          data-testid={`label-${item.id}`}
-        >
-          <span class="game-swatch" style={`--swatch: ${item.color}`}></span>
-          {item.nombre}
-        </button>
-      {/each}
-    </div>
-
-    <label class="finish-slider">
-      <span>Horizontal</span>
-      <input
-        type="range"
-        min={-LABEL_MAX_X}
-        max={LABEL_MAX_X}
-        step="1"
-        value={game.craft.label.x}
-        oninput={(event) => game.setLabelX(Number(event.currentTarget.value))}
-        data-testid="label-x"
-      />
-      <output>{game.craft.label.x}</output>
-    </label>
-
-    <label class="finish-slider">
-      <span>Vertical</span>
-      <input
-        type="range"
-        min={-LABEL_MAX_Y}
-        max={LABEL_MAX_Y}
-        step="1"
-        value={game.craft.label.y}
-        oninput={(event) => game.setLabelY(Number(event.currentTarget.value))}
-        data-testid="label-y"
-      />
-      <output>{game.craft.label.y}</output>
-    </label>
-
-    <label class="finish-slider">
-      <span>Giro</span>
-      <input
-        type="range"
-        min={-LABEL_MAX_ROTATION}
-        max={LABEL_MAX_ROTATION}
-        step="1"
-        value={game.craft.label.rotation}
-        oninput={(event) =>
-          game.setLabelRotation(Number(event.currentTarget.value))}
-        data-testid="label-rotation"
-      />
-      <output>{game.craft.label.rotation}°</output>
-    </label>
-
-    <button
-      class="game-action game-action--secondary"
-      type="button"
-      onclick={() => game.placeLabel()}
-      data-testid="place-label"
-    >
-      {game.craft.label.placed ? "Volver a aplicar" : "Aplicar etiqueta"}
-    </button>
-    <p class="finish-hint">Guía: centrada a media altura y sin inclinación.</p>
+    <p class="finish-hint">
+      {label
+        ? `Etiqueta ${label.nombre.toLowerCase()} elegida en el diseño.`
+        : "Sin etiqueta"}
+      Guía: centrada a media altura y sin inclinación.
+    </p>
+    <p class="finish-hint">
+      <strong>Puntero:</strong> arrastra la etiqueta y su tirador.
+      <strong>Teclado:</strong> 1, flechas para mover y Mayús + ← → para girar.
+    </p>
   </div>
 
   <div class="finish-block">
@@ -130,57 +62,28 @@
       <p class="finish-block__title">Mecha</p>
       <span class="game-badge">{trimQuality}</span>
     </div>
-
-    <label class="finish-slider">
-      <span>Largo</span>
-      <input
-        type="range"
-        min={TRIM_MIN_MM}
-        max={TRIM_MAX_MM}
-        step="0.5"
-        value={game.craft.wick.trimMm}
-        oninput={(event) => game.setTrimMm(Number(event.currentTarget.value))}
-        data-testid="trim-slider"
-      />
-      <output>{game.craft.wick.trimMm} mm</output>
-    </label>
-
     <p class="finish-hint">
-      Objetivo de ejemplo: {TRIM_TARGET_MM} mm. Si queda muy corta o muy larga, la
-      llama pierde calidad.
+      Objetivo de ejemplo: 5 mm. Arrastra el corte sobre la mecha o usa 2 y las
+      flechas; Enter para cortar.
     </p>
-
-    <button
-      class="game-action game-action--secondary"
-      type="button"
-      onclick={() => game.cutWick()}
-      data-testid="cut-wick"
-    >
-      {game.craft.wick.trimmed ? "Volver a cortar" : "Cortar mecha"}
-    </button>
   </div>
 
-  <div class="finish-checks">
-    <button
-      class="game-choice"
-      class:game-choice--selected={game.craft.lidOn}
-      type="button"
-      onclick={() => game.addLid()}
-      disabled={game.craft.lidOn}
-      data-testid="lid"
-    >
-      {game.craft.lidOn ? "Tapa puesta" : "Poner tapa"}
-    </button>
-    <button
-      class="game-choice"
-      class:game-choice--selected={game.craft.wrapped}
-      type="button"
-      onclick={() => game.wrap()}
-      disabled={game.craft.wrapped}
-      data-testid="wrap"
-    >
-      {game.craft.wrapped ? "Empaque listo" : "Empacar"}
-    </button>
+  <div class="finish-block">
+    <div class="finish-block__head">
+      <p class="finish-block__title">Cierre</p>
+      <span class="game-badge">
+        {game.canFinish ? "Completo" : "Pendiente"}
+      </span>
+    </div>
+    <div class="checks">
+      <span class:on={game.craft.label.placed}>Etiqueta</span>
+      <span class:on={game.craft.wick.trimmed}>Mecha</span>
+      <span class:on={game.craft.lidOn}>Tapa</span>
+      <span class:on={game.craft.wrapped}>Empaque</span>
+    </div>
+    <p class="finish-hint">
+      Toca la tapa y la caja de empaque en el escenario, o pulsa 3 y 4.
+    </p>
   </div>
 
   <button
@@ -195,8 +98,7 @@
 
   {#if !game.canFinish}
     <p class="finish-hint finish-hint--center">
-      Faltan detalles por completar: etiqueta aplicada, mecha cortada, tapa y
-      empaque.
+      Faltan detalles: etiqueta, corte de mecha, tapa y empaque.
     </p>
   {/if}
 </div>
@@ -204,8 +106,8 @@
 <style>
   .finish-block {
     display: grid;
-    gap: 0.45rem;
-    padding-top: 0.6rem;
+    gap: 0.35rem;
+    padding-top: 0.55rem;
     border-top: 1px dashed var(--color-border);
   }
 
@@ -229,47 +131,35 @@
     text-transform: uppercase;
   }
 
-  .finish-slider {
-    display: grid;
-    grid-template-columns: 4.5rem minmax(0, 1fr) 3rem;
-    align-items: center;
-    gap: 0.5rem;
-    color: var(--color-text-muted);
-    font-size: 0.65rem;
-    font-weight: 700;
-  }
-
-  .finish-slider input {
-    width: 100%;
-    accent-color: var(--color-accent);
-  }
-
-  .finish-slider output {
-    color: var(--color-heading);
-    font-weight: 800;
-    text-align: right;
-  }
-
   .finish-hint {
     color: var(--color-text-muted);
     font-size: 0.62rem;
-    line-height: 1.4;
+    line-height: 1.45;
   }
 
   .finish-hint--center {
     text-align: center;
   }
 
-  .finish-checks {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.45rem;
-    padding-top: 0.6rem;
-    border-top: 1px dashed var(--color-border);
+  .checks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
   }
 
-  .finish-panel.expert .finish-slider output,
-  .finish-panel.expert .finish-hint {
-    visibility: hidden;
+  .checks span {
+    padding: 0.2rem 0.45rem;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    background: var(--color-bg);
+    color: var(--color-text-muted);
+    font-size: 0.6rem;
+    font-weight: 700;
+  }
+
+  .checks span.on {
+    border-color: var(--color-sage);
+    background: var(--color-sage-soft);
+    color: var(--color-sage);
   }
 </style>

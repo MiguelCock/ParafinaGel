@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { FILM_SECONDS, POUR_MIN_TO_FINISH } from "@lib/game/craft";
+  import { FILM_SECONDS } from "@lib/game/craft";
   import type { GameState } from "@lib/game/game-state.svelte";
 
   interface Props {
@@ -12,6 +12,7 @@
   const target = $derived(unit?.target ?? 88);
   const zoneMin = $derived(Math.max(0, target - 8));
   const zoneMax = $derived(Math.min(100, target + 7));
+  const aligned = $derived(Math.abs(game.craft.pourOffset) <= 0.32);
   const filmProgress = $derived(
     Math.min(
       100,
@@ -24,19 +25,19 @@
 </script>
 
 <div class="game-station-panel" data-testid="pour-panel">
-  <p class="game-eyebrow">Vertido</p>
+  <p class="game-eyebrow">Vertido manual</p>
   <h3 class="game-title">
-    {game.craft.waitingFilm ? "Deja que cuaje" : "Vierte por partes"}
+    {game.craft.waitingFilm ? "Deja que cuaje" : "Lleva la jarra a la vela"}
   </h3>
   <p class="game-text">
     {#if game.craft.waitingFilm}
-      La capa necesita unos segundos antes de recibir la siguiente. Mientras
-      tanto puedes respirar: no hay prisa.
+      La capa necesita unos segundos antes de recibir la siguiente. No hay
+      prisa.
     {:else if game.pourComplete}
       Todas las partes están llenas. Ahora coloca la mecha.
     {:else}
-      Llena cada parte hasta la zona verde y pulsa “Terminar” cuando estés
-      dentro. El vertido es lento para que puedas reaccionar.
+      Arrastra la jarra sobre la boca del frasco. Cuando esté alineada, el
+      líquido empezará a caer; suelta para cerrar la capa.
     {/if}
   </p>
 
@@ -61,36 +62,34 @@
         {unit.label}: {Math.round(unit.fill)}%
       </span>
       <span
-        class:game-success={unit.fill >= zoneMin && unit.fill <= zoneMax}
-        class:game-warning={unit.fill > zoneMax}
+        class:game-success={aligned && unit.fill >= zoneMin}
+        class:game-warning={!aligned || unit.fill > zoneMax}
         class="game-badge"
       >
-        {unit.fill > zoneMax
-          ? "Un poco de más"
-          : unit.fill >= zoneMin
-            ? "En la meta"
-            : "Falta llenar"}
+        {!aligned
+          ? "Jarra fuera de la boca"
+          : unit.fill > zoneMax
+            ? "Un poco de más"
+            : unit.fill >= zoneMin
+              ? "En la meta"
+              : "Falta llenar"}
       </span>
     </div>
 
-    <button
-      class="game-action"
-      type="button"
-      onclick={() => game.togglePour()}
-      data-testid="pour-toggle"
-    >
-      {game.craft.pouring ? "Parar" : "Verter"}
-    </button>
+    <div class="gauge-label">
+      <span>Jarra</span>
+      <span class={aligned ? "gauge-label__ok" : "gauge-label__bad"}>
+        {aligned ? "Alineada con el frasco" : "Muévela sobre el frasco"}
+      </span>
+    </div>
 
-    <button
-      class="game-action game-action--secondary"
-      type="button"
-      onclick={() => game.finishUnit()}
-      disabled={unit.fill < POUR_MIN_TO_FINISH}
-      data-testid="finish-unit"
-    >
-      Terminar {game.design.mode === "figura" ? "parte" : "capa"}
-    </button>
+    <div class="manual-note">
+      <span class="manual-note__icon" aria-hidden="true">↔</span>
+      <span>
+        Arrastra la jarra con el puntero. Con teclado: ← → para mover y
+        <strong>Espacio</strong> para verter o soltar.
+      </span>
+    </div>
   {:else}
     <p class="game-note" data-testid="pour-complete">
       Vertido completo. La mecha es el siguiente paso.
@@ -157,5 +156,46 @@
 
   .pour-unit strong {
     font-size: 0.58rem;
+  }
+
+  .manual-note {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.5rem;
+    padding: 0.55rem 0.65rem;
+    border-left: 3px solid var(--color-accent);
+    border-radius: 0.4rem;
+    background: var(--color-accent-soft);
+    color: var(--color-accent-strong);
+    font-size: 0.65rem;
+    line-height: 1.45;
+  }
+
+  .manual-note__icon {
+    display: grid;
+    place-items: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    background: var(--color-bg-elevated);
+    font-size: 0.9rem;
+    font-weight: 800;
+  }
+
+  .gauge-label {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    color: var(--color-text-muted);
+    font-size: 0.6rem;
+    font-weight: 700;
+  }
+
+  .gauge-label__ok {
+    color: var(--color-sage);
+  }
+
+  .gauge-label__bad {
+    color: var(--color-accent-strong);
   }
 </style>

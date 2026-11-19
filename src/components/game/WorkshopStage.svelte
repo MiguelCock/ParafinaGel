@@ -2,15 +2,10 @@
   import { orderTypeLabels, stationLabels, stationOrder } from "@lib/game/data";
   import type { GameState } from "@lib/game/game-state.svelte";
   import type { StationId } from "@lib/game/types";
-  import CoolScene from "./CoolScene.svelte";
   import CounterScene from "./CounterScene.svelte";
   import CustomerPortrait from "./CustomerPortrait.svelte";
-  import DesignScene from "./DesignScene.svelte";
-  import FinishScene from "./FinishScene.svelte";
-  import MeltScene from "./MeltScene.svelte";
-  import PourScene from "./PourScene.svelte";
   import StationIcon from "./StationIcon.svelte";
-  import WickScene from "./WickScene.svelte";
+  import StageCanvas from "./StageCanvas.svelte";
   import WorkshopBackdrop from "./WorkshopBackdrop.svelte";
 
   interface Props {
@@ -42,6 +37,23 @@
   const scene = $derived(
     game.view === "overview" ? null : (game.view as StationId),
   );
+
+  const sceneHint = $derived.by(() => {
+    if (game.phase === "score") {
+      return "Así queda tu vela · receta lista para pedir insumos";
+    }
+    if (scene === "pour") {
+      if (game.craft.waitingFilm)
+        return "Deja que la capa cuaje antes de seguir";
+      if (game.pourComplete) return "Vertido completo · ahora coloca la mecha";
+      return "Arrastra la jarra sobre la boca del frasco y suelta al terminar";
+    }
+    if (scene === "cool" && game.craft.cooled) {
+      return "La vela está lista · pasa al acabado";
+    }
+    if (scene) return hints[scene];
+    return "";
+  });
 
   const visibleHotspots = $derived(
     game.mode === "guided"
@@ -180,26 +192,12 @@
             revealed={game.revealed}
             noted={game.noted}
           />
-        {:else if scene === "design"}
-          <DesignScene {game} />
-        {:else if scene === "melt"}
-          <MeltScene {game} />
-        {:else if scene === "pour"}
-          <PourScene {game} />
-        {:else if scene === "wick"}
-          <WickScene {game} />
-        {:else if scene === "cool"}
-          <CoolScene {game} />
-        {:else if scene === "finish"}
-          <FinishScene {game} />
+        {:else}
+          <StageCanvas {game} {scene} />
         {/if}
       </div>
 
-      <p class="stage__hint">
-        {game.phase === "score"
-          ? "Así queda tu vela · receta lista para pedir insumos"
-          : hints[scene]}
-      </p>
+      <p class="stage__hint">{sceneHint}</p>
     </div>
   {/if}
 </section>
@@ -497,9 +495,9 @@
 
   .stage__scene-body {
     display: grid;
-    align-items: center;
+    align-items: stretch;
     min-height: 0;
-    overflow: auto;
+    overflow: hidden;
   }
 
   @media (max-width: 899px) {

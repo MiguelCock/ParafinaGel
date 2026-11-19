@@ -23,9 +23,8 @@
   <p class="game-eyebrow">Estación de cera</p>
   <h3 class="game-title">Calienta con calma</h3>
   <p class="game-text">
-    Lleva la {wax?.nombre.toLowerCase() ?? "cera"} a {game.meltMin}–{game.meltMax}
-    °C y remueve tres veces. La temperatura queda registrada cuando entra en el rango;
-    si te pasas, puedes retirarla y esperar.
+    Mantén la palanca de la olla para calentar y arrastra la cuchara en círculos
+    para remover. La temperatura se registra al entrar en el rango.
   </p>
 
   <div class="game-gauge" aria-hidden="true">
@@ -59,29 +58,24 @@
   </div>
 
   <p class="game-text">
-    Aroma: <strong>{scent?.nombre ?? "—"}</strong>
+    Aroma: <strong>{scent?.nombre ?? "—"}</strong> · Cera:
+    <strong>{wax?.nombre ?? "—"}</strong>
   </p>
 
-  <button
-    class="game-action"
-    type="button"
-    onclick={() => game.toggleHeat()}
-    data-testid="heat-toggle"
-  >
-    {game.craft.heating ? "Retirar del fuego" : "Poner al fuego"}
-  </button>
+  <div class="manual-note">
+    <span class="manual-note__icon" aria-hidden="true">↕</span>
+    <span>
+      <strong>Palanca:</strong> mantén pulsado el control de la olla.
+      <br />
+      <strong>Cuchara:</strong> gira sobre la cera con el puntero o con ← →.
+    </span>
+  </div>
 
   <div class="game-row">
     <span class="game-text">Removidos: {game.craft.stirs}/3</span>
-    <button
-      class="game-action game-action--secondary game-action--small"
-      type="button"
-      onclick={() => game.stir()}
-      disabled={game.craft.stirs >= 3}
-      data-testid="stir"
-    >
-      Remover
-    </button>
+    <span class="game-badge">
+      {game.craft.stirs >= 3 ? "Mezcla lista" : "Sigue removiendo"}
+    </span>
   </div>
 
   <button
@@ -94,3 +88,29 @@
     Ir al vertido
   </button>
 </div>
+
+<style>
+  .manual-note {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.5rem;
+    padding: 0.55rem 0.65rem;
+    border-left: 3px solid var(--color-accent);
+    border-radius: 0.4rem;
+    background: var(--color-accent-soft);
+    color: var(--color-accent-strong);
+    font-size: 0.65rem;
+    line-height: 1.45;
+  }
+
+  .manual-note__icon {
+    display: grid;
+    place-items: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    background: var(--color-bg-elevated);
+    font-size: 0.9rem;
+    font-weight: 800;
+  }
+</style>

@@ -108,25 +108,29 @@ export function scoreExecution(
     doneUnits.length > 0
       ? (doneUnits.reduce((sum, unit) => sum + (unit.accuracy ?? 0), 0) /
           doneUnits.length) *
-        12
+        10
       : 0;
 
-  const wick = craft.wick.placed ? wickAccuracy(craft) * 8 : 0;
-  const label = craft.label.placed ? labelAccuracy(craft) * 4 : 0;
-  const trim = craft.wick.trimmed ? trimAccuracy(craft) * 3 : 0;
+  const mix = (1 - Math.min(1, Math.max(0, craft.mix))) * 4;
+  const spill = (1 - Math.min(1, Math.max(0, craft.spill))) * 3;
+  const wick = craft.wick.placed ? wickAccuracy(craft) * 6 : 0;
+  const label = craft.label.placed ? labelAccuracy(craft) * 3 : 0;
+  const trim = craft.wick.trimmed ? trimAccuracy(craft) * 2 : 0;
   const gel =
     design.mode === "gel" && craft.gelBubbles > 0
-      ? (craft.gelPopped / craft.gelBubbles) * 5
-      : 5;
+      ? (craft.gelPopped / craft.gelBubbles) * 4
+      : 4;
 
   return {
     temperature,
     pour,
+    mix,
+    spill,
     wick,
     label,
     trim,
     gel,
-    total: temperature + pour + wick + label + trim + gel,
+    total: temperature + pour + mix + spill + wick + label + trim + gel,
   };
 }
 

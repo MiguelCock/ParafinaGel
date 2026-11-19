@@ -306,6 +306,14 @@ export class GameState {
     this.craft.heating = !this.craft.heating;
   }
 
+  startHeating(): void {
+    this.craft.heating = true;
+  }
+
+  stopHeating(): void {
+    this.craft.heating = false;
+  }
+
   stir(): void {
     this.craft.stirs = Math.min(3, this.craft.stirs + 1);
   }
@@ -313,24 +321,48 @@ export class GameState {
   goPour(): void {
     if (!this.canContinueMelt) return;
     this.craft.heating = false;
+    this.craft.pourOffset = 0.55;
     this.phase = "pour";
     this.view = "pour";
+  }
+
+  startPour(): void {
+    if (this.craft.waitingFilm) return;
+    const unit = currentUnit(this.craft);
+    if (!unit || unit.done || unit.fill >= 100) return;
+    this.craft.pouring = true;
+  }
+
+  stopPour(): void {
+    this.craft.pouring = false;
+  }
+
+  releasePour(): void {
+    this.craft.pouring = false;
+    const unit = currentUnit(this.craft);
+    if (!unit || unit.done || this.craft.waitingFilm) return;
+    if (unit.fill >= POUR_MIN_TO_FINISH) {
+      finishPourUnit(this.craft, this.design.mode === "capas");
+    }
+  }
+
+  setPourOffset(value: number): void {
+    this.craft.pourOffset = clamp(value, -1, 1);
   }
 
   togglePour(): void {
     if (this.craft.waitingFilm) return;
     if (this.craft.pouring) {
-      this.craft.pouring = false;
+      this.releasePour();
       return;
     }
-    const unit = currentUnit(this.craft);
-    if (unit && unit.fill >= 100) return;
-    this.craft.pouring = true;
+    this.startPour();
   }
 
   finishUnit(): void {
     const unit = currentUnit(this.craft);
     if (!unit || unit.done || unit.fill < POUR_MIN_TO_FINISH) return;
+    this.craft.pouring = false;
     finishPourUnit(this.craft, this.design.mode === "capas");
   }
 
@@ -341,13 +373,16 @@ export class GameState {
   }
 
   moveWick(dx: number, dy: number): void {
-    if (this.craft.wick.placed) return;
     this.craft.wick.x = clamp(this.craft.wick.x + dx, -30, 30);
     this.craft.wick.y = clamp(this.craft.wick.y + dy, -30, 30);
   }
 
+  setWickPosition(x: number, y: number): void {
+    this.craft.wick.x = clamp(x, -30, 30);
+    this.craft.wick.y = clamp(y, -30, 30);
+  }
+
   centerWick(): void {
-    if (this.craft.wick.placed) return;
     this.craft.wick.x = 0;
     this.craft.wick.y = 0;
   }
@@ -451,6 +486,13 @@ export class GameState {
     this.view = "design";
   }
 
+  viewRecipe(): void {
+    if (!this.canDesign) return;
+    this.score = null;
+    this.phase = "score";
+    this.view = "design";
+  }
+
   backToDesign(): void {
     this.score = null;
     this.phase = "design";
@@ -541,8 +583,24 @@ export class GameState {
         }
       } else if (this.craft.pouring) {
         const unit = currentUnit(this.craft);
+        const wax = this.wax;
         if (unit) {
-          unit.fill = Math.min(100, unit.fill + POUR_SPEED * delta);
+          const aligned = Math.abs(this.craft.pourOffset) <= 0.32;
+          if (aligned && unit.fill < 100) {
+            unit.fill = Math.min(100, unit.fill + POUR_SPEED * delta);
+          }
+
+          if (!aligned || unit.fill >= 100) {
+            this.craft.spill = Math.min(1, this.craft.spill + 0.2 * delta);
+          }
+
+          if (
+            wax &&
+            this.craft.temperature >= wax.meltMax - 4 &&
+            !this.craft.overheated
+          ) {
+            this.craft.mix = Math.min(1, this.craft.mix + 0.055 * delta);
+          }
         }
       }
     }

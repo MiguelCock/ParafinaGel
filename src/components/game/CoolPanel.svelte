@@ -8,14 +8,6 @@
   let { game }: Props = $props();
 
   const gel = $derived(game.design.mode === "gel");
-  const bubbles = [0, 1, 2, 3, 4];
-  const bubblePositions = [
-    { left: "18%", top: "28%" },
-    { left: "44%", top: "16%" },
-    { left: "70%", top: "36%" },
-    { left: "32%", top: "62%" },
-    { left: "62%", top: "70%" },
-  ];
 </script>
 
 <div class="game-station-panel" data-testid="cool-panel">
@@ -25,8 +17,8 @@
   </h3>
   <p class="game-text">
     {gel
-      ? "La parafina gel necesita cuajar despacio. Mientras tanto, quita las burbujas que aparezcan en la superficie."
-      : "La cera necesita enfriarse antes del acabado. Abanica para acelerar el proceso; no pasa nada si tardas."}
+      ? "El gel necesita cuajar despacio. Toca el ventilador para abanicar y las burbujas dentro de la vela para quitarlas."
+      : "La cera necesita enfriarse antes del acabado. Toca el ventilador del taller para acelerar el proceso."}
   </p>
 
   <div class="game-meter" aria-hidden="true">
@@ -47,40 +39,20 @@
     </span>
   </div>
 
-  {#if gel}
-    <div class="bubble-field" data-testid="bubble-field">
-      {#each bubbles as bubble}
-        {@const popped = bubble < game.craft.gelPopped}
-        <button
-          class="bubble"
-          class:popped
-          type="button"
-          disabled={popped || game.craft.cooled}
-          style={`left: ${bubblePositions[bubble]?.left}; top: ${bubblePositions[bubble]?.top}`}
-          aria-label={popped
-            ? `Burbuja ${bubble + 1} quitada`
-            : `Quitar burbuja ${bubble + 1}`}
-          onclick={() => game.popBubble()}
-          data-testid={`bubble-${bubble}`}
-        >
-          {popped ? "✓" : ""}
-        </button>
-      {/each}
-      <span class="bubble-field__label">
-        Burbujas {game.craft.gelPopped}/{game.craft.gelBubbles}
-      </span>
-    </div>
-  {/if}
-
-  <button
-    class="game-action game-action--secondary"
-    type="button"
-    onclick={() => game.fan()}
-    disabled={game.craft.cooled}
-    data-testid="fan"
-  >
-    Abanicar
-  </button>
+  <div class="manual-note">
+    <span class="manual-note__icon" aria-hidden="true">❄</span>
+    <span>
+      <strong>Ventilador:</strong> tócalo en el escenario o pulsa Espacio.
+      {#if gel}
+        <br />
+        <strong>Burbujas:</strong> tócalas dentro del gel o pulsa B. Quedan {Math.max(
+          0,
+          game.craft.gelBubbles - game.craft.gelPopped,
+        )} de
+        {game.craft.gelBubbles}.
+      {/if}
+    </span>
+  </div>
 
   <button
     class="game-action game-primary"
@@ -94,60 +66,27 @@
 </div>
 
 <style>
-  .bubble-field {
-    position: relative;
-    min-height: 7.5rem;
-    border: 1px solid var(--color-border);
-    border-radius: 0.8rem;
-    background:
-      radial-gradient(
-        circle at 30% 20%,
-        rgba(255, 255, 255, 0.6),
-        transparent 45%
-      ),
-      var(--color-surface);
+  .manual-note {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.5rem;
+    padding: 0.55rem 0.65rem;
+    border-left: 3px solid var(--color-accent);
+    border-radius: 0.4rem;
+    background: var(--color-accent-soft);
+    color: var(--color-accent-strong);
+    font-size: 0.65rem;
+    line-height: 1.45;
   }
 
-  .bubble {
-    position: absolute;
+  .manual-note__icon {
     display: grid;
     place-items: center;
-    width: 2.2rem;
-    height: 2.2rem;
-    border: 1.5px solid rgba(127, 149, 171, 0.65);
+    width: 1.5rem;
+    height: 1.5rem;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.5);
-    box-shadow: inset -2px -3px 5px rgba(127, 149, 171, 0.25);
-    color: var(--color-sage);
-    font-size: 0.8rem;
+    background: var(--color-bg-elevated);
+    font-size: 0.9rem;
     font-weight: 800;
-    transition:
-      opacity var(--transition),
-      transform var(--transition);
-  }
-
-  .bubble:hover:not(:disabled) {
-    transform: scale(1.08);
-  }
-
-  .bubble.popped {
-    border-color: var(--color-sage);
-    background: var(--color-sage-soft);
-    opacity: 0.65;
-  }
-
-  .bubble-field__label {
-    position: absolute;
-    right: 0.5rem;
-    bottom: 0.4rem;
-    color: var(--color-text-muted);
-    font-size: 0.6rem;
-    font-weight: 700;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .bubble {
-      transition: none;
-    }
   }
 </style>

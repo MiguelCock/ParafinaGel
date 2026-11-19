@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { wickTypesById } from "@lib/game/data";
   import type { GameState } from "@lib/game/game-state.svelte";
 
   interface Props {
@@ -8,7 +7,6 @@
 
   let { game }: Props = $props();
 
-  const wick = $derived(game.wickInfo);
   const distance = $derived(Math.hypot(game.craft.wick.x, game.craft.wick.y));
   const quality = $derived(
     distance < 5
@@ -19,93 +17,43 @@
           ? "Algo desviada"
           : "Desviada",
   );
-  const doble = $derived(game.design.wickId === "doble");
 </script>
 
 <div class="game-station-panel" data-testid="wick-panel">
   <p class="game-eyebrow">Colocar la mecha</p>
   <h3 class="game-title">Busca el centro</h3>
   <p class="game-text">
-    Mueve la mecha con las flechas hasta el centro de la pieza. Cuanto más cerca
-    quede, mejor será la combustión.
+    Arrastra la mecha directamente sobre la vista superior de la pieza. Al
+    soltarla queda colocada; puedes volver a arrastrarla para ajustar.
   </p>
 
-  {#if wick}
+  {#if game.wickInfo}
     <div class="game-note">
-      Mecha {wick.nombre.toLowerCase()} · {wick.diameterMin}–{wick.diameterMax} mm.
-      {doble ? "La mecha doble se centra como una sola pieza." : wick.note}
+      Mecha {game.wickInfo.nombre.toLowerCase()} ·
+      {game.wickInfo.diameterMin}–{game.wickInfo.diameterMax} mm.
+      {game.design.wickId === "doble"
+        ? "La mecha doble se centra como una sola pieza."
+        : game.wickInfo.note}
     </div>
   {/if}
 
-  <div class="wick-pad" aria-label="Mover la mecha">
-    <span></span>
-    <button
-      class="wick-key"
-      type="button"
-      aria-label="Mover la mecha hacia arriba"
-      onclick={() => game.moveWick(0, -4)}
-      disabled={game.craft.wick.placed}
-      data-testid="wick-up"
-    >
-      ↑
-    </button>
-    <span></span>
-    <button
-      class="wick-key"
-      type="button"
-      aria-label="Mover la mecha a la izquierda"
-      onclick={() => game.moveWick(-4, 0)}
-      disabled={game.craft.wick.placed}
-      data-testid="wick-left"
-    >
-      ←
-    </button>
-    <span class="wick-pad__target" aria-hidden="true">◎</span>
-    <button
-      class="wick-key"
-      type="button"
-      aria-label="Mover la mecha a la derecha"
-      onclick={() => game.moveWick(4, 0)}
-      disabled={game.craft.wick.placed}
-      data-testid="wick-right"
-    >
-      →
-    </button>
-    <span></span>
-    <button
-      class="wick-key"
-      type="button"
-      aria-label="Mover la mecha hacia abajo"
-      onclick={() => game.moveWick(0, 4)}
-      disabled={game.craft.wick.placed}
-      data-testid="wick-down"
-    >
-      ↓
-    </button>
-    <span></span>
+  <div class="manual-note">
+    <span class="manual-note__icon" aria-hidden="true">✛</span>
+    <span>
+      <strong>Puntero:</strong> arrastra y suelta sobre el centro.
+      <br />
+      <strong>Teclado:</strong> flechas para mover y Enter para colocar.
+    </span>
   </div>
 
-  {#if game.craft.wick.placed}
-    <p class="game-note" data-testid="wick-quality">
-      Mecha colocada · {quality}. {wickTypesById[game.design.wickId ?? ""]
-        ?.nombre ?? "Mecha"}.
-    </p>
-  {:else}
-    <p class="game-text">
-      Cuando esté lista, pulsa “Colocar mecha”. Aún podrás ajustarla antes de
-      confirmar.
-    </p>
-  {/if}
-
-  <button
-    class="game-action"
-    type="button"
-    onclick={() => game.placeWick()}
-    disabled={game.craft.wick.placed}
-    data-testid="place-wick"
-  >
-    {game.craft.wick.placed ? "Mecha colocada" : "Colocar mecha"}
-  </button>
+  <div class="game-row">
+    <span class="game-badge" data-testid="wick-quality">
+      {game.craft.wick.placed ? `Colocada · ${quality}` : "Sin colocar"}
+    </span>
+    <span class="game-badge">
+      {game.craft.wick.placed ? "Puedes ajustarla" : "Suelta para fijar"}
+    </span>
+  </div>
 
   <button
     class="game-action game-primary"
@@ -119,48 +67,27 @@
 </div>
 
 <style>
-  .wick-pad {
+  .manual-note {
     display: grid;
-    grid-template-columns: repeat(3, 3rem);
-    justify-content: center;
-    gap: 0.3rem;
-  }
-
-  .wick-key {
-    display: grid;
-    place-items: center;
-    width: 3rem;
-    height: 3rem;
-    border: 1px solid var(--color-border-strong);
-    border-radius: 0.7rem;
-    background: var(--color-bg);
-    color: var(--color-heading);
-    font-size: var(--text-lg);
-    transition:
-      background-color var(--transition),
-      border-color var(--transition);
-  }
-
-  .wick-key:hover:not(:disabled) {
-    border-color: var(--color-accent);
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.5rem;
+    padding: 0.55rem 0.65rem;
+    border-left: 3px solid var(--color-accent);
+    border-radius: 0.4rem;
     background: var(--color-accent-soft);
+    color: var(--color-accent-strong);
+    font-size: 0.65rem;
+    line-height: 1.45;
   }
 
-  .wick-key:disabled {
-    opacity: 0.4;
-  }
-
-  .wick-pad__target {
+  .manual-note__icon {
     display: grid;
     place-items: center;
-    color: var(--color-accent);
-    font-size: var(--text-xl);
-    opacity: 0.7;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .wick-key {
-      transition: none;
-    }
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    background: var(--color-bg-elevated);
+    font-size: 0.9rem;
+    font-weight: 800;
   }
 </style>

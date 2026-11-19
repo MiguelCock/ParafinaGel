@@ -23,7 +23,7 @@
   const message = $derived(
     whatsappLink(buildSuppliesMessage(game.design, recipe)),
   );
-  const recipeOnly = $derived(game.mode === "sandbox" && !score);
+  const recipeOnly = $derived(!score);
   const gel = $derived(game.design.mode === "gel");
 </script>
 
@@ -116,6 +116,16 @@
           <div>
             <span>Vertido</span><strong>
               {Math.round(score.execution.pour)}
+            </strong>
+          </div>
+          <div>
+            <span>Mezcla</span><strong>
+              {Math.round(score.execution.mix)}
+            </strong>
+          </div>
+          <div>
+            <span>Derrame</span><strong>
+              {Math.round(score.execution.spill)}
             </strong>
           </div>
           <div>

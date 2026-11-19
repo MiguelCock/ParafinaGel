@@ -43,10 +43,12 @@ Fuente de verdad: `src/styles/global.css`.
 - No agregues una librería de UI ni Tailwind sin acordarlo.
 - Cualquier token nuevo debe tener su equivalente en modo oscuro.
 
-## Juego 2D
+## Juego 2D WebGL
 
-- La UI del juego usa los tokens del sitio (`src/styles/game.css`).
-- El escenario ilustrado y los objetos (jarra, olla, jarra de vertido, ventilador, vapor, iconos) viven en `src/components/game/` como SVG/CSS; no agregues paletas 3D ni canvas.
-- Las tarjetas de escena son theme-aware: usan `var(--color-bg-elevated)` para que el modo oscuro mantenga contraste.
-- `CustomerPortrait` admite `customer.portrait` para futuros retratos AI/foto; si falta, usa el SVG.
+- La UI de paneles del juego usa los tokens del sitio (`src/styles/game.css`).
+- El escenario interactivo se renderiza con **PixiJS 8** en `src/lib/game/render/`; las escenas WebGL no leen variables CSS. Usa la paleta de `src/lib/game/render/palette.ts` y mantenla alineada con `global.css`.
+- El canvas usa un escenario virtual 1000×640 y letterboxing; no posiciones objetos con CSS absoluto dentro de la escena.
+- `CandlePreview`/`MoldPreview` son el fallback SVG y la vista de respaldo; los retratos se generan por capas en `src/lib/game/portrait.ts`.
+- Las tarjetas de escena son theme-aware; el canvas conserva la paleta cálida del taller.
 - Mantén la estética de papel: tickets, sellos, líneas punteadas y recibos.
+- Cada reto manual debe tener foco visible, teclado y explicación textual en el panel.

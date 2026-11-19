@@ -77,6 +77,9 @@ export function createCraft(design: CandleDesign): Craft {
     units: createPourUnits(design),
     unitIndex: 0,
     pouring: false,
+    pourOffset: 0.55,
+    mix: 0,
+    spill: 0,
     waitingFilm: false,
     filmRemaining: 0,
     coolingRemaining: wax?.coolTime ?? 8,
@@ -122,6 +125,7 @@ export function finishPourUnit(craft: Craft, waitForFilm: boolean): void {
       craft.filmRemaining = FILM_SECONDS;
     } else {
       craft.unitIndex += 1;
+      craft.pourOffset = 0.55;
     }
   }
 }
@@ -130,6 +134,7 @@ export function completeFilm(craft: Craft): void {
   craft.waitingFilm = false;
   craft.filmRemaining = 0;
   craft.unitIndex = Math.min(craft.units.length - 1, craft.unitIndex + 1);
+  craft.pourOffset = 0.55;
 }
 
 export function wickDistance(craft: Craft): number {

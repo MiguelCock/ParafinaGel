@@ -208,6 +208,9 @@ export interface Craft {
   units: PourUnit[];
   unitIndex: number;
   pouring: boolean;
+  pourOffset: number;
+  mix: number;
+  spill: number;
   waitingFilm: boolean;
   filmRemaining: number;
   coolingRemaining: number;
@@ -234,6 +237,8 @@ export interface DesignScore {
 export interface ExecutionScore {
   temperature: number;
   pour: number;
+  mix: number;
+  spill: number;
   wick: number;
   label: number;
   trim: number;

@@ -212,22 +212,31 @@
           <strong>Diseño:</strong> elige cera, recipiente o molde, capas, figura,
           gel, aroma, mecha y etiqueta.
         </li>
-        <li><strong>Cera:</strong> calienta despacio y remueve tres veces.</li>
         <li>
-          <strong>Vertido:</strong> llena cada capa o parte hasta la meta.
-        </li>
-        <li><strong>Mecha:</strong> muévela al centro con las flechas.</li>
-        <li>
-          <strong>Curado:</strong> espera, abanica y quita burbujas si es gel.
+          <strong>Cera:</strong> mantén la palanca para calentar y gira la cuchara
+          dentro de la olla.
         </li>
         <li>
-          <strong>Acabado:</strong> alinea la etiqueta, corta la mecha, tapa y empaca.
+          <strong>Vertido:</strong> arrastra la jarra sobre la boca del frasco y suelta
+          para cerrar la capa.
+        </li>
+        <li>
+          <strong>Mecha:</strong> arrastra la mecha al centro con el puntero o las
+          flechas.
+        </li>
+        <li>
+          <strong>Curado:</strong> toca el ventilador y, en gel, las burbujas.
+        </li>
+        <li>
+          <strong>Acabado:</strong> arrastra la etiqueta y su tirador, corta la mecha
+          sobre la vela, y toca la tapa y el empaque.
         </li>
       </ol>
       <p class="game-text">
         Al final obtienes puntos, estrellas y la receta con la lista de insumos.
         En <strong>Modo libre</strong> puedes diseñar sin pedido ni reloj. El
-        botón <strong>Experto</strong> oculta las pistas numéricas del acabado.
+        botón <strong>Experto</strong> oculta las pistas numéricas. El taller usa
+        WebGL; si tu navegador no lo soporta, puedes ver la receta igual.
       </p>
       <button
         class="game-action game-primary"
