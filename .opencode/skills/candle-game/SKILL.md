@@ -99,10 +99,12 @@ El sitio vende **insumos y materias primas**, no velas terminadas. El juego perm
 
 - `npm test` cubre briefs, validación, capas, scoring, receta, líquido y motion.
 - `npm run check`, `npm run build`.
-- Flujo completo de los 4 tipos + sandbox + fallback sin WebGL.
+- `npm run qa:game` cubre los 4 tipos, puntero y teclado, sandbox, fallback, 390/1280, claro/oscuro, axe, overflow, consola, bundle y FPS.
+- Capturas y reportes en `qa/` (`report.md`, `report.json`, `screens/`); usa `BROWSER_PATH` si el navegador no está en una ruta conocida.
+- `QA_QUICK=1` para humo; `QA_SKIP_BUILD=1` para reutilizar `dist/`.
 - Probar `?motion=off` y `?motion=full`; verificar que la ayuda/pestaña oculta pausa las animaciones.
-- Pruebas de captura con Puppeteer/Brave y flags WebGL (`--enable-webgl --ignore-gpu-blocklist --use-angle=swiftshader --enable-unsafe-swiftshader`).
-- Capturas de retratos, olla/cuchara, jarra/chorro, etiqueta/mecha y score.
+- El FPS de Chromium headless con SwiftShader es una referencia, no una medición de GPU real.
+- La comparación visual contra línea base queda pendiente; las capturas tienen nombres estables para agregarla después.
 
 ## Fase 3
 
@@ -115,6 +117,7 @@ El sitio vende **insumos y materias primas**, no velas terminadas. El juego perm
 ## Checklist
 
 - [ ] `npm test` y `npm run check` pasan.
+- [ ] `npm run qa:game` pasa y las capturas se revisan.
 - [ ] Flujo de los 4 tipos + sandbox.
 - [ ] Retos manuales con teclado y puntero.
 - [ ] Simulación visible y `mix`/`spill` en el score.

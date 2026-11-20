@@ -18,6 +18,8 @@ Sitio de **ParafinaGel**, negocio familiar de velas que vende **insumos y materi
 - `npm run build` → `npm run check` + build estático en `dist/`
 - `npm run check` → `astro check` + `svelte-check`
 - `npm test` → Vitest del motor del juego
+- `npm run qa:game` → build + E2E, capturas, axe, overflow, bundle y FPS en `qa/`
+- `QA_QUICK=1 npm run qa:game` → humo visual del juego
 - `npm run preview` → sirve `dist/`
 - `npm run format` / `npm run format:check`
 - `PUBLIC_SHOW_DRAFTS=true npm run build` → incluye placeholders en el build.
@@ -53,6 +55,8 @@ Sitio de **ParafinaGel**, negocio familiar de velas que vende **insumos y materi
 - `src/content.config.ts`: schema Zod de productos con loader `glob`.
 - `src/lib/products.ts`: consultas, orden por categoría, precios, borradores y relacionados.
 - `src/config/site.ts`: WhatsApp, correo, Instagram y ciudad centralizados (placeholders `TODO`).
+- `scripts/qa-game.mjs` y `scripts/qa/`: harness de QA con Puppeteer Core y axe.
+- `qa/`: reportes, JSON y capturas del QA; ignorada por git.
 
 ## Juego WebGL
 
@@ -81,6 +85,17 @@ Sitio de **ParafinaGel**, negocio familiar de velas que vende **insumos y materi
 - **Presupuesto**: usa `motionBudget` (partículas, tweens concurrentes, stagger y frame budget); no agregues librerías de animación.
 - `prefers-reduced-motion` reduce ondas, vapor, ventilador y llama.
 - El tick del juego usa `requestAnimationFrame` con delta limitado; Pixi renderiza con su propio ticker. `visibilitychange` pausa el estado.
+
+## QA del juego
+
+- `npm run qa:game`: build, servidor estático de `dist/`, navegador y matriz completa.
+- `scripts/qa-game.mjs` orquesta; `scripts/qa/` separa entorno, navegador, flujos, checks y reporte.
+- Cubre los 4 pedidos, puntero y teclado, sandbox, fallback, 390/1280, claro/oscuro, axe, overflow, consola, bundle y FPS.
+- Los fallos de axe, overflow, consola, receta o flujo son duros; el FPS bajo SwiftShader es un aviso.
+- Salidas en `qa/report.md`, `qa/report.json` y `qa/screens/`; `qa/` está ignorada.
+- Variables: `BROWSER_PATH`, `QA_QUICK=1`, `QA_SKIP_BUILD=1`, `QA_BASE_URL`, `QA_OUT_DIR`, `QA_PORT`, `QA_HEADLESS=0`.
+- No hay comparación visual contra línea base todavía; las capturas usan nombres estables para una historia posterior.
+- El QA no corre en CI ni dentro de `npm run build`.
 
 ## Reglas generales
 
@@ -119,7 +134,8 @@ Sitio de **ParafinaGel**, negocio familiar de velas que vende **insumos y materi
 
 - PixiJS agrega ~180–230 KB gzip al chunk del juego, cargado solo en `/juego` y de forma diferida. Mantén el presupuesto.
 - `?motion=off` fuerza el modo reducido y `?motion=full` lo desactiva para QA visual.
-- `package-lock.json` se versiona; `node_modules/` y `dist/` están ignorados.
+- `npm run qa:game` tarda ~10 min en la matriz completa y ~3 min en modo rápido; `qa/` está ignorada.
+- `package-lock.json` se versiona; `node_modules/`, `dist/` y `qa/` están ignorados.
 - `README.md` tiene la guía para humanos y el checklist previo a publicar.
 
 ## Skills del repo

@@ -18,6 +18,7 @@ npm run build      # check + build estático en dist/
 npm run preview    # previsualiza dist/
 npm run check      # astro check + svelte-check
 npm test           # tests del motor del juego
+npm run qa:game    # E2E, capturas, axe, overflow, bundle y FPS
 npm run format     # Prettier (Astro, Svelte, TS, CSS, MD)
 ```
 
@@ -61,6 +62,39 @@ Rutas: `/`, `/productos`, `/productos/[slug]`, `/nosotros`, `/juego`, `/contacto
 - **Motion**: tokens de duración/easing, estado central de movimiento reducido y pausa de animaciones cuando la ayuda está abierta o la pestaña oculta. `?motion=off` fuerza el modo reducido; `?motion=full` lo desactiva para QA.
 
 Los tiempos, temperaturas, medidas de mecha y cantidades son **placeholders**. Valídalos con el negocio antes de publicar.
+
+## QA del juego
+
+`npm run qa:game` construye el sitio, sirve `dist/` en un puerto libre y corre un navegador real contra el build de producción. No forma parte de `npm run build` ni de CI.
+
+Cubre:
+
+- Los 4 pedidos completos, sandbox y fallback sin WebGL.
+- Flujo con puntero para los retos manuales y flujo con teclado.
+- Capturas deterministas a 1280 y 390, en claro y oscuro.
+- axe WCAG 2.1 AA, overflow horizontal y errores de consola.
+- Bundle gzip del build y FPS de referencia.
+
+Los artefactos quedan en `qa/` (ignorada por git): `qa/report.md`, `qa/report.json` y `qa/screens/*.png`. Usa `QA_OUT_DIR` para guardarlos en otra carpeta.
+
+```bash
+npm run qa:game                  # build + matriz completa (~10 min)
+QA_SKIP_BUILD=1 npm run qa:game  # reutiliza dist/
+QA_QUICK=1 npm run qa:game       # humo: clásica, sandbox, fallback y checks base
+```
+
+| Variable          | Uso                                                                      |
+| ----------------- | ------------------------------------------------------------------------ |
+| `BROWSER_PATH`    | Ruta a Brave/Chromium/Chrome. Si falta, se buscan rutas conocidas.       |
+| `QA_BASE_URL`     | Usa un servidor ya levantado; no construye ni arranca el servidor local. |
+| `QA_SKIP_BUILD=1` | Reutiliza `dist/` para iterar.                                           |
+| `QA_QUICK=1`      | Omite los 4 pedidos, móvil, oscuro y la matriz ampliada.                 |
+| `QA_OUT_DIR`      | Carpeta de salida de capturas y reportes.                                |
+| `QA_PORT`         | Puerto inicial del servidor estático local.                              |
+| `QA_HEADLESS=0`   | Abre el navegador para depurar.                                          |
+| `QA_VERBOSE=1`    | Log detallado.                                                           |
+
+El FPS se mide en Chromium headless con SwiftShader; sirve como referencia y aviso, no como presupuesto de GPU real. La comparación visual contra una línea base queda para una historia posterior.
 
 ## Catálogo y placeholders
 
@@ -112,7 +146,8 @@ El juego usa datos de ejemplo y no incluye temperaturas reales. Valida tiempos, 
 - Las animaciones usan los tokens y el presupuesto de `src/lib/game/motion.ts`; no agregues duraciones mágicas ni librerías de motion.
 - No ejecutes `npm audit fix --force`: puede romper las versiones de Astro/Svelte.
 - La accesibilidad se verificó con axe (WCAG 2.1 AA) en las páginas principales y en `/juego`, en modo claro y oscuro.
-- `npm test` cubre el motor puro del juego; `npm run check` valida Astro y Svelte.
+- `npm test` cubre el motor puro del juego; `npm run check` valida Astro y Svelte; `npm run qa:game` valida los flujos y capturas del juego.
+- `qa/` está ignorada: los reportes y capturas se regeneran con `npm run qa:game`.
 
 ## Antes de publicar
 
@@ -125,4 +160,5 @@ El juego usa datos de ejemplo y no incluye temperaturas reales. Valida tiempos, 
 - [ ] Reemplazar los retratos/escenas placeholder por arte final si se desea.
 - [ ] Agregar fotos reales y `alt` descriptivos.
 - [ ] Ejecutar `npm test`, `npm run check`, `npm run build` y revisar en 360 px y desktop.
+- [ ] Ejecutar `npm run qa:game` y revisar `qa/report.md` y las capturas.
 - [ ] Verificar WebGL en móvil y el fallback sin WebGL.
