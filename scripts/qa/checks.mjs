@@ -24,9 +24,7 @@ export async function scanAxe(page, report, { state, theme, width }) {
       id: violation.id,
       impact: violation.impact,
       nodes: violation.nodes.length,
-      targets: violation.nodes
-        .slice(0, 4)
-        .map((node) => node.target.join(" ")),
+      targets: violation.nodes.slice(0, 4).map((node) => node.target.join(" ")),
     }));
   }, AXE_TAGS);
 
@@ -232,7 +230,8 @@ function resolveScripts(urls, chunks) {
     .map((url) => {
       const normalized = url.replace(/^\/+/, "").replaceAll("\\", "/");
       return chunks.find(
-        (chunk) => chunk.file === normalized || chunk.file.endsWith(`/${normalized}`),
+        (chunk) =>
+          chunk.file === normalized || chunk.file.endsWith(`/${normalized}`),
       );
     })
     .filter(Boolean);

@@ -76,7 +76,9 @@ export function printSummary(report, paths) {
   const duration = (report.durationMs / 1000).toFixed(1);
 
   console.log("");
-  console.log(`QA ${status} · ${totals.pass} ok · ${totals.fail} fail · ${totals.warn} warn · ${duration} s`);
+  console.log(
+    `QA ${status} · ${totals.pass} ok · ${totals.fail} fail · ${totals.warn} warn · ${duration} s`,
+  );
 
   for (const check of report.checks.filter((item) => item.status === "fail")) {
     console.log(`  ✗ ${check.name}: ${check.detail}`);

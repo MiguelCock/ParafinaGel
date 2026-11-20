@@ -14,22 +14,16 @@ import {
   wait,
   waitForStage,
 } from "./browser.mjs";
-import {
-  recordFps,
-  recordOverflow,
-  sampleFps,
-  scanAxe,
-} from "./checks.mjs";
-import {
-  recordCheck,
-  recordConsoleErrors,
-} from "./report.mjs";
+import { recordFps, recordOverflow, sampleFps, scanAxe } from "./checks.mjs";
+import { recordCheck, recordConsoleErrors } from "./report.mjs";
 
 const TYPES = ["clasico", "capas", "figura", "gel"];
 
 async function startSandbox(page) {
   await click(page, "start-sandbox");
-  await page.waitForSelector('[data-testid="design-panel"]', { timeout: 15000 });
+  await page.waitForSelector('[data-testid="design-panel"]', {
+    timeout: 15000,
+  });
   await waitForStage(page, "design");
 }
 
@@ -218,8 +212,7 @@ async function pourWithKeyboard(page) {
     await page.waitForFunction(
       () => {
         const content =
-          document.querySelector('[data-testid="pour-panel"]')?.innerText ??
-          "";
+          document.querySelector('[data-testid="pour-panel"]')?.innerText ?? "";
         return (
           content.includes("Cuajando") ||
           content.includes("Vertido completo") ||
@@ -737,11 +730,7 @@ export async function flowDark({ browser, baseUrl, outDir, report }) {
   });
 }
 
-export async function flowOverflowMatrix({
-  browser,
-  baseUrl,
-  report,
-}) {
+export async function flowOverflowMatrix({ browser, baseUrl, report }) {
   const widths = [360, 390, 768, 1280];
   const errors = [];
 
@@ -799,15 +788,22 @@ export async function flowMotionOverrides({ browser, baseUrl, report }) {
     },
   ];
 
-  for (const testCase of cases) {
-    const page = await createPage(browser, {
-      width: 1280,
-      height: 1000,
-      theme: "light",
-      reducedMotion: testCase.reducedMotion,
-    });
+  const page = await createPage(browser, {
+    width: 1280,
+    height: 1000,
+    theme: "light",
+  });
 
-    try {
+  try {
+    for (const testCase of cases) {
+      await page.emulateMediaFeatures([
+        { name: "prefers-color-scheme", value: "light" },
+        {
+          name: "prefers-reduced-motion",
+          value: testCase.reducedMotion ? "reduce" : "no-preference",
+        },
+      ]);
+
       await gotoGame(page, baseUrl, { query: testCase.query });
       await click(page, "start-game");
       const actual = await page.$eval(
@@ -820,14 +816,10 @@ export async function flowMotionOverrides({ browser, baseUrl, report }) {
         actual === testCase.expected ? "pass" : "fail",
         `esperado ${testCase.expected}, recibido ${actual}`,
       );
-    } finally {
-      recordConsoleErrors(
-        report,
-        `motion ${testCase.name}`,
-        page.__qa.errors,
-      );
-      await page.close();
     }
+  } finally {
+    recordConsoleErrors(report, "motion-overrides", page.__qa.errors);
+    await page.close();
   }
 }
 

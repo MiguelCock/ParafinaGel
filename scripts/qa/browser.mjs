@@ -26,9 +26,7 @@ const BROWSER_CANDIDATES = [
 ];
 
 export function resolveBrowserPath(configuredPath) {
-  const candidates = configuredPath
-    ? [configuredPath]
-    : BROWSER_CANDIDATES;
+  const candidates = configuredPath ? [configuredPath] : BROWSER_CANDIDATES;
 
   const found = candidates.find((candidate) => existsSync(candidate));
   if (!found) {
@@ -55,8 +53,30 @@ export async function launchBrowser({ browserPath, headless = true }) {
   };
 }
 
-export async function createPage(
-  browser,
+export async function createPage(browser, options = {}) {
+  let lastError = null;
+
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    let page = null;
+    try {
+      page = await browser.newPage();
+      await setupPage(page, options);
+      return page;
+    } catch (error) {
+      lastError = error;
+      if (page && !page.isClosed()) {
+        await page.close().catch(() => {});
+      }
+      if (!isTransientSessionError(error) || attempt === 2) throw error;
+      await wait(250);
+    }
+  }
+
+  throw lastError;
+}
+
+async function setupPage(
+  page,
   {
     width = 1280,
     height = 1000,
@@ -65,7 +85,6 @@ export async function createPage(
     blockWebgl = false,
   } = {},
 ) {
-  const page = await browser.newPage();
   await page.setViewport({
     width,
     height,
@@ -90,7 +109,10 @@ export async function createPage(
   if (blockWebgl) {
     await page.evaluateOnNewDocument(() => {
       const original = HTMLCanvasElement.prototype.getContext;
-      HTMLCanvasElement.prototype.getContext = function getContext(type, ...args) {
+      HTMLCanvasElement.prototype.getContext = function getContext(
+        type,
+        ...args
+      ) {
         if (typeof type === "string" && /webgl/i.test(type)) return null;
         return original.call(this, type, ...args);
       };
@@ -106,8 +128,13 @@ export async function createPage(
     reducedMotion,
     axeInjected: false,
   };
+}
 
-  return page;
+function isTransientSessionError(error) {
+  const message = error instanceof Error ? error.message : String(error);
+  return /session closed|target closed|protocol error|connection closed/i.test(
+    message,
+  );
 }
 
 async function setMedia(page, theme, reduced) {
@@ -174,9 +201,8 @@ export async function clickSelector(
 }
 
 export async function text(page, testid) {
-  return page.$eval(
-    `[data-testid="${testid}"]`,
-    (element) => (element.innerText || element.textContent || "").trim(),
+  return page.$eval(`[data-testid="${testid}"]`, (element) =>
+    (element.innerText || element.textContent || "").trim(),
   );
 }
 
@@ -189,10 +215,9 @@ export async function isDisabled(page, testid) {
 }
 
 export async function waitForStage(page, scene, { timeout = 20000 } = {}) {
-  await page.waitForSelector(
-    `[data-testid="stage-canvas-${scene}"] canvas`,
-    { timeout },
-  );
+  await page.waitForSelector(`[data-testid="stage-canvas-${scene}"] canvas`, {
+    timeout,
+  });
   await wait(700);
 }
 
@@ -250,7 +275,8 @@ export async function capture(page, outDir, name, report) {
 
   try {
     const game = await page.$('[data-testid="game2d"]');
-    if (!game) throw new Error("No encontré el shell del juego para la captura.");
+    if (!game)
+      throw new Error("No encontré el shell del juego para la captura.");
     await game.screenshot({
       path: file,
       captureBeyondViewport: true,
