@@ -99,6 +99,8 @@ Sitio de **ParafinaGel**, negocio familiar de velas que vende **insumos y materi
 
 ## Reglas generales
 
+- **Repositorio público**: no agregues datos reales de contacto, precios, clientes, secretos ni archivos `.env`. Usa placeholders marcados con `TODO`.
+- **Licencia propietaria**: el código, el arte y la marca están bajo `LICENSE`; no cambies el uso, la marca ni el texto sin decisión del dueño.
 - **Estático por defecto**. Svelte solo para el juego; no agregues JS global.
 - Productos como content collection; no hardcodees productos en componentes.
 - `borrador: true` protege los placeholders: el build de producción los excluye. No quites esa protección sin reemplazar los datos.
