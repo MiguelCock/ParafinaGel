@@ -126,7 +126,7 @@
   {/if}
 
   {#if failed}
-    <div class="stage-canvas__fallback">
+    <div class="stage-canvas__fallback" data-testid="stage-fallback">
       <p class="game-eyebrow">Sin WebGL</p>
       <p class="stage-canvas__message">
         Tu navegador no pudo iniciar el taller visual. Puedes revisar el diseño
@@ -138,6 +138,7 @@
           class="game-action game-primary game-action--small"
           type="button"
           onclick={() => game.viewRecipe()}
+          data-testid="fallback-recipe"
         >
           Ver receta sin taller
         </button>
@@ -194,6 +195,10 @@
     background: var(--color-surface);
     color: var(--color-text-muted);
     text-align: center;
+  }
+
+  .stage-canvas__fallback :global(.game-eyebrow) {
+    color: var(--color-accent-strong);
   }
 
   .stage-canvas__message {

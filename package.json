@@ -12,6 +12,7 @@
     "preview": "astro preview",
     "check": "astro check && svelte-check --tsconfig ./tsconfig.json",
     "test": "vitest run",
+    "qa:game": "node scripts/qa-game.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },

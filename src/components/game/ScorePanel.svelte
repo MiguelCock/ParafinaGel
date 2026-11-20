@@ -59,7 +59,11 @@
       <p class="score-hero__number">
         {Math.round(score.total)}<span>/100</span>
       </p>
-      <div class="game-stars" aria-label={`${score.stars} de 5 estrellas`}>
+      <div
+        class="game-stars"
+        role="img"
+        aria-label={`${score.stars} de 5 estrellas`}
+      >
         {#each Array.from({ length: 5 }) as _, index}
           <span
             class:game-star--filled={index < score.stars}
