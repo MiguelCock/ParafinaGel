@@ -6,12 +6,12 @@ import StoryVisual from "@components/StoryVisual.astro";
 
 const valores = [
   {
-    title: "Hecho a mano",
-    text: "Cada pieza pasa por nuestras manos, desde la preparación de la cera hasta el último detalle.",
+    title: "Materiales probados",
+    text: "Probamos ceras, mechas y aromas antes de recomendarlos para tu taller.",
   },
   {
-    title: "Pequeños lotes",
-    text: "Trabajamos por tandas pequeñas para cuidar la calidad y probar cada aroma con calma.",
+    title: "Recetas claras",
+    text: "Te contamos cantidades y pasos para que puedas repetir tu vela con confianza.",
   },
   {
     title: "Atención cercana",
@@ -20,21 +20,21 @@ const valores = [
 ];
 
 const proceso = [
-  "Elegimos la cera y el recipiente.",
-  "Mezclamos el aroma con cuidado.",
-  "Vertemos y dejamos reposar.",
-  "Curamos la vela antes de que llegue a tus manos.",
+  "Elegimos las materias primas.",
+  "Probamos la combinación.",
+  "Armamos la receta.",
+  "Te acompañamos por WhatsApp.",
 ];
 ---
 
 <BaseLayout
   title="Nosotros"
-  description="Conoce la historia familiar detrás de ParafinaGel y cómo hacemos nuestras velas."
+  description="Conoce el taller familiar de ParafinaGel y cómo seleccionamos los insumos para hacer velas."
 >
   <PageHero
     eyebrow="Nosotros"
-    title="Una familia, un oficio y muchas velas."
-    description="ParafinaGel es un proyecto familiar que nació de las ganas de hacer algo con las manos y compartirlo con otros."
+    title="Una familia, un oficio y muchos materiales."
+    description="ParafinaGel es un proyecto familiar que comparte ceras, mechas, aromas y moldes para que puedas hacer tus propias velas."
     align="center"
   />
 
@@ -50,13 +50,9 @@ const proceso = [
           experimento se convirtió en un pequeño taller familiar.
         </p>
         <p>
-          Hoy seguimos trabajando de la misma forma: en lotes pequeños, con
-          atención al detalle y con la idea de que cada vela acompañe un momento
-          cotidiano.
-        </p>
-        <p class="about-story__note">
-          Este texto es de ejemplo y se reemplazará con la historia real de la
-          familia.
+          Hoy seguimos probando combinaciones y seleccionando materiales para
+          compartir lo que aprendimos: ceras, mechas, aromas y moldes para que
+          armes tus propias velas.
         </p>
       </div>
     </div>
@@ -81,10 +77,10 @@ const proceso = [
       <div class="process__inner">
         <div>
           <p class="eyebrow">El proceso</p>
-          <h2>Cómo nace una vela</h2>
+          <h2>Cómo preparamos tu pedido</h2>
           <p class="process__intro">
-            Cada paso importa. Estos son los momentos principales de nuestro
-            proceso artesanal.
+            Cada paso importa. Así seleccionamos y preparamos los materiales que
+            llegan a tu taller.
           </p>
         </div>
 
@@ -116,14 +112,6 @@ const proceso = [
   .about-story p {
     max-width: 56ch;
     color: var(--color-text-muted);
-  }
-
-  .about-story__note {
-    padding: var(--space-3) var(--space-4);
-    border: 1px dashed var(--color-border-strong);
-    border-radius: var(--radius-md);
-    font-size: var(--text-sm);
-    font-style: italic;
   }
 
   .values {

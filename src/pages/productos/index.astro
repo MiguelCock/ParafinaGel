@@ -10,18 +10,18 @@ const hayBorradores = productos.some((producto) => producto.data.borrador);
 ---
 
 <BaseLayout
-  title="Catálogo"
-  description="Explora las velas, difusores, kits y accesorios de ParafinaGel."
+  title="Insumos"
+  description="Explora ceras, mechas, aromas, moldes, kits y accesorios de ParafinaGel."
 >
   <PageHero
     eyebrow="Catálogo"
-    title="Velas y aromas para tu casa."
-    description="Cada producto se prepara en pequeños lotes. Encuentra tu aroma y escríbenos para confirmar precio y disponibilidad."
+    title="Insumos para tu taller."
+    description="Estamos migrando el catálogo a ceras, mechas, aromas, moldes y kits. Mientras tanto, escríbenos para confirmar disponibilidad y precios."
   >
     {hayBorradores && (
       <p class="catalog-note">
-        Estás viendo productos de ejemplo. El catálogo, los precios y las fotos
-        se reemplazarán antes de publicar.
+        Estás viendo productos de ejemplo. El catálogo de insumos, los precios y
+        las fotos se reemplazarán antes de publicar.
       </p>
     )}
   </PageHero>
@@ -30,10 +30,10 @@ const hayBorradores = productos.some((producto) => producto.data.borrador);
     <section class="section">
       <div class="container">
         <div class="empty-state">
-          <h2>El catálogo está en preparación</h2>
+          <h2>El catálogo de insumos está en preparación</h2>
           <p>
-            Estamos organizando nuestros productos y precios. Escríbenos para
-            conocer qué tenemos disponible hoy.
+            Estamos organizando materiales y precios. Escríbenos para conocer
+            qué tenemos disponible hoy.
           </p>
           <div class="catalog-empty__cta">
             <WhatsAppCTA />
@@ -47,9 +47,11 @@ const hayBorradores = productos.some((producto) => producto.data.borrador);
         <div class="catalog__toolbar">
           <p>
             {productos.length}{" "}
-            {productos.length === 1 ? "producto" : "productos"}
+            {productos.length === 1
+              ? "producto de ejemplo"
+              : "productos de ejemplo"}
           </p>
-          <p>Velas · Difusores · Kits · Accesorios</p>
+          <p>Ceras · Mechas · Aromas · Moldes · Kits</p>
         </div>
 
         <div class="catalog__grid">

@@ -62,7 +62,7 @@
   </button>
 
   <a class="game-action game-action--secondary" href="/productos/">
-    Ver catálogo
+    Ver insumos
   </a>
 </div>
 

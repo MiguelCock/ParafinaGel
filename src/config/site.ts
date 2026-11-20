@@ -1,10 +1,10 @@
 export const site = {
   name: "ParafinaGel",
-  tagline: "Velas artesanales hechas en familia",
+  tagline: "Insumos para hacer velas en casa",
   description:
-    "Velas y aromas para tu casa, elaborados en pequeños lotes por una familia que ama el oficio.",
-  whatsapp: "573000000000", // TODO: número real con indicativo, sin + ni espacios
-  email: "hola@parafinagel.com", // TODO
-  instagram: "https://instagram.com/parafinagel", // TODO
-  city: "Colombia", // TODO
+    "Ceras, mechas, aromas, colorantes, moldes y kits para hacer velas, con un taller interactivo que te ayuda a calcular tu receta.",
+  whatsapp: "0000000000", // TODO: número real con indicativo, sin + ni espacios
+  email: "hola@example.com", // TODO
+  instagram: "https://instagram.com/example", // TODO
+  city: "Ciudad por confirmar", // TODO
 } as const;

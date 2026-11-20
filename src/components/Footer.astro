@@ -6,14 +6,14 @@ import { whatsappLink } from "@lib/whatsapp";
 const year = new Date().getFullYear();
 
 const links = [
-  { href: "/productos", label: "Productos" },
+  { href: "/productos", label: "Insumos" },
   { href: "/nosotros", label: "Nosotros" },
   { href: "/juego", label: "Juego" },
   { href: "/contacto", label: "Contacto" },
 ];
 
 const whatsapp = whatsappLink(
-  "Hola, quiero información sobre las velas de ParafinaGel.",
+  "Hola, quiero información sobre insumos para velas de ParafinaGel.",
 );
 ---
 
@@ -24,7 +24,7 @@ const whatsapp = whatsappLink(
         <Logo size={32} />
         <span>ParafinaGel</span>
       </a>
-      <p>{site.tagline}. Pequeños lotes, aromas cuidados y atención cercana.</p>
+      <p>{site.tagline}. Materiales, recetas y atención cercana.</p>
     </div>
 
     <div>
@@ -60,7 +60,7 @@ const whatsapp = whatsappLink(
 
   <div class="container site-footer__bottom">
     <p>© {year} ParafinaGel. Hecho en familia.</p>
-    <p>{site.city} · Catálogo en actualización</p>
+    <p>{site.city} · Catálogo de insumos en preparación</p>
   </div>
 </footer>
 

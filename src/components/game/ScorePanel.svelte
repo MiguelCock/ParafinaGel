@@ -210,7 +210,7 @@
         {game.isLastBrief ? "Terminar el día" : "Siguiente cliente"}
       </button>
       <a class="game-action game-action--secondary" href="/productos/">
-        Ver catálogo
+        Ver insumos
       </a>
     {/if}
   </div>

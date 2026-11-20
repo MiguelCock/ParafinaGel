@@ -6,36 +6,36 @@ import { site } from "@config/site";
 import { whatsappLink } from "@lib/whatsapp";
 
 const whatsapp = whatsappLink(
-  "Hola, quiero información sobre las velas de ParafinaGel.",
+  "Hola, quiero información sobre insumos para velas de ParafinaGel.",
 );
 
 const faqs = [
   {
     question: "¿Hacen envíos?",
     answer:
-      "Escríbenos con tu ciudad y te confirmamos disponibilidad, tiempo y costo de envío.",
+      "Escríbenos con tu ciudad y te confirmamos disponibilidad, tiempo y costo de envío de los materiales.",
   },
   {
-    question: "¿Puedo pedir un aroma personalizado?",
+    question: "¿Puedo pedir una cantidad especial?",
     answer:
-      "Cuéntanos qué aroma buscas. Revisamos si podemos prepararlo y te contamos los tiempos.",
+      "Cuéntanos qué necesitas: cera, mecha, aroma o molde. Revisamos disponibilidad y te contamos los tiempos.",
   },
   {
     question: "¿Venden al por mayor?",
     answer:
-      "Escríbenos y conversamos sobre tu idea, la cantidad y el tipo de producto que necesitas.",
+      "Escríbenos y conversamos sobre tu idea, la cantidad y los materiales que necesitas.",
   },
 ];
 ---
 
 <BaseLayout
   title="Contacto"
-  description="Escríbenos por WhatsApp o correo para pedir velas, resolver dudas o coordinar un pedido."
+  description="Escríbenos por WhatsApp o correo para pedir insumos, resolver dudas o coordinar un pedido."
 >
   <PageHero
     eyebrow="Contacto"
-    title="Hablemos de velas."
-    description="Estamos para ayudarte a elegir, resolver dudas y coordinar tu pedido."
+    title="Hablemos de tu próxima vela."
+    description="Estamos para ayudarte a elegir materiales, resolver dudas y coordinar tu pedido."
     align="center"
   />
 
@@ -49,7 +49,7 @@ const faqs = [
             </svg>
           </span>
           <h2>WhatsApp</h2>
-          <p>La forma más rápida de pedir y resolver dudas.</p>
+          <p>La forma más rápida de pedir insumos y resolver dudas.</p>
           <a href={whatsapp} target="_blank" rel="noopener noreferrer">
             Escribir por WhatsApp <span aria-hidden="true">→</span>
           </a>
@@ -104,7 +104,7 @@ const faqs = [
             </svg>
           </span>
           <h2>Instagram</h2>
-          <p>Novedades, procesos y aromas nuevos.</p>
+          <p>Novedades, procesos y recetas nuevas.</p>
           <a href={site.instagram} target="_blank" rel="noopener noreferrer">
             Ver perfil <span aria-hidden="true">→</span>
           </a>
@@ -147,7 +147,7 @@ const faqs = [
 
   <section class="section section--tight">
     <div class="container contact__cta">
-      <p>¿Prefieres que te ayudemos a elegir?</p>
+      <p>¿No sabes qué materiales necesitas?</p>
       <WhatsAppCTA />
     </div>
   </section>

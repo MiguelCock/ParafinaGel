@@ -21,12 +21,12 @@ const destacados = await getDestacados(3);
     <div class="container">
       <div class="featured__header">
         <SectionHeading
-          eyebrow="Favoritos de la casa"
-          title="Aromas para cada momento"
-          description="Una selección para empezar a encontrar el aroma que te acompaña."
+          eyebrow="Para tu taller"
+          title="Materiales para cada idea"
+          description="Ceras, mechas, aromas y moldes para empezar tu próxima vela."
         />
         <Button href="/productos" variant="ghost">
-          Ver todo el catálogo <span aria-hidden="true">→</span>
+          Ver todos los insumos <span aria-hidden="true">→</span>
         </Button>
       </div>
 
@@ -38,10 +38,11 @@ const destacados = await getDestacados(3);
         </div>
       ) : (
         <div class="empty-state">
-          <h2>Estamos preparando el catálogo</h2>
+          <h2>Estamos preparando el catálogo de insumos</h2>
           <p>
-            Muy pronto vas a poder ver aquí nuestras velas y aromas. Mientras
-            tanto, escríbenos y te contamos qué tenemos disponible.
+            Muy pronto vas a poder ver aquí ceras, mechas, aromas, colorantes y
+            moldes. Mientras tanto, escríbenos y te contamos qué tenemos
+            disponible.
           </p>
           <div class="featured__empty-cta">
             <WhatsAppCTA />
