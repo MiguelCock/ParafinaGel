@@ -2,8 +2,5 @@ node_modules/
 dist/
 .astro/
 package-lock.json
-cmd/
-internal/
-go.mod
 AGENTS.md
 .opencode/

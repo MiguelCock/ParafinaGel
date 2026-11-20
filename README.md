@@ -103,10 +103,6 @@ El schema está en `src/content.config.ts`. Los precios son opcionales: si falta
 
 El juego usa datos de ejemplo y no incluye temperaturas reales. Valida tiempos, ceras, mechas, medidas y cantidades con el negocio antes de publicar.
 
-## Prototipo Go
-
-`cmd/`, `internal/` y `go.mod` pertenecen al prototipo anterior y no los usa Astro. Se pueden eliminar cuando la versión nueva esté aprobada; el historial de Git conserva el código.
-
 ## Notas
 
 - El sitio no tiene backend ni checkout. El CTA de compra es WhatsApp.

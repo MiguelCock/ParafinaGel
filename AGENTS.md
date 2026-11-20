@@ -7,7 +7,6 @@ Sitio de **ParafinaGel**, negocio familiar de velas que vende **insumos y materi
 - **Astro 7 + Svelte 5**, salida 100 % estática.
 - El escenario interactivo del juego usa **WebGL con PixiJS 8**; la UI de paneles sigue en Svelte/DOM.
 - La versión 2.1 incluye pedido progresivo, cuatro tipos de vela, diseñador, retos manuales, simulación de líquido viscoso, modo libre y fallback sin WebGL.
-- El prototipo Go (`cmd/`, `internal/`, `go.mod`) sigue en el repo pero **no se usa**.
 - El catálogo es de ejemplo: `src/content/productos/*.md` con `borrador: true`. En producción se excluye salvo `PUBLIC_SHOW_DRAFTS=true`.
 - Los retratos se generan por capas en `src/lib/game/portrait.ts` (pelo trasero, cara y flequillo) para evitar desalineaciones.
 - Hay tests del motor (`npm test`), typecheck de Astro/Svelte y build.
@@ -120,6 +119,5 @@ Sitio de **ParafinaGel**, negocio familiar de velas que vende **insumos y materi
 En `.opencode/skills/` (cárgalos con la herramienta `skill`):
 
 - `frontend-visual`: diseño, pulido visual y checklist antes de entregar una página.
-- `astro-migration`: estado y reglas del código Astro/Svelte actual.
 - `product-catalog`: schema, precios, placeholders y copy del catálogo.
 - `candle-game`: diseño, arquitectura WebGL/PixiJS, retos manuales y líquidos.
