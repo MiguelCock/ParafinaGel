@@ -1,81 +1,105 @@
-# ParafinaGel
+<div align="center">
 
-Sitio web del negocio familiar de velas **ParafinaGel**: catálogo, contacto y un juego **2D WebGL** para diseñar velas y descubrir los **insumos** necesarios para hacerlas.
+# 🕯️ ParafinaGel
 
-Construido con **Astro 7**, islas de **Svelte 5** y **PixiJS 8** para el escenario del juego. Salida 100 % estática.
+**Insumos para hacer velas + un taller 2D WebGL que termina en tu receta.**
 
-## Requisitos
+Ceras, mechas, aromas, colorantes, moldes y kits para tu taller.
+El juego enseña el proceso y genera la lista de materiales; no vende velas terminadas.
 
-- Node.js `>= 22.23.4`
-- npm
+[![Astro](https://img.shields.io/badge/Astro-7-BC52EE?logo=astro&logoColor=white)](https://astro.build)
+[![Svelte](https://img.shields.io/badge/Svelte-5-FF3E00?logo=svelte&logoColor=white)](https://svelte.dev)
+[![PixiJS](https://img.shields.io/badge/PixiJS-8-E72264)](https://pixijs.com)
+[![WebGL](https://img.shields.io/badge/WebGL-2D-6E4AFF)](#el-juego)
+[![Node](https://img.shields.io/badge/Node-22%2B-5FA04E?logo=nodedotjs&logoColor=white)](https://nodejs.org)
+[![QA](https://img.shields.io/badge/QA-Puppeteer%20%2B%20axe-2F6F4E)](#qa)
 
-## Comandos
+[El juego](#el-juego) · [Empezar](#empezar) · [QA](#qa) · [Estado](#estado) · [Licencia](#licencia)
+
+</div>
+
+<p align="center">
+  <img src="docs/game-design.webp" alt="Taller de diseño de ParafinaGel: una vela clásica con panel de cera, aroma, mecha, etiqueta y colores" width="900" />
+</p>
+
+<p align="center"><sub>Captura del prototipo con datos de ejemplo.</sub></p>
+
+## Qué es
+
+ParafinaGel es un negocio familiar de **insumos y materias primas para velas**. Este repositorio reúne el sitio público y un taller interactivo para aprender haciendo: eliges materiales, fabricas una vela paso a paso y recibes una **receta con la lista de insumos**.
+
+El objetivo no es vender una vela terminada. El juego termina en una receta accionable y un CTA de WhatsApp para pedir los materiales.
+
+## El juego
+
+`/juego` es una experiencia cozy ilustrada con escenario **2D WebGL**. El jugador escucha un brief, diseña una vela y la fabrica con retos manuales.
+
+```mermaid
+flowchart LR
+  A[Brief] --> B[Diseño] --> C[Cera] --> D[Vertido] --> E[Mecha] --> F[Curado] --> G[Acabado] --> H[Receta]
+```
+
+| Estación      | Qué haces                                                                |
+| ------------- | ------------------------------------------------------------------------ |
+| **Mostrador** | Escuchas al cliente y creas la nota del pedido.                          |
+| **Diseño**    | Eliges cera, tamaño, recipiente o molde, capas, aroma, mecha y etiqueta. |
+| **Cera**      | Mantienes la palanca para calentar y arrastras la cuchara en círculos.   |
+| **Vertido**   | Arrastras la jarra sobre la boca del frasco y cierras cada capa.         |
+| **Mecha**     | Colocas la mecha en el centro de la vista superior.                      |
+| **Curado**    | Abanicas con el ventilador; en gel, revientas burbujas.                  |
+| **Acabado**   | Etiqueta, corte de mecha, tapa y empaque.                                |
+| **Receta**    | Recibes puntos, estrellas y la lista de insumos para pedir.              |
+
+- **Cuatro tipos de vela**: clásica, capas, figura con molde y gel con montajes.
+- **Simulación de líquido viscoso**: superficie, volumen, película entre capas, salpicaduras, mezcla y burbujas. Afecta el puntaje.
+- **Retos manuales**: sin sliders ni botones para las estaciones; el teclado es la alternativa accesible.
+- **Modo libre**: diseño sin brief ni reloj, con receta o taller.
+- **Modo experto**: oculta las pistas numéricas.
+- **Fallback**: si no hay WebGL, muestra el diseño en SVG y permite ver la receta.
+- **Motion y accesibilidad**: movimiento reducido, pausa decorativa, foco visible y controles de teclado.
+
+<p align="center">
+  <img src="docs/game-recipe.webp" alt="Receta generada por el juego con cantidades de ceras, mechas, aromas, recipientes y montajes" width="900" />
+</p>
+
+<p align="center"><sub>El cierre del juego: una receta con cantidades y CTA para pedir los insumos.</sub></p>
+
+## Stack
+
+| Capa       | Tecnología                        |
+| ---------- | --------------------------------- |
+| Sitio      | Astro 7 con salida 100 % estática |
+| Islas      | Svelte 5                          |
+| Juego      | PixiJS 8 sobre WebGL 2D           |
+| Estilos    | CSS con tokens y modo oscuro      |
+| Tests      | Vitest                            |
+| QA         | Puppeteer Core + axe-core         |
+| Tipografía | Fontsource: Fraunces y Manrope    |
+
+## Empezar
 
 ```bash
+git clone https://github.com/MiguelCock/ParafinaGel.git
+cd ParafinaGel
 npm install
-npm run dev        # http://localhost:4321
-npm run build      # check + build estático en dist/
-npm run preview    # previsualiza dist/
-npm run check      # astro check + svelte-check
-npm test           # tests del motor del juego
-npm run qa:game    # E2E, capturas, axe, overflow, bundle y FPS
-npm run format     # Prettier (Astro, Svelte, TS, CSS, MD)
+npm run dev
 ```
 
-## Estructura
+Abre `http://localhost:4321` para el sitio y `http://localhost:4321/juego` para el taller.
 
-```text
-src/
-  pages/           # rutas por archivo
-  layouts/         # BaseLayout con SEO, fuentes y navegación
-  components/      # UI en Astro
-  components/game/ # shell, escenario, paneles, brief y fallback SVG
-  content/         # productos del catálogo (Markdown)
-  lib/game/        # motor: briefs, diseño, craft, líquido, motion, scoring y receta
-  lib/game/render/ # PixiJS: stage, escenas, candle rig, motion y paleta
-  lib/             # productos, WhatsApp y formato
-  styles/          # tokens y estilos globales
-public/            # favicon, robots
-```
+| Comando           | Qué hace                             |
+| ----------------- | ------------------------------------ |
+| `npm run dev`     | Servidor local de Astro.             |
+| `npm run build`   | `check` + build estático en `dist/`. |
+| `npm run preview` | Sirve el build.                      |
+| `npm test`        | Tests del motor del juego.           |
+| `npm run check`   | Diagnóstico de Astro y Svelte.       |
+| `npm run qa:game` | QA visual/E2E del juego.             |
+| `npm run format`  | Prettier.                            |
 
-Rutas: `/`, `/productos`, `/productos/[slug]`, `/nosotros`, `/juego`, `/contacto` y 404. `/about` redirige a `/nosotros`.
+## QA
 
-## Juego 2D WebGL
-
-`/juego` tiene una experiencia cozy ilustrada. El jugador escucha un brief, diseña una vela y la fabrica con retos manuales. Al final recibe **puntos, estrellas y una receta con la lista de insumos**, no el precio de una vela terminada.
-
-- **Escenario WebGL**: PixiJS 8 renderiza las estaciones; los paneles siguen en Svelte/DOM.
-- **Pedido progresivo**: el cliente revela los requisitos poco a poco; “Crear nota” fija el brief.
-- **Cuatro tipos**: clásica, capas, figura (molde con partes de colores) y gel (transparente con montajes).
-- **Diseñador**: cera, tamaño, recipiente o molde, capas y alturas, colores, aroma, mecha, etiqueta y montajes. Validación en vivo.
-- **Cera manual**: mantén la palanca para calentar y arrastra la cuchara en círculos.
-- **Vertido manual**: arrastra la jarra sobre la boca del frasco y suelta para cerrar la capa.
-- **Mecha manual**: arrastra la mecha al centro de la vista superior.
-- **Curado**: toca el ventilador; en gel, toca las burbujas dentro de la vela.
-- **Acabado manual**: arrastra la etiqueta y su tirador, corta la mecha sobre la vela, toca la tapa y el empaque.
-- **Simulación de líquido viscoso**: superficie ondulada, capas, película, salpicaduras, mezcla por temperatura y burbujas de gel. Afecta el puntaje (`Mezcla` y `Derrame`).
-- **Puntaje**: diseño 60 + taller 40, estrellas y puntos. Sin precio ni propina.
-- **Modo libre**: sandbox sin pedido ni reloj; se puede ver la receta o probar el taller.
-- **Modo experto**: oculta las pistas numéricas.
-- **Fallback**: si el navegador no soporta WebGL, muestra el diseño en SVG y permite ver la receta.
-- **Accesibilidad**: canvas focusable, controles de teclado, `aria-live`, foco visible y `prefers-reduced-motion`.
-- **Motion**: tokens de duración/easing, estado central de movimiento reducido y pausa de animaciones cuando la ayuda está abierta o la pestaña oculta. `?motion=off` fuerza el modo reducido; `?motion=full` lo desactiva para QA.
-
-Los tiempos, temperaturas, medidas de mecha y cantidades son **placeholders**. Valídalos con el negocio antes de publicar.
-
-## QA del juego
-
-`npm run qa:game` construye el sitio, sirve `dist/` en un puerto libre y corre un navegador real contra el build de producción. No forma parte de `npm run build` ni de CI.
-
-Cubre:
-
-- Los 4 pedidos completos, sandbox y fallback sin WebGL.
-- Flujo con puntero para los retos manuales y flujo con teclado.
-- Capturas deterministas a 1280 y 390, en claro y oscuro.
-- axe WCAG 2.1 AA, overflow horizontal y errores de consola.
-- Bundle gzip del build y FPS de referencia.
-
-Los artefactos quedan en `qa/` (ignorada por git): `qa/report.md`, `qa/report.json` y `qa/screens/*.png`. Usa `QA_OUT_DIR` para guardarlos en otra carpeta.
+El QA corre contra el build de producción, con un servidor estático local y un navegador real. No forma parte de `npm run build` ni de CI.
 
 ```bash
 npm run qa:game                  # build + matriz completa (~10 min)
@@ -83,9 +107,14 @@ QA_SKIP_BUILD=1 npm run qa:game  # reutiliza dist/
 QA_QUICK=1 npm run qa:game       # humo: clásica, sandbox, fallback y checks base
 ```
 
+Cubre los 4 pedidos, sandbox, fallback sin WebGL, 390/1280, claro/oscuro, puntero y teclado, axe WCAG 2.1 AA, overflow, errores de consola, bundle gzip y FPS de referencia. Los artefactos quedan en `qa/` (ignorada): `qa/report.md`, `qa/report.json` y `qa/screens/`.
+
+<details>
+<summary>Variables de QA</summary>
+
 | Variable          | Uso                                                                      |
 | ----------------- | ------------------------------------------------------------------------ |
-| `BROWSER_PATH`    | Ruta a Brave/Chromium/Chrome. Si falta, se buscan rutas conocidas.       |
+| `BROWSER_PATH`    | Ruta a Brave, Chromium o Chrome. Si falta, se buscan rutas conocidas.    |
 | `QA_BASE_URL`     | Usa un servidor ya levantado; no construye ni arranca el servidor local. |
 | `QA_SKIP_BUILD=1` | Reutiliza `dist/` para iterar.                                           |
 | `QA_QUICK=1`      | Omite los 4 pedidos, móvil, oscuro y la matriz ampliada.                 |
@@ -94,71 +123,61 @@ QA_QUICK=1 npm run qa:game       # humo: clásica, sandbox, fallback y checks ba
 | `QA_HEADLESS=0`   | Abre el navegador para depurar.                                          |
 | `QA_VERBOSE=1`    | Log detallado.                                                           |
 
-El FPS se mide en Chromium headless con SwiftShader; sirve como referencia y aviso, no como presupuesto de GPU real. La comparación visual contra una línea base queda para una historia posterior.
+El FPS se mide en Chromium headless con SwiftShader; sirve como referencia y aviso, no como presupuesto de GPU real.
 
-## Catálogo y placeholders
+</details>
 
-Los productos actuales están en `src/content/productos/*.md` y tienen `borrador: true`.
-En desarrollo se ven todos; en producción se excluyen para no publicar datos de ejemplo.
+## Estructura
 
-Para ver el catálogo de ejemplo en un build:
-
-```bash
-PUBLIC_SHOW_DRAFTS=true npm run build
+```text
+src/
+  pages/            rutas por archivo
+  layouts/          SEO, fuentes, navegación y footer
+  components/       UI del sitio
+  components/game/  shell, escenario, paneles, brief y fallback
+  content/          productos de ejemplo (Markdown)
+  lib/game/         motor: diseño, craft, líquido, motion, scoring y receta
+  lib/game/render/  escenas PixiJS, candle rig, paleta y motion
+  styles/           tokens y estilos globales
+scripts/qa/         harness de QA
+docs/               capturas usadas en este README
 ```
 
-El schema está en `src/content.config.ts`. Los precios son opcionales: si faltan, la interfaz muestra “Precio por confirmar”.
+Rutas: `/`, `/productos`, `/productos/[slug]`, `/nosotros`, `/juego`, `/contacto` y 404. `/about` redirige a `/nosotros`.
 
-### Agregar un producto real
+## Estado
 
-1. Crea `src/content/productos/<slug>.md` con los campos del schema.
-2. Agrega `precio` (entero COP) o `precioDesde`.
-3. Agrega imágenes en `src/assets/productos/<slug>/` y referéncialas en `imagenes` con `alt`.
-4. Quita `borrador: true` cuando el contenido sea real.
-5. Ejecuta `npm run check` y revisa la card y el detalle en dev.
-6. Si el insumo aparece en el juego, actualiza su entrada en `src/lib/game/data.ts` y `supplyCatalog`.
+El prototipo está funcional y verificado, pero todavía usa **datos de ejemplo**. El catálogo real de insumos, los precios y los datos técnicos están pendientes de validación con el negocio.
 
-## Datos por reemplazar
+> [!WARNING]
+> Repositorio público con datos de ejemplo. No hay demo pública ni dominio real todavía. El contacto, el catálogo, los precios, las temperaturas y las cantidades son placeholders.
 
-| Qué                                  | Dónde                                                                           |
-| ------------------------------------ | ------------------------------------------------------------------------------- |
-| WhatsApp, correo, Instagram y ciudad | `src/config/site.ts`                                                            |
-| Dominio del sitio                    | `astro.config.mjs`                                                              |
-| Catálogo y precios                   | `src/content/productos/*.md`                                                    |
-| Historia y copy de páginas           | `src/pages/nosotros.astro`, `src/pages/index.astro`, `src/pages/contacto.astro` |
-| Briefs y materiales del juego        | `src/lib/game/data.ts`                                                          |
-| Reglas y puntaje del juego           | `src/lib/game/scoring.ts`, `src/lib/game/craft.ts`                              |
-| Simulación de líquido                | `src/lib/game/liquid.ts`                                                        |
-| Motion y presupuesto                 | `src/lib/game/motion.ts`, `src/lib/game/motion.svelte.ts`                       |
-| Escenas WebGL                        | `src/lib/game/render/`                                                          |
-| Paleta del escenario                 | `src/lib/game/render/palette.ts`                                                |
-| Retratos                             | `src/lib/game/portrait.ts`                                                      |
-| Receta y lista de compras            | `src/lib/game/supplies.ts`                                                      |
-| Paneles y UI del juego               | `src/components/game/` y `src/styles/game.css`                                  |
-| Paleta, tipografía y tokens          | `src/styles/global.css`                                                         |
+| Pendiente                            | Dónde                              |
+| ------------------------------------ | ---------------------------------- |
+| Dominio real                         | `astro.config.mjs`                 |
+| WhatsApp, correo, Instagram y ciudad | `src/config/site.ts`               |
+| Catálogo de insumos y precios        | `src/content/productos/*.md`       |
+| Briefs y datos técnicos              | `src/lib/game/data.ts`             |
+| Revisión final del copy              | `src/pages/*` y `src/components/*` |
 
-El juego usa datos de ejemplo y no incluye temperaturas reales. Valida tiempos, ceras, mechas, medidas y cantidades con el negocio antes de publicar.
+Historias relacionadas: [catálogo de insumos](https://github.com/MiguelCock/ParafinaGel/issues/90) · [datos técnicos](https://github.com/MiguelCock/ParafinaGel/issues/87) · [game juice](https://github.com/MiguelCock/ParafinaGel/issues/107) · [baseline visual](https://github.com/MiguelCock/ParafinaGel/issues/108).
 
-## Notas
+## Licencia
 
-- El sitio no tiene backend ni checkout. El CTA de compra es WhatsApp.
-- PixiJS se importa dinámicamente solo en `/juego`; el resto del sitio no carga el motor. El chunk WebGL ronda 180–230 KB gzip.
-- Las animaciones usan los tokens y el presupuesto de `src/lib/game/motion.ts`; no agregues duraciones mágicas ni librerías de motion.
-- No ejecutes `npm audit fix --force`: puede romper las versiones de Astro/Svelte.
-- La accesibilidad se verificó con axe (WCAG 2.1 AA) en las páginas principales y en `/juego`, en modo claro y oscuro.
-- `npm test` cubre el motor puro del juego; `npm run check` valida Astro y Svelte; `npm run qa:game` valida los flujos y capturas del juego.
-- `qa/` está ignorada: los reportes y capturas se regeneran con `npm run qa:game`.
+Este repositorio es público como muestra del proyecto, pero **no es open source**.
+
+El código, el arte y la marca son de ParafinaGel. Puedes leer y estudiar el repositorio como referencia personal; no puedes forkearlo, redistribuirlo ni reutilizarlo en otro proyecto. GitHub no permite desactivar forks en repositorios públicos de cuentas personales, así que la licencia es la que establece la restricción; si necesitas bloquearlo también a nivel técnico, el repositorio tendría que ser privado. Para permisos especiales, abre un issue.
+
+Ver [`LICENSE`](LICENSE).
 
 ## Antes de publicar
 
-- [ ] Reemplazar WhatsApp, correo, Instagram y ciudad.
-- [ ] Definir el dominio en `astro.config.mjs`.
-- [ ] Migrar el catálogo de velas terminadas a insumos y materias primas.
-- [ ] Cargar productos reales y quitar `borrador: true`.
+- [ ] Reemplazar dominio, WhatsApp, correo, Instagram y ciudad.
+- [ ] Migrar el catálogo de ejemplo a insumos y materias primas.
+- [ ] Cargar precios reales y quitar `borrador: true`.
 - [ ] Validar briefs, temperaturas, tiempos, mechas y cantidades con el negocio.
-- [ ] Reemplazar los textos marcados como ejemplo.
-- [ ] Reemplazar los retratos/escenas placeholder por arte final si se desea.
-- [ ] Agregar fotos reales y `alt` descriptivos.
-- [ ] Ejecutar `npm test`, `npm run check`, `npm run build` y revisar en 360 px y desktop.
-- [ ] Ejecutar `npm run qa:game` y revisar `qa/report.md` y las capturas.
-- [ ] Verificar WebGL en móvil y el fallback sin WebGL.
+- [ ] Revisar el copy completo del sitio.
+- [ ] Reemplazar retratos y escenas placeholder por arte final si se desea.
+- [ ] Agregar fotos reales con `alt` descriptivos.
+- [ ] Ejecutar `npm run format:check`, `npm test`, `npm run check`, `npm run build` y `npm run qa:game`.
+- [ ] Revisar 360 px, 768 px y desktop; WebGL y fallback.
