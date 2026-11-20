@@ -2,6 +2,7 @@ import { Container, Graphics, Text } from "pixi.js";
 import type { GameState } from "../../game-state.svelte";
 import { createLiquidState, stepLiquid } from "../../liquid";
 import { CandleRig } from "../candle-rig";
+import { motion } from "../motion";
 import { stageColors } from "../palette";
 import type { StageScene } from "../scene";
 
@@ -38,7 +39,6 @@ export class CoolScene implements StageScene {
   });
   private liquid = createLiquidState(41);
   private time = 0;
-  private reducedMotion = false;
 
   constructor() {
     this.board
@@ -85,22 +85,20 @@ export class CoolScene implements StageScene {
       this.timer,
       this.help,
     );
-
-    this.reducedMotion =
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
 
   update(game: GameState, delta: number): void {
-    this.time += delta;
-    stepLiquid(this.liquid, delta, {
-      pouring: false,
-      offset: 0,
-      heat: 0,
-      fill: 1,
-      gel: game.design.mode === "gel",
-      reducedMotion: this.reducedMotion,
-    });
+    if (!motion.paused) this.time += delta;
+    if (!motion.paused) {
+      stepLiquid(this.liquid, delta, {
+        pouring: false,
+        offset: 0,
+        heat: 0,
+        fill: 1,
+        gel: game.design.mode === "gel",
+        reducedMotion: motion.reduced,
+      });
+    }
 
     this.candle.update(game, {
       showWick: true,
@@ -110,9 +108,10 @@ export class CoolScene implements StageScene {
       time: this.time,
     });
 
-    this.fanBlades.rotation += this.reducedMotion
-      ? 0
-      : (game.craft.cooled ? 0.02 : 0.22) * delta * 6;
+    this.fanBlades.rotation +=
+      motion.reduced || motion.paused
+        ? 0
+        : (game.craft.cooled ? 0.02 : 0.22) * delta * 6;
 
     this.timer.text = game.craft.cooled
       ? "Vela lista"
@@ -141,7 +140,7 @@ export class CoolScene implements StageScene {
     this.steam.clear();
     if (!game.craft.cooled) {
       for (let i = 0; i < 3; i += 1) {
-        const phase = (this.time * 0.4 + i * 0.3) % 1;
+        const phase = motion.reduced ? 0.4 : (this.time * 0.4 + i * 0.3) % 1;
         this.steam
           .circle(
             JAR_X - 30 + i * 30 + Math.sin(this.time + i) * 6,

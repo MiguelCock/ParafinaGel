@@ -1,6 +1,7 @@
 import { Application, Container } from "pixi.js";
 import type { GameState } from "../game-state.svelte";
 import type { StationId } from "../types";
+import { motion, tweens } from "./motion";
 import type { StageScene } from "./scene";
 import { DesignScene } from "./scenes/design-scene";
 import { MeltScene } from "./scenes/melt-scene";
@@ -79,6 +80,7 @@ export class StageRenderer {
   setScene(sceneId: StationId): void {
     if (!this.app || (this.sceneId === sceneId && this.scene)) return;
     this.sceneId = sceneId;
+    tweens.clear();
     this.scene?.destroy();
     this.scene = this.createScene(sceneId);
     this.root.removeChildren();
@@ -104,6 +106,7 @@ export class StageRenderer {
   destroy(): void {
     this.detachInput?.();
     this.resizeObserver?.disconnect();
+    tweens.clear();
     if (this.app) {
       this.app.ticker.remove(this.tick);
       this.app.destroy(true, { children: true });
@@ -132,6 +135,11 @@ export class StageRenderer {
   private tick = (): void => {
     if (!this.app) return;
     const delta = Math.min(0.05, this.app.ticker.deltaMS / 1000);
+    if (motion.reduced) {
+      tweens.completeAll();
+    } else if (!motion.paused) {
+      tweens.update(delta);
+    }
     this.scene?.update(this.game, delta);
   };
 

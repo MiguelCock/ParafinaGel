@@ -30,8 +30,8 @@ src/
   components/      # UI en Astro
   components/game/ # shell, escenario, paneles, brief y fallback SVG
   content/         # productos del catálogo (Markdown)
-  lib/game/        # motor: briefs, diseño, craft, líquido, scoring y receta
-  lib/game/render/ # PixiJS: stage, escenas, candle rig y paleta
+  lib/game/        # motor: briefs, diseño, craft, líquido, motion, scoring y receta
+  lib/game/render/ # PixiJS: stage, escenas, candle rig, motion y paleta
   lib/             # productos, WhatsApp y formato
   styles/          # tokens y estilos globales
 public/            # favicon, robots
@@ -58,6 +58,7 @@ Rutas: `/`, `/productos`, `/productos/[slug]`, `/nosotros`, `/juego`, `/contacto
 - **Modo experto**: oculta las pistas numéricas.
 - **Fallback**: si el navegador no soporta WebGL, muestra el diseño en SVG y permite ver la receta.
 - **Accesibilidad**: canvas focusable, controles de teclado, `aria-live`, foco visible y `prefers-reduced-motion`.
+- **Motion**: tokens de duración/easing, estado central de movimiento reducido y pausa de animaciones cuando la ayuda está abierta o la pestaña oculta. `?motion=off` fuerza el modo reducido; `?motion=full` lo desactiva para QA.
 
 Los tiempos, temperaturas, medidas de mecha y cantidades son **placeholders**. Valídalos con el negocio antes de publicar.
 
@@ -94,6 +95,7 @@ El schema está en `src/content.config.ts`. Los precios son opcionales: si falta
 | Briefs y materiales del juego        | `src/lib/game/data.ts`                                                          |
 | Reglas y puntaje del juego           | `src/lib/game/scoring.ts`, `src/lib/game/craft.ts`                              |
 | Simulación de líquido                | `src/lib/game/liquid.ts`                                                        |
+| Motion y presupuesto                 | `src/lib/game/motion.ts`, `src/lib/game/motion.svelte.ts`                       |
 | Escenas WebGL                        | `src/lib/game/render/`                                                          |
 | Paleta del escenario                 | `src/lib/game/render/palette.ts`                                                |
 | Retratos                             | `src/lib/game/portrait.ts`                                                      |
@@ -107,6 +109,7 @@ El juego usa datos de ejemplo y no incluye temperaturas reales. Valida tiempos, 
 
 - El sitio no tiene backend ni checkout. El CTA de compra es WhatsApp.
 - PixiJS se importa dinámicamente solo en `/juego`; el resto del sitio no carga el motor. El chunk WebGL ronda 180–230 KB gzip.
+- Las animaciones usan los tokens y el presupuesto de `src/lib/game/motion.ts`; no agregues duraciones mágicas ni librerías de motion.
 - No ejecutes `npm audit fix --force`: puede romper las versiones de Astro/Svelte.
 - La accesibilidad se verificó con axe (WCAG 2.1 AA) en las páginas principales y en `/juego`, en modo claro y oscuro.
 - `npm test` cubre el motor puro del juego; `npm run check` valida Astro y Svelte.

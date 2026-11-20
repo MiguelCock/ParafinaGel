@@ -6,7 +6,7 @@ Sitio de **ParafinaGel**, negocio familiar de velas que vende **insumos y materi
 
 - **Astro 7 + Svelte 5**, salida 100 % estática.
 - El escenario interactivo del juego usa **WebGL con PixiJS 8**; la UI de paneles sigue en Svelte/DOM.
-- La versión 2.1 incluye pedido progresivo, cuatro tipos de vela, diseñador, retos manuales, simulación de líquido viscoso, modo libre y fallback sin WebGL.
+- La versión 2.2 incluye pedido progresivo, cuatro tipos de vela, diseñador, retos manuales, simulación de líquido viscoso, sistema de motion, modo libre y fallback sin WebGL.
 - El catálogo es de ejemplo: `src/content/productos/*.md` con `borrador: true`. En producción se excluye salvo `PUBLIC_SHOW_DRAFTS=true`.
 - Los retratos se generan por capas en `src/lib/game/portrait.ts` (pelo trasero, cara y flequillo) para evitar desalineaciones.
 - Hay tests del motor (`npm test`), typecheck de Astro/Svelte y build.
@@ -41,12 +41,14 @@ Sitio de **ParafinaGel**, negocio familiar de velas que vende **insumos y materi
   - `design.ts`: `CandleDesign`, capas, validación y resumen.
   - `craft.ts`: unidades de vertido, precisión de mecha/etiqueta/corte y burbujas.
   - `liquid.ts`: simulación de superficie, salpicaduras, mezcla y burbujas.
+  - `motion.ts`: tokens de duración/easing y `MotionController` para tweens.
+  - `motion.svelte.ts`: estado de movimiento reducido, pausa y override por query.
   - `scoring.ts`: diseño (60) + taller (40), incluyendo mezcla y derrame.
   - `supplies.ts`: receta, cantidades y mensaje de WhatsApp.
   - `portrait.ts`: SVG por capas de los retratos.
   - `game-state.svelte.ts`: orquestación con runes.
-  - `render/`: `stage-renderer.ts`, `scene.ts`, `candle-rig.ts`, `palette.ts` y `scenes/` (design, melt, pour, wick, cool, finish).
-  - `game.test.ts`: tests del motor y del líquido.
+  - `render/`: `stage-renderer.ts`, `scene.ts`, `candle-rig.ts`, `palette.ts`, `motion.ts` y `scenes/` (design, melt, pour, wick, cool, finish).
+  - `game.test.ts` y `motion.test.ts`: tests del motor, líquido y motion.
 - `src/styles/game.css`: estilos compartidos de la UI del juego.
 - `src/content.config.ts`: schema Zod de productos con loader `glob`.
 - `src/lib/products.ts`: consultas, orden por categoría, precios, borradores y relacionados.
@@ -74,6 +76,9 @@ Sitio de **ParafinaGel**, negocio familiar de velas que vende **insumos y materi
 - **Modo libre**: sin brief ni reloj; se puede ver la receta o probar el taller.
 - **Modo experto**: oculta pistas numéricas del diseño y del acabado.
 - **Fallback**: si no hay WebGL, se muestra el diseño en SVG y se ofrece “Ver receta sin taller”.
+- **Motion tokens**: usa duraciones/easings de `motion.ts`; no inventes tiempos por escena. `MotionState` centraliza `prefers-reduced-motion`, pausa y el override `?motion=off` / `?motion=full`.
+- **Pausa decorativa**: ayuda abierta, pestaña oculta o escena fuera de vista pausan tweens/animaciones, no la lógica del juego.
+- **Presupuesto**: usa `motionBudget` (partículas, tweens concurrentes, stagger y frame budget); no agregues librerías de animación.
 - `prefers-reduced-motion` reduce ondas, vapor, ventilador y llama.
 - El tick del juego usa `requestAnimationFrame` con delta limitado; Pixi renderiza con su propio ticker. `visibilitychange` pausa el estado.
 
@@ -85,6 +90,8 @@ Sitio de **ParafinaGel**, negocio familiar de velas que vende **insumos y materi
 - Precios en **COP enteros**; si faltan, la UI muestra "Precio por confirmar". No inventes precios.
 - Archivos pequeños, una responsabilidad por archivo (SOLID/KISS). Código, nombres y comentarios en inglés; copy visible en español.
 - Usa los tokens de `global.css` para la UI. Para Pixi usa `src/lib/game/render/palette.ts` (WebGL no lee variables CSS) y mantén la paleta alineada.
+- Usa los tokens de `src/lib/game/motion.ts` para animaciones. No agregues duraciones mágicas ni librerías de motion.
+- Toda animación nueva debe respetar `motion.reduced` y tener una versión estática o de baja intensidad.
 - **No nombres una variable `state` en un componente que usa `$state`**: Svelte compila `$state` como suscripción a un store y lanza `store_invalid_shape`. Usa `game` o `store`.
 - Mantén accesibilidad: axe (WCAG 2.1 AA) pasa en las páginas principales y en `/juego`, en claro y oscuro. Revisa contraste, foco, teclado y `prefers-reduced-motion`.
 - Mobile-first: verifica 360 px, 768 px y desktop. No debe haber scroll horizontal.
@@ -111,6 +118,7 @@ Sitio de **ParafinaGel**, negocio familiar de velas que vende **insumos y materi
 ## Notas
 
 - PixiJS agrega ~180–230 KB gzip al chunk del juego, cargado solo en `/juego` y de forma diferida. Mantén el presupuesto.
+- `?motion=off` fuerza el modo reducido y `?motion=full` lo desactiva para QA visual.
 - `package-lock.json` se versiona; `node_modules/` y `dist/` están ignorados.
 - `README.md` tiene la guía para humanos y el checklist previo a publicar.
 

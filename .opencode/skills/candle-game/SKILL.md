@@ -12,19 +12,20 @@ El sitio vende **insumos y materias primas**, no velas terminadas. El juego perm
 ## Dónde vive
 
 - Página: `src/pages/juego.astro`.
-- Shell: `src/components/game/GameExperience.svelte` (HUD, progreso, reloj, experto, ayuda).
+- Shell: `src/components/game/GameExperience.svelte` (HUD, progreso, reloj, experto, ayuda, `data-motion`).
 - Escenario: `WorkshopStage.svelte`, `WorkshopBackdrop.svelte`, `StageCanvas.svelte`.
 - Render WebGL: `src/lib/game/render/`:
-  - `stage-renderer.ts`: `Application` de PixiJS, escenario virtual 1000×640, input y cambio de escena.
+  - `stage-renderer.ts`: `Application` de PixiJS, escenario virtual 1000×640, input, cambio de escena y ticker de tweens.
   - `scene.ts`: interfaz `StageScene`.
   - `candle-rig.ts`: frasco/moldes, capas, gel, mecha, etiqueta, llama.
+  - `motion.ts`: re-export de `motion` y `tweens` compartidos.
   - `palette.ts`: colores para WebGL (no lee CSS vars).
   - `scenes/design-scene.ts`, `melt-scene.ts`, `pour-scene.ts`, `wick-scene.ts`, `cool-scene.ts`, `finish-scene.ts`.
 - Pedido: `BriefTicket`, `BriefSummary`, `CounterScene`.
 - Diseño: `DesignPanel`, `DesignBasics`, `DesignColors`, `ColorDots`.
 - Paneles: `MeltPanel`, `PourPanel`, `WickPanel`, `CoolPanel`, `FinishPanel`, `ScorePanel`, `ShoppingList`.
 - Fallback: `CandlePreview` y `MoldPreview` (SVG) si no hay WebGL.
-- Motor: `src/lib/game/` (`types`, `data`, `design`, `craft`, `liquid`, `scoring`, `supplies`, `portrait`, `game-state.svelte.ts`, `game.test.ts`).
+- Motor: `src/lib/game/` (`types`, `data`, `design`, `craft`, `liquid`, `motion`, `scoring`, `supplies`, `portrait`, `game-state.svelte.ts`, tests).
 - Estilos: `src/styles/game.css`.
 
 ## Flujo
@@ -49,6 +50,17 @@ El sitio vende **insumos y materias primas**, no velas terminadas. El juego perm
 - El canvas usa `pointerdown/move/up`; el renderer convierte coordenadas de cliente a virtuales.
 - `prefers-reduced-motion` reduce ondas, vapor, ventilador y llama.
 - Si `webglAvailable()` falla o `Application.init` lanza, se muestra `CandlePreview` y “Ver receta sin taller”.
+
+## Motion
+
+- `src/lib/game/motion.ts` es la fuente de duraciones, easings, presupuesto (`motionBudget`) y `MotionController`.
+- `src/lib/game/motion.svelte.ts` centraliza `reduced`, `paused` y los overrides `?motion=off` / `?motion=full`.
+- `src/lib/game/render/motion.ts` exporta `motion` y `tweens` para las escenas.
+- `GameExperience` aplica `data-motion` al shell y al modal de ayuda; `game.css` define los tokens CSS.
+- `StageRenderer` actualiza `tweens`, los completa en reduced y los limpia al cambiar de escena.
+- Los tweens se pausan si la ayuda está abierta o la pestaña está oculta.
+- No dupliques `matchMedia("(prefers-reduced-motion...)")`; importa `motion`.
+- Toda animación nueva debe tener una versión estática o de baja intensidad.
 
 ## Retos manuales
 
@@ -85,9 +97,10 @@ El sitio vende **insumos y materias primas**, no velas terminadas. El juego perm
 
 ## Verificación
 
-- `npm test` cubre briefs, validación, capas, scoring, receta y líquido.
+- `npm test` cubre briefs, validación, capas, scoring, receta, líquido y motion.
 - `npm run check`, `npm run build`.
 - Flujo completo de los 4 tipos + sandbox + fallback sin WebGL.
+- Probar `?motion=off` y `?motion=full`; verificar que la ayuda/pestaña oculta pausa las animaciones.
 - Pruebas de captura con Puppeteer/Brave y flags WebGL (`--enable-webgl --ignore-gpu-blocklist --use-angle=swiftshader --enable-unsafe-swiftshader`).
 - Capturas de retratos, olla/cuchara, jarra/chorro, etiqueta/mecha y score.
 

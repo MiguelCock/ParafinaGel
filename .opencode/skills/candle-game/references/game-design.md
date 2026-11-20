@@ -49,6 +49,15 @@ Estrellas: ≥90 = 5, ≥75 = 4, ≥55 = 3, ≥35 = 2, resto 1. Puntos = total +
 - `CandleRig` dibuja una banda mezclada en la interfaz de capas y una superficie visible.
 - `Craft.pourOffset` controla la jarra; `releasePour()` cierra la capa si hay suficiente cera.
 
+## Motion
+
+- `motion.ts` define duraciones, easings, `motionBudget` y `MotionController`.
+- `motion.svelte.ts` centraliza `reduced`, `paused` y `?motion=off` / `?motion=full`.
+- `StageRenderer` actualiza los tweens y los limpia al cambiar de escena.
+- La ayuda abierta o la pestaña oculta pausan el motion decorativo.
+- Toda animación tiene una versión estática o de baja intensidad.
+- Capturas de QA: `?motion=off`; revisión completa: `?motion=full`.
+
 ## Mini-juegos
 
 - **Cera**: palanca hold + cuchara circular; 1.6π por remoción.

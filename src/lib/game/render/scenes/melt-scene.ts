@@ -1,6 +1,7 @@
 import { Container, Graphics, Text } from "pixi.js";
 import { scentsById, waxesById } from "../../data";
 import type { GameState } from "../../game-state.svelte";
+import { easings, motion, motionDurations, tweens } from "../motion";
 import { hexColor, stageColors } from "../palette";
 import type { StageScene } from "../scene";
 
@@ -59,9 +60,9 @@ export class MeltScene implements StageScene {
   private accumulated = 0;
   private spoonAngle = -0.8;
   private time = 0;
-  private reducedMotion =
-    typeof window !== "undefined" &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  private leverProgress = 0;
+  private wasHeating = false;
+  private leverTween: (() => void) | null = null;
 
   constructor() {
     this.background
@@ -93,10 +94,27 @@ export class MeltScene implements StageScene {
   }
 
   update(game: GameState, delta: number): void {
-    this.time += delta;
+    if (!motion.paused) this.time += delta;
     const wax = game.design.waxId ? waxesById[game.design.waxId] : null;
     const waxColor = wax ? wax.hex : "#e9c9a8";
     const heating = game.craft.heating;
+    if (heating !== this.wasHeating) {
+      this.wasHeating = heating;
+      this.leverTween?.();
+      const from = this.leverProgress;
+      const to = heating ? 1 : 0;
+      if (motion.reduced) {
+        this.leverProgress = to;
+      } else {
+        this.leverTween = tweens.animate({
+          duration: motionDurations.fast,
+          easing: easings.outCubic,
+          onUpdate: (progress) => {
+            this.leverProgress = from + (to - from) * progress;
+          },
+        });
+      }
+    }
     const inRange =
       game.craft.temperature >= game.meltMin &&
       game.craft.temperature <= game.meltMax;
@@ -131,7 +149,7 @@ export class MeltScene implements StageScene {
     this.drawBottles(waxColor, scent?.nombre ?? "Sin aroma");
     this.drawSteam(game, waxColor);
     this.drawSpoon(waxColor);
-    this.drawLever(heating);
+    this.drawLever();
   }
 
   private drawBottles(waxColor: string, scentName: string): void {
@@ -187,9 +205,7 @@ export class MeltScene implements StageScene {
 
     const amount = game.craft.heating ? 4 : 2;
     for (let i = 0; i < amount; i += 1) {
-      const phase = this.reducedMotion
-        ? 0.45
-        : (this.time * 0.32 + i * 0.27) % 1;
+      const phase = motion.reduced ? 0.45 : (this.time * 0.32 + i * 0.27) % 1;
       const x = POT_X - 70 + i * 46 + Math.sin(this.time * 1.8 + i) * 8;
       const y = POT_Y - 70 - phase * 150;
       this.steam
@@ -223,18 +239,20 @@ export class MeltScene implements StageScene {
       .fill({ color: hexColor(waxColor), alpha: 0.8 });
   }
 
-  private drawLever(heating: boolean): void {
+  private drawLever(): void {
     const x = 745;
     const y = 440;
+    const knobY = y + 4 + this.leverProgress * 70;
+    const active = this.leverProgress > 0.5;
     this.lever.clear();
     this.lever
       .roundRect(x - 18, y, 36, 130, 18)
       .fill({ color: stageColors.creamDeep, alpha: 0.9 })
       .stroke({ width: 2, color: stageColors.border })
-      .roundRect(x - 22, y + (heating ? 74 : 4), 44, 50, 18)
-      .fill(heating ? stageColors.accent : stageColors.woodLight)
+      .roundRect(x - 22, knobY, 44, 50, 18)
+      .fill(active ? stageColors.accent : stageColors.woodLight)
       .stroke({ width: 2, color: stageColors.woodDark })
-      .circle(x, y + (heating ? 99 : 29), 7)
+      .circle(x, knobY + 25, 7)
       .fill({ color: stageColors.white, alpha: 0.7 })
       .roundRect(x - 70, y + 146, 140, 28, 14)
       .fill({ color: stageColors.sageSoft, alpha: 0.9 });

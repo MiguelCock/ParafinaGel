@@ -1,6 +1,7 @@
 import { Container, Graphics, Text } from "pixi.js";
 import type { GameState } from "../../game-state.svelte";
 import { CandleRig } from "../candle-rig";
+import { motion } from "../motion";
 import { clamp, stageColors } from "../palette";
 import type { StageScene } from "../scene";
 
@@ -100,7 +101,7 @@ export class FinishScene implements StageScene {
   }
 
   update(game: GameState, delta: number): void {
-    this.time += delta;
+    if (!motion.paused) this.time += delta;
     const finished = game.phase === "score";
     if (!this.trimming && !this.trimKeyboard) {
       this.trimPreview = game.craft.wick.trimMm;

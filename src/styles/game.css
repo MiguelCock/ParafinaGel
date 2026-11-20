@@ -1,5 +1,30 @@
 /* Shared 2D game UI. Imported only by the game island. */
 
+.game-shell,
+.game-help {
+  --motion-instant: 80ms;
+  --motion-fast: 140ms;
+  --motion-base: 240ms;
+  --motion-slow: 420ms;
+  --motion-celebrate: 720ms;
+  --motion-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --motion-ease-emphasis: cubic-bezier(0.2, 0.9, 0.25, 1.15);
+}
+
+.game-shell[data-motion="reduced"] *,
+.game-shell[data-motion="reduced"] *::before,
+.game-shell[data-motion="reduced"] *::after,
+.game-help[data-motion="reduced"] *,
+.game-help[data-motion="reduced"] *::before,
+.game-help[data-motion="reduced"] *::after {
+  animation-delay: 0ms !important;
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-delay: 0ms !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
 .game-eyebrow {
   color: var(--color-accent);
   font-size: var(--text-xs);
@@ -65,11 +90,11 @@
   line-height: 1.1;
   text-align: center;
   transition:
-    background-color var(--transition),
-    border-color var(--transition),
-    color var(--transition),
-    transform var(--transition),
-    opacity var(--transition);
+    background-color var(--motion-fast, 160ms) var(--motion-ease, ease),
+    border-color var(--motion-fast, 160ms) var(--motion-ease, ease),
+    color var(--motion-fast, 160ms) var(--motion-ease, ease),
+    transform var(--motion-fast, 160ms) var(--motion-ease, ease),
+    opacity var(--motion-fast, 160ms) var(--motion-ease, ease);
 }
 
 .game-action:hover:not(:disabled) {
@@ -123,9 +148,9 @@
   line-height: 1.2;
   text-align: left;
   transition:
-    background-color var(--transition),
-    border-color var(--transition),
-    color var(--transition);
+    background-color var(--motion-fast, 160ms) var(--motion-ease, ease),
+    border-color var(--motion-fast, 160ms) var(--motion-ease, ease),
+    color var(--motion-fast, 160ms) var(--motion-ease, ease);
 }
 
 .game-choice:hover {
@@ -171,7 +196,7 @@
   border-radius: 4px;
   background: var(--color-accent);
   transform: translateX(-50%);
-  transition: left 80ms linear;
+  transition: left var(--motion-instant, 80ms) linear;
 }
 
 .game-meter {
@@ -185,7 +210,7 @@
   height: 100%;
   border-radius: inherit;
   background: linear-gradient(90deg, var(--color-accent), #c98a4b);
-  transition: width 120ms linear;
+  transition: width var(--motion-fast, 140ms) linear;
 }
 
 .game-badge {

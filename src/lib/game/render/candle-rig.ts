@@ -10,6 +10,7 @@ import {
 import type { GameState } from "../game-state.svelte";
 import { surfaceAt, type LiquidState } from "../liquid";
 import type { Mold } from "../types";
+import { motion } from "./motion";
 import { clamp, hexColor, mixHex, stageColors } from "./palette";
 
 const JAR_W = 220;
@@ -52,9 +53,6 @@ export class CandleRig extends Container {
   private mold = new Graphics();
   private inclusionsGraphics = new Graphics();
   private bubblesGraphics = new Graphics();
-  private reducedMotion =
-    typeof window !== "undefined" &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   constructor() {
     super();
@@ -460,7 +458,7 @@ export class CandleRig extends Container {
     if (!visible) return;
     const length = 24;
     const y = waxTop + (lift === -1 ? 2 : -2) - length - 7;
-    const pulse = this.reducedMotion ? 1 : 1 + Math.sin(time * 4.2) * 0.04;
+    const pulse = motion.reduced ? 1 : 1 + Math.sin(time * 4.2) * 0.04;
     this.flame.position.set(0, y);
     this.flame.scale.set(pulse, 1 / pulse);
     this.flame

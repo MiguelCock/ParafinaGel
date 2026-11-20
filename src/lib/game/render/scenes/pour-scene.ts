@@ -3,6 +3,7 @@ import { pourFills } from "../../craft";
 import type { GameState } from "../../game-state.svelte";
 import { createLiquidState, stepLiquid, type LiquidState } from "../../liquid";
 import { CandleRig } from "../candle-rig";
+import { motion } from "../motion";
 import { clamp, hexColor, stageColors } from "../palette";
 import type { StageScene } from "../scene";
 
@@ -33,7 +34,6 @@ export class PourScene implements StageScene {
   private liquid: LiquidState = createLiquidState(23);
   private dragging = false;
   private time = 0;
-  private reducedMotion = false;
 
   constructor() {
     this.background
@@ -61,10 +61,6 @@ export class PourScene implements StageScene {
       this.spill,
       this.label,
     );
-
-    this.reducedMotion =
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
 
   private drawPitcher(): void {
@@ -92,23 +88,25 @@ export class PourScene implements StageScene {
   }
 
   update(game: GameState, delta: number): void {
-    this.time += delta;
+    if (!motion.paused) this.time += delta;
     const unit = game.unit;
     const offset = game.craft.pourOffset;
 
-    stepLiquid(this.liquid, delta, {
-      pouring: game.craft.pouring,
-      offset,
-      heat: clamp(
-        (game.craft.temperature - game.meltMin) /
-          Math.max(1, game.meltMax - game.meltMin),
-        0,
-        1,
-      ),
-      fill: (unit?.fill ?? 0) / 100,
-      gel: game.design.mode === "gel",
-      reducedMotion: this.reducedMotion,
-    });
+    if (!motion.paused) {
+      stepLiquid(this.liquid, delta, {
+        pouring: game.craft.pouring,
+        offset,
+        heat: clamp(
+          (game.craft.temperature - game.meltMin) /
+            Math.max(1, game.meltMax - game.meltMin),
+          0,
+          1,
+        ),
+        fill: (unit?.fill ?? 0) / 100,
+        gel: game.design.mode === "gel",
+        reducedMotion: motion.reduced,
+      });
+    }
 
     this.candle.update(game, {
       fills: pourFills(game.craft),
@@ -159,7 +157,7 @@ export class PourScene implements StageScene {
     const aligned = Math.abs(game.craft.pourOffset) <= 0.32;
     const endX = aligned ? JAR_X + game.craft.pourOffset * 60 : pitcherX - 30;
     const endY = aligned ? JAR_MOUTH_Y + 18 : 560;
-    const wobble = this.reducedMotion ? 0 : Math.sin(this.time * 10) * 7;
+    const wobble = motion.reduced ? 0 : Math.sin(this.time * 10) * 7;
 
     this.stream
       .moveTo(startX, startY)

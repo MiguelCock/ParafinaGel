@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
   import { stationLabels, stationOrder } from "@lib/game/data";
   import { GameState } from "@lib/game/game-state.svelte";
+  import { motion } from "@lib/game/motion.svelte";
   import BriefSummary from "./BriefSummary.svelte";
   import StationPanel from "./StationPanel.svelte";
   import StationTabs from "./StationTabs.svelte";
@@ -58,11 +59,13 @@
   function openHelp() {
     showHelp = true;
     game.paused = true;
+    motion.pause();
   }
 
   function closeHelp() {
     showHelp = false;
     game.paused = document.hidden;
+    motion.resume();
   }
 
   function restartGame() {
@@ -71,6 +74,7 @@
   }
 
   onMount(() => {
+    motion.start();
     let raf = 0;
     let last = performance.now();
 
@@ -92,6 +96,7 @@
 
     return () => {
       cancelAnimationFrame(raf);
+      motion.stop();
       document.removeEventListener("visibilitychange", onVisibility);
     };
   });
@@ -103,7 +108,12 @@
   }}
 />
 
-<div class="game-shell" bind:this={shellEl} data-testid="game2d">
+<div
+  class="game-shell"
+  data-motion={motion.reduced ? "reduced" : "full"}
+  bind:this={shellEl}
+  data-testid="game2d"
+>
   <p class="visually-hidden" aria-live="polite">{status}</p>
 
   <header class="game-hud">
@@ -199,6 +209,7 @@
 {#if showHelp}
   <div
     class="game-help"
+    data-motion={motion.reduced ? "reduced" : "full"}
     role="dialog"
     aria-modal="true"
     aria-labelledby="help-title"

@@ -48,6 +48,7 @@ Fuente de verdad: `src/styles/global.css`.
 - La UI de paneles del juego usa los tokens del sitio (`src/styles/game.css`).
 - El escenario interactivo se renderiza con **PixiJS 8** en `src/lib/game/render/`; las escenas WebGL no leen variables CSS. Usa la paleta de `src/lib/game/render/palette.ts` y mantenla alineada con `global.css`.
 - El canvas usa un escenario virtual 1000×640 y letterboxing; no posiciones objetos con CSS absoluto dentro de la escena.
+- Las animaciones usan los tokens de `src/lib/game/motion.ts` y `--motion-*` de `game.css`; `data-motion="reduced"` desactiva el motion decorativo. No inventes duraciones por componente.
 - `CandlePreview`/`MoldPreview` son el fallback SVG y la vista de respaldo; los retratos se generan por capas en `src/lib/game/portrait.ts`.
 - Las tarjetas de escena son theme-aware; el canvas conserva la paleta cálida del taller.
 - Mantén la estética de papel: tickets, sellos, líneas punteadas y recibos.
