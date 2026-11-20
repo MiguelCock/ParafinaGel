@@ -11,7 +11,9 @@ import StoryTeaser from "@components/StoryTeaser.astro";
 import WhatsAppCTA from "@components/WhatsAppCTA.astro";
 import { getDestacados } from "@lib/products";
 
-const destacados = await getDestacados(3);
+const destacados = (await getDestacados(3)).filter(
+  (producto) => !producto.data.borrador,
+);
 ---
 
 <BaseLayout>
