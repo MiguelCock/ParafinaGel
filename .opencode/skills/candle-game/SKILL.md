@@ -30,14 +30,14 @@ El sitio vende **insumos y materias primas**, no velas terminadas. El juego perm
 
 ## Flujo
 
-`brief → design → melt → pour → wick → cool → finish → score`
+`brief → design → wick (preparación) → melt → pour → cool → finish → score`
 
 1. **Mostrador**: el cliente revela el pedido por líneas. “Crear nota” fija el brief.
 2. **Diseño**: tipo, cera, tamaño, recipiente/molde, capas/partes/montajes, aroma, mecha y etiqueta.
-3. **Cera**: mantener la palanca para calentar; arrastrar la cuchara en círculos.
-4. **Vertido**: arrastrar la jarra sobre la boca; el líquido cae, se ondula y llena. Soltar cierra la capa.
-5. **Mecha**: arrastrar la mecha al centro de la vista superior.
-6. **Curado**: tocar el ventilador; en gel, tocar las burbujas.
+3. **Preparación**: colocar el porta pabilo, ajustar la mecha al centro y usar el sostenedor.
+4. **Cera**: mantener la palanca para calentar; arrastrar la cuchara en círculos.
+5. **Vertido**: arrastrar la jarra sobre la boca; el líquido cae, se ondula y llena. Soltar cierra la capa.
+6. **Curado**: retirar el sostenedor y tocar el ventilador; en gel, tocar las burbujas.
 7. **Acabado**: arrastrar etiqueta y tirador, cortar la mecha sobre la vela, tocar tapa y empaque.
 8. **Score**: puntos, estrellas, receta e insumos; WhatsApp.
 
@@ -64,9 +64,9 @@ El sitio vende **insumos y materias primas**, no velas terminadas. El juego perm
 
 ## Retos manuales
 
+- **Preparación**: arrastrar la mecha en la vista superior; `game.setWickPosition` y `placeWick`. El porta pabilo es la base metálica; el sostenedor de madera solo centra y se retira después del curado. Teclado: flechas + Enter.
 - **Cera**: `pointerDown` en la palanca inicia calor; `pointerUp` lo detiene. Arrastrar sobre la olla acumula ángulo y llama `game.stir()` cada 1.6π. Teclado: Espacio y flechas.
 - **Vertido**: arrastrar la jarra; `game.setPourOffset` alinea. Si `|offset| <= 0.32`, el tick llena la unidad; si no, acumula `spill`. Al soltar, `game.releasePour()` cierra la capa si hay suficiente cera. Teclado: flechas + Espacio.
-- **Mecha**: arrastrar en la vista superior; `game.setWickPosition` y `placeWick`. Teclado: flechas + Enter.
 - **Curado**: clic en el ventilador (`game.fan()`); burbujas de gel (`game.popBubble()`). Teclado: Espacio y B.
 - **Acabado**: etiqueta arrastrable con tirador de giro; corte de mecha con regla; tapa y empaque clicables. Teclado: 1 etiqueta, 2 mecha, 3 tapa, 4 empaque, flechas, Mayús + flechas, Enter.
 - No reintroduzcas sliders/botones para estos retos. Los botones de navegación, selección de materiales y CTA sí se quedan.

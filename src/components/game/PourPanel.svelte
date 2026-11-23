@@ -34,10 +34,12 @@
       La capa necesita unos segundos antes de recibir la siguiente. No hay
       prisa.
     {:else if game.pourComplete}
-      Todas las partes están llenas. Ahora coloca la mecha.
+      Todas las partes están llenas. La mecha ya está preparada; deja curar la
+      vela.
     {:else}
-      Arrastra la jarra sobre la boca del frasco. Cuando esté alineada, el
-      líquido empezará a caer; suelta para cerrar la capa.
+      La mecha ya está sujeta en el envase. Arrastra la jarra sobre la boca del
+      frasco. Cuando esté alineada, el líquido empezará a caer; suelta para
+      cerrar la capa.
     {/if}
   </p>
 
@@ -92,7 +94,7 @@
     </div>
   {:else}
     <p class="game-note" data-testid="pour-complete">
-      Vertido completo. La mecha es el siguiente paso.
+      Vertido completo. La mecha ya está en el envase; deja curar la vela.
     </p>
   {/if}
 
@@ -115,11 +117,11 @@
   <button
     class="game-action game-primary"
     type="button"
-    onclick={() => game.goWick()}
-    disabled={!game.canGoWick}
+    onclick={() => game.goCool()}
+    disabled={!game.canGoCool}
     data-testid="pour-continue"
   >
-    Ir a la mecha
+    Ir al curado
   </button>
 </div>
 

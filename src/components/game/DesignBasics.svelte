@@ -4,8 +4,10 @@
     molds,
     orderTypeDescriptions,
     orderTypeLabels,
+    recommendedWickTypes,
     scents,
     sizes,
+    vesselMaterialLabels,
     vessels,
     waxes,
     wickTypes,
@@ -37,6 +39,9 @@
       : null,
   );
   const selectedWick = $derived(game.wickInfo);
+  const recommendedWicks = $derived(
+    selectedVessel ? recommendedWickTypes(selectedVessel.diameterMm) : [],
+  );
 </script>
 
 <div class="design-section">
@@ -144,8 +149,9 @@
     </div>
     {#if selectedVessel}
       <p class="design-hint">
-        {selectedVessel.transparent ? "Vidrio transparente" : "Vidrio tintado"} ·
-        {selectedVessel.diameterMm} mm de diámetro.
+        {vesselMaterialLabels[selectedVessel.material]} · {selectedVessel.transparent
+          ? "transparente"
+          : "opaco"} · {selectedVessel.diameterMm} mm de diámetro.
       </p>
     {/if}
   </div>
@@ -175,6 +181,14 @@
 
 <div class="design-section">
   <p class="design-section__label">Mecha</p>
+  {#if selectedVessel}
+    <p class="design-hint">
+      Para {selectedVessel.diameterMm} mm:
+      {recommendedWicks.length > 0
+        ? recommendedWicks.map((wick) => wick.nombre).join(", ")
+        : "ninguna mecha del catálogo coincide con este envase"}.
+    </p>
+  {/if}
   <div class="game-grid-2">
     {#each wickTypes as wick}
       <button
@@ -182,6 +196,8 @@
         class:game-choice--selected={game.design.wickId === wick.id}
         type="button"
         onclick={() => game.selectWick(wick.id)}
+        disabled={Boolean(selectedVessel) &&
+          !recommendedWicks.some((item) => item.id === wick.id)}
         data-testid={`wick-type-${wick.id}`}
       >
         {wick.nombre}
@@ -191,8 +207,7 @@
   {#if selectedWick}
     <p class="design-hint">
       {selectedWick.material} · {selectedWick.diameterMin}–{selectedWick.diameterMax}
-      mm.
-      {selectedWick.note}
+      mm. {selectedWick.note}
     </p>
   {/if}
 </div>
@@ -226,6 +241,11 @@
   .design-section:first-child {
     padding-top: 0;
     border-top: 0;
+  }
+
+  .game-choice:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
   }
 
   .design-section__label {

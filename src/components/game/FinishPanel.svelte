@@ -36,8 +36,9 @@
   <p class="game-eyebrow">Acabado manual</p>
   <h3 class="game-title">Los últimos detalles</h3>
   <p class="game-text">
-    Arrastra la etiqueta sobre la vela y gira el tirador. Corta la mecha
-    arrastrando sobre ella. Toca la tapa y el empaque para cerrar la pieza.
+    La mecha ya está centrada. Arrastra la etiqueta sobre la vela y gira el
+    tirador. Corta la mecha arrastrando sobre ella. Toca la tapa y el empaque
+    para cerrar la pieza.
   </p>
 
   <div class="finish-block">

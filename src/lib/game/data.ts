@@ -18,9 +18,9 @@ import type {
 export const stationOrder: StationId[] = [
   "counter",
   "design",
+  "wick",
   "melt",
   "pour",
-  "wick",
   "cool",
   "finish",
 ];
@@ -30,7 +30,7 @@ export const stationLabels: Record<StationId, string> = {
   design: "Diseño",
   melt: "Cera",
   pour: "Vertido",
-  wick: "Mecha",
+  wick: "Preparación",
   cool: "Curado",
   finish: "Acabado",
 };
@@ -144,6 +144,7 @@ export const vessels: Vessel[] = [
     id: "ambar",
     nombre: "Frasco ámbar",
     glass: "#d8a45f",
+    material: "vidrio",
     transparent: false,
     capacityG: 250,
     diameterMm: 70,
@@ -152,6 +153,7 @@ export const vessels: Vessel[] = [
     id: "claro",
     nombre: "Frasco claro",
     glass: "#f4ead9",
+    material: "vidrio",
     transparent: true,
     capacityG: 220,
     diameterMm: 65,
@@ -160,11 +162,42 @@ export const vessels: Vessel[] = [
     id: "cristal",
     nombre: "Vaso de cristal",
     glass: "#e8f2f0",
+    material: "vidrio",
     transparent: true,
     capacityG: 260,
     diameterMm: 75,
   },
+  {
+    id: "lata",
+    nombre: "Lata de metal",
+    glass: "#c9ccc7",
+    material: "metal",
+    transparent: false,
+    capacityG: 200,
+    diameterMm: 65,
+  },
+  {
+    id: "ceramica",
+    nombre: "Tarro de cerámica",
+    glass: "#d9c4ae",
+    material: "ceramica",
+    transparent: false,
+    capacityG: 220,
+    diameterMm: 70,
+  },
 ];
+
+export const vesselMaterialLabels: Record<Vessel["material"], string> = {
+  vidrio: "Vidrio",
+  metal: "Metal",
+  ceramica: "Cerámica",
+};
+
+export const vesselMaterialStroke: Record<Vessel["material"], string> = {
+  vidrio: "#6f5541",
+  metal: "#6f7475",
+  ceramica: "#966b50",
+};
 
 export const molds: Mold[] = [
   {
@@ -271,6 +304,12 @@ export const wickTypes: WickType[] = [
     note: "Para recipientes anchos.",
   },
 ];
+
+export function recommendedWickTypes(diameterMm: number): WickType[] {
+  return wickTypes.filter(
+    (wick) => diameterMm >= wick.diameterMin && diameterMm <= wick.diameterMax,
+  );
+}
 
 export const labels: Label[] = [
   { id: "clasica", nombre: "Clásica", color: "#fbf3e9", accent: "#b4552f" },
@@ -595,6 +634,21 @@ export const supplyCatalog: SupplyItem[] = [
     categoria: "empaque",
     unidad: "unidad",
     detalle: "Papel de regalo y lazo de algodón.",
+  },
+  {
+    id: "mecha-porta-pabilo",
+    nombre: "Porta pabilo",
+    categoria: "mecha",
+    unidad: "unidad",
+    detalle: "Base metálica que sostiene el pabilo en el fondo del envase.",
+  },
+  {
+    id: "herramienta-sostenedor",
+    nombre: "Sostenedor de madera",
+    categoria: "herramienta",
+    unidad: "unidad",
+    detalle:
+      "Puente de madera para mantener el pabilo centrado; se retira después del curado.",
   },
   {
     id: "herramienta-termometro",

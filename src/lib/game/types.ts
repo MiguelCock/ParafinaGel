@@ -48,10 +48,13 @@ export interface Scent {
   notas: string;
 }
 
+export type VesselMaterial = "vidrio" | "metal" | "ceramica";
+
 export interface Vessel {
   id: string;
   nombre: string;
   glass: string;
+  material: VesselMaterial;
   transparent: boolean;
   capacityG: number;
   diameterMm: number;

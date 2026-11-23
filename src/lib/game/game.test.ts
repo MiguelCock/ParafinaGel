@@ -7,7 +7,7 @@ import {
   trimAccuracy,
   wickAccuracy,
 } from "./craft";
-import { briefs, waxesById } from "./data";
+import { briefs, recommendedWickTypes, waxesById } from "./data";
 import {
   createDesign,
   resizeLayer,
@@ -134,14 +134,23 @@ describe("design validation", () => {
     expect(messages).toContain("Agrega al menos dos capas.");
   });
 
-  it("warns when the wick is too small for the vessel", () => {
+  it("rejects a wick that does not fit the vessel diameter", () => {
     const design = designForBrief(briefs[0]);
     design.wickId = "eco";
 
-    const warning = validateDesign(design).find(
-      (issue) => issue.field === "wick" && issue.severity === "warning",
+    const error = validateDesign(design).find(
+      (issue) => issue.field === "wick" && issue.severity === "error",
     );
-    expect(warning).toBeDefined();
+    expect(error).toBeDefined();
+  });
+
+  it("recommends wicks that fit the vessel diameter", () => {
+    const recommended = recommendedWickTypes(70).map((wick) => wick.id);
+
+    expect(recommended).toContain("algodon");
+    expect(recommended).toContain("madera");
+    expect(recommended).toContain("doble");
+    expect(recommended).not.toContain("eco");
   });
 });
 
@@ -333,6 +342,8 @@ describe("supply list", () => {
     expect(ids).toContain("color-crema");
     expect(ids).toContain("recipiente-ambar");
     expect(ids).toContain("mecha-algodon");
+    expect(ids).toContain("mecha-porta-pabilo");
+    expect(ids).toContain("herramienta-sostenedor");
     expect(ids).toContain("etiqueta-clasica");
     expect(ids).toContain("herramienta-termometro");
 
@@ -360,10 +371,13 @@ describe("supply list", () => {
   it("asks for two units of double wick", () => {
     const design = designForBrief(briefs[0]);
     design.wickId = "doble";
-    const line = buildRecipe(design).find(
-      (item) => item.supplyId === "mecha-doble",
+    const recipe = buildRecipe(design);
+    const line = recipe.find((item) => item.supplyId === "mecha-doble");
+    const holder = recipe.find(
+      (item) => item.supplyId === "mecha-porta-pabilo",
     );
 
     expect(line?.cantidad).toBe(2);
+    expect(holder?.cantidad).toBe(2);
   });
 });

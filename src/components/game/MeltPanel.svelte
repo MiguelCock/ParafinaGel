@@ -23,8 +23,9 @@
   <p class="game-eyebrow">Estación de cera</p>
   <h3 class="game-title">Calienta con calma</h3>
   <p class="game-text">
-    Mantén la palanca de la olla para calentar y arrastra la cuchara en círculos
-    para remover. La temperatura se registra al entrar en el rango.
+    La mecha ya está preparada en el envase. Mantén la palanca de la olla para
+    calentar y arrastra la cuchara en círculos para remover. La temperatura se
+    registra al entrar en el rango.
   </p>
 
   <div class="game-gauge" aria-hidden="true">

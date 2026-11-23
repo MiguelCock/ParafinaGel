@@ -182,9 +182,9 @@
           <ol>
             <li>Escucha el brief y crea la nota.</li>
             <li>Diseña la vela: capas, figura o gel.</li>
-            <li>Calienta, vierte y coloca la mecha.</li>
-            <li>Espera el curado y cuida el acabado.</li>
-            <li>Recibe la receta y pide los materiales.</li>
+            <li>Prepara el envase, el porta pabilo y la mecha.</li>
+            <li>Calienta, vierte y espera el curado.</li>
+            <li>Cuida el acabado y recibe tu receta.</li>
           </ol>
           <p class="game-text">
             Los pedidos son de ejemplo. Temperaturas, tiempos y materiales se
@@ -224,19 +224,20 @@
           gel, aroma, mecha y etiqueta.
         </li>
         <li>
+          <strong>Preparación:</strong> coloca el porta pabilo, engancha la mecha
+          y usa el sostenedor de madera para centrarla.
+        </li>
+        <li>
           <strong>Cera:</strong> mantén la palanca para calentar y gira la cuchara
           dentro de la olla.
         </li>
         <li>
-          <strong>Vertido:</strong> arrastra la jarra sobre la boca del frasco y suelta
-          para cerrar la capa.
+          <strong>Vertido:</strong> la mecha ya está lista; arrastra la jarra sobre
+          la boca del frasco y suelta para cerrar la capa.
         </li>
         <li>
-          <strong>Mecha:</strong> arrastra la mecha al centro con el puntero o las
-          flechas.
-        </li>
-        <li>
-          <strong>Curado:</strong> toca el ventilador y, en gel, las burbujas.
+          <strong>Curado:</strong> retira el sostenedor, toca el ventilador y, en
+          gel, las burbujas.
         </li>
         <li>
           <strong>Acabado:</strong> arrastra la etiqueta y su tirador, corta la mecha

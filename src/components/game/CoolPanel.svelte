@@ -18,7 +18,7 @@
   <p class="game-text">
     {gel
       ? "El gel necesita cuajar despacio. Toca el ventilador para abanicar y las burbujas dentro de la vela para quitarlas."
-      : "La cera necesita enfriarse antes del acabado. Toca el ventilador del taller para acelerar el proceso."}
+      : "La cera necesita enfriarse antes del acabado. Toca el ventilador del taller para acelerar el proceso y retira el sostenedor cuando la vela esté firme."}
   </p>
 
   <div class="game-meter" aria-hidden="true">

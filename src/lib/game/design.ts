@@ -314,7 +314,7 @@ export function validateDesign(design: CandleDesign): DesignIssue[] {
       issues.push({
         field: "wick",
         message: `La mecha ${wick.nombre} recomienda ${wick.diameterMin}–${wick.diameterMax} mm y el recipiente mide ${vessel.diameterMm} mm.`,
-        severity: "warning",
+        severity: "error",
       });
     }
   }

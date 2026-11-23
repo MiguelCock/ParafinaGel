@@ -3,6 +3,7 @@ import {
   inclusionsById,
   labelsById,
   moldsById,
+  vesselMaterialStroke,
   vesselsById,
   waxColorsById,
   waxesById,
@@ -115,8 +116,15 @@ export class CandleRig extends Container {
 
     const waxTop = figure ? -112 : this.waxTop(game, fills);
     const lift = figure ? 1 : -1;
-    this.drawWick(showWick, waxTop, lift, options.trimMm, design.wickId);
-    this.drawFlame(showWick && Boolean(options.showFlame), waxTop, lift, time);
+    const wickX = figure ? 0 : (game.craft.wick.x / 30) * 55;
+    this.drawWick(showWick, waxTop, lift, options.trimMm, design.wickId, wickX);
+    this.drawFlame(
+      showWick && Boolean(options.showFlame),
+      waxTop,
+      lift,
+      time,
+      wickX,
+    );
     this.drawLabel(game, showLabel, figure);
     this.drawBubbles(game, options, figure);
   }
@@ -130,6 +138,9 @@ export class CandleRig extends Container {
     const vessel = design.vesselId ? vesselsById[design.vesselId] : null;
     const wax = design.waxId ? waxesById[design.waxId] : null;
     const bowl = { color: vessel ? hexColor(vessel.glass) : stageColors.glass };
+    const stroke = vessel
+      ? hexColor(vesselMaterialStroke[vessel.material])
+      : hexColor("#6f5541");
     const gel = design.mode === "gel";
 
     this.jar
@@ -137,25 +148,25 @@ export class CandleRig extends Container {
       .fill({ color: stageColors.shadow, alpha: 0.13 })
       .roundRect(-JAR_W / 2, -JAR_H / 2, JAR_W, JAR_H, 34)
       .fill({ color: bowl.color, alpha: 0.28 })
-      .stroke({ width: 5, color: hexColor("#6f5541") })
+      .stroke({ width: 5, color: stroke })
       .roundRect(-JAR_W / 2 - 6, -JAR_H / 2 - 16, JAR_W + 12, 20, 9)
       .fill({ color: bowl.color, alpha: 0.7 })
-      .stroke({ width: 4, color: hexColor("#6f5541") });
+      .stroke({ width: 4, color: stroke });
 
     this.overlay
       .roundRect(INNER_X + 8, INNER_Y + 8, 12, INNER_H - 16, 6)
       .fill({ color: stageColors.white, alpha: 0.28 })
       .roundRect(INNER_X, INNER_Y, INNER_W, INNER_H, 26)
-      .stroke({ width: 3, color: hexColor("#6f5541") });
+      .stroke({ width: 3, color: stroke });
 
     if (design.lidOn) {
       this.overlay
         .roundRect(-JAR_W / 2 - 8, -JAR_H / 2 - 30, JAR_W + 16, 22, 10)
         .fill(stageColors.paper)
-        .stroke({ width: 3, color: hexColor("#6f5541") })
+        .stroke({ width: 3, color: stroke })
         .roundRect(-20, -JAR_H / 2 - 42, 40, 15, 7)
         .fill(stageColors.creamDeep)
-        .stroke({ width: 2, color: hexColor("#6f5541") });
+        .stroke({ width: 2, color: stroke });
     }
 
     this.layerGraphics.clear();
@@ -422,6 +433,7 @@ export class CandleRig extends Container {
     lift: number,
     trimMm: number | undefined,
     wickId: string | null,
+    offsetX: number,
   ): void {
     if (!visible) return;
     const length =
@@ -431,21 +443,21 @@ export class CandleRig extends Container {
 
     if (wickId === "doble") {
       this.wick
-        .moveTo(-7, y)
-        .lineTo(-7, y - length)
+        .moveTo(offsetX - 7, y)
+        .lineTo(offsetX - 7, y - length)
         .stroke({ width: 3, color: stageColors.ink })
-        .moveTo(7, y)
-        .lineTo(7, y - length)
+        .moveTo(offsetX + 7, y)
+        .lineTo(offsetX + 7, y - length)
         .stroke({ width: 3, color: stageColors.ink });
     } else {
       this.wick
-        .moveTo(0, y)
-        .lineTo(0, y - length)
+        .moveTo(offsetX, y)
+        .lineTo(offsetX, y - length)
         .stroke({ width, color: stageColors.ink, cap: "round" });
     }
     this.wick
-      .moveTo(0, y - length)
-      .lineTo(0, y - length - 5)
+      .moveTo(offsetX, y - length)
+      .lineTo(offsetX, y - length - 5)
       .stroke({ width: 3, color: stageColors.accent });
   }
 
@@ -454,12 +466,13 @@ export class CandleRig extends Container {
     waxTop: number,
     lift: number,
     time: number,
+    offsetX: number,
   ): void {
     if (!visible) return;
     const length = 24;
     const y = waxTop + (lift === -1 ? 2 : -2) - length - 7;
     const pulse = motion.reduced ? 1 : 1 + Math.sin(time * 4.2) * 0.04;
-    this.flame.position.set(0, y);
+    this.flame.position.set(offsetX, y);
     this.flame.scale.set(pulse, 1 / pulse);
     this.flame
       .moveTo(0, 0)

@@ -110,7 +110,7 @@ export class PourScene implements StageScene {
 
     this.candle.update(game, {
       fills: pourFills(game.craft),
-      showWick: false,
+      showWick: game.craft.wick.placed,
       showLabel: false,
       liquid: this.liquid,
       showBubbles: false,

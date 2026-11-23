@@ -36,21 +36,23 @@ El objetivo no es vender una vela terminada. El juego termina en una receta acci
 
 ```mermaid
 flowchart LR
-  A[Brief] --> B[Diseño] --> C[Cera] --> D[Vertido] --> E[Mecha] --> F[Curado] --> G[Acabado] --> H[Receta]
+  A[Brief] --> B[Diseño] --> C[Preparación] --> D[Cera] --> E[Vertido] --> F[Curado] --> G[Acabado] --> H[Receta]
 ```
 
-| Estación      | Qué haces                                                                |
-| ------------- | ------------------------------------------------------------------------ |
-| **Mostrador** | Escuchas al cliente y creas la nota del pedido.                          |
-| **Diseño**    | Eliges cera, tamaño, recipiente o molde, capas, aroma, mecha y etiqueta. |
-| **Cera**      | Mantienes la palanca para calentar y arrastras la cuchara en círculos.   |
-| **Vertido**   | Arrastras la jarra sobre la boca del frasco y cierras cada capa.         |
-| **Mecha**     | Colocas la mecha en el centro de la vista superior.                      |
-| **Curado**    | Abanicas con el ventilador; en gel, revientas burbujas.                  |
-| **Acabado**   | Etiqueta, corte de mecha, tapa y empaque.                                |
-| **Receta**    | Recibes puntos, estrellas y la lista de insumos para pedir.              |
+| Estación        | Qué haces                                                                |
+| --------------- | ------------------------------------------------------------------------ |
+| **Mostrador**   | Escuchas al cliente y creas la nota del pedido.                          |
+| **Diseño**      | Eliges cera, tamaño, recipiente o molde, capas, aroma, mecha y etiqueta. |
+| **Preparación** | Colocas el porta pabilo, la mecha y el sostenedor en el envase.          |
+| **Cera**        | Mantienes la palanca para calentar y arrastras la cuchara en círculos.   |
+| **Vertido**     | La mecha ya está lista; arrastras la jarra y cierras cada capa.          |
+| **Curado**      | Retiras el sostenedor y abanicas; en gel, revientas burbujas.            |
+| **Acabado**     | Etiqueta, corte de mecha, tapa y empaque.                                |
+| **Receta**      | Recibes puntos, estrellas y la lista de insumos para pedir.              |
 
 - **Cuatro tipos de vela**: clásica, capas, figura con molde y gel con montajes.
+- **Envases**: vidrio, lata y cerámica, con pabilos recomendados según el diámetro.
+- **Preparación de mecha**: porta pabilo y sostenedor de madera antes del vertido.
 - **Simulación de líquido viscoso**: superficie, volumen, película entre capas, salpicaduras, mezcla y burbujas. Afecta el puntaje.
 - **Retos manuales**: sin sliders ni botones para las estaciones; el teclado es la alternativa accesible.
 - **Modo libre**: diseño sin brief ni reloj, con receta o taller.
@@ -140,10 +142,12 @@ src/
   lib/game/render/  escenas PixiJS, candle rig, paleta y motion
   styles/           tokens y estilos globales
 scripts/qa/         harness de QA
-docs/               capturas usadas en este README
+docs/               capturas y notas del proceso de fabricación
 ```
 
 Rutas: `/`, `/productos`, `/productos/[slug]`, `/nosotros`, `/juego`, `/contacto` y 404. `/about` redirige a `/nosotros`.
+
+Notas del proceso real y datos pendientes: [`docs/proceso-de-fabricacion.md`](docs/proceso-de-fabricacion.md).
 
 ## Estado
 
@@ -176,6 +180,7 @@ Ver [`LICENSE`](LICENSE).
 - [ ] Migrar el catálogo de ejemplo a insumos y materias primas.
 - [ ] Cargar precios reales y quitar `borrador: true`.
 - [ ] Validar briefs, temperaturas, tiempos, mechas y cantidades con el negocio.
+- [ ] Validar porcentajes de ácido esteárico y aroma, y la tabla de pabilos por diámetro.
 - [ ] Revisar el copy completo del sitio.
 - [ ] Reemplazar retratos y escenas placeholder por arte final si se desea.
 - [ ] Agregar fotos reales con `alt` descriptivos.

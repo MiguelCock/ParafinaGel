@@ -1,5 +1,5 @@
 import { Container, Graphics, Text } from "pixi.js";
-import { vesselsById } from "../../data";
+import { vesselMaterialStroke, vesselsById } from "../../data";
 import type { GameState } from "../../game-state.svelte";
 import { clamp, hexColor, stageColors } from "../palette";
 import type { StageScene } from "../scene";
@@ -60,6 +60,9 @@ export class WickScene implements StageScene {
       ? vesselsById[game.design.vesselId]
       : null;
     const glass = vessel ? vessel.glass : "#f4ead9";
+    const stroke = vessel
+      ? hexColor(vesselMaterialStroke[vessel.material])
+      : hexColor("#6f5541");
 
     this.name.text = vessel
       ? vessel.nombre
@@ -76,11 +79,17 @@ export class WickScene implements StageScene {
       .fill({ color: stageColors.shadow, alpha: 0.1 })
       .circle(CENTER_X, CENTER_Y, RADIUS)
       .fill({ color: hexColor(glass), alpha: 0.42 })
-      .stroke({ width: 4, color: hexColor("#6f5541") })
+      .stroke({ width: 4, color: stroke })
       .circle(CENTER_X, CENTER_Y, RADIUS - 12)
       .stroke({ width: 1.5, color: stageColors.white, alpha: 0.5 });
 
     this.guide.clear();
+    if (game.craft.wick.placed) {
+      this.guide
+        .roundRect(CENTER_X - 150, CENTER_Y - RADIUS - 14, 300, 14, 7)
+        .fill({ color: stageColors.woodLight, alpha: 0.95 })
+        .stroke({ width: 2, color: stageColors.woodDark });
+    }
     this.guide
       .circle(CENTER_X, CENTER_Y, 22)
       .stroke({ width: 2.5, color: stageColors.accent, alpha: 0.6 })
@@ -95,7 +104,10 @@ export class WickScene implements StageScene {
     const y = CENTER_Y + (game.craft.wick.y / 30) * (RADIUS - 30);
     this.wick.clear();
     this.wick
-      .circle(x, y, game.craft.wick.placed ? 16 : 14)
+      .circle(x, y, 18)
+      .fill({ color: stageColors.steel, alpha: 0.95 })
+      .stroke({ width: 2, color: stageColors.steelDark })
+      .circle(x, y, game.craft.wick.placed ? 12 : 14)
       .fill(game.craft.wick.placed ? stageColors.sage : hexColor("#6f5541"))
       .stroke({
         width: 3,

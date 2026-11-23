@@ -3,6 +3,7 @@
     inclusionsById,
     labelsById,
     moldsById,
+    vesselMaterialStroke,
     vesselsById,
     waxColorsById,
     waxesById,
@@ -39,6 +40,9 @@
   );
   const vessel = $derived(
     design.vesselId ? (vesselsById[design.vesselId] ?? null) : null,
+  );
+  const vesselStroke = $derived(
+    vessel ? vesselMaterialStroke[vessel.material] : "#6f5541",
   );
   const label = $derived(
     design.labelId ? (labelsById[design.labelId] ?? null) : null,
@@ -171,7 +175,7 @@
       rx="18"
       fill={vessel?.glass ?? "#f4ead9"}
       fill-opacity={vessel?.transparent ? 0.2 : 0.5}
-      stroke="#6f5541"
+      stroke={vesselStroke}
       stroke-width="3.2"
     />
 
@@ -276,7 +280,7 @@
       width={jarWidth}
       height={jarHeight}
       rx="18"
-      stroke="#6f5541"
+      stroke={vesselStroke}
       stroke-width="3.2"
     />
     <rect

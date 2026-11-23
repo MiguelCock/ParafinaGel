@@ -73,6 +73,9 @@ export function buildRecipe(design: CandleDesign): RecipeLine[] {
     lines.push(
       recipeLine(`mecha-${design.wickId}`, design.wickId === "doble" ? 2 : 1),
     );
+    lines.push(
+      recipeLine("mecha-porta-pabilo", design.wickId === "doble" ? 2 : 1),
+    );
   }
 
   for (const inclusionId of design.inclusions) {
@@ -93,6 +96,7 @@ export function buildRecipe(design: CandleDesign): RecipeLine[] {
 
   lines.push(recipeLine("herramienta-termometro", 1));
   lines.push(recipeLine("herramienta-jarra", 1));
+  lines.push(recipeLine("herramienta-sostenedor", 1));
 
   return lines
     .filter((line): line is RecipeLine => line !== null)

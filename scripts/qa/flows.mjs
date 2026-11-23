@@ -348,6 +348,10 @@ async function assertRecipe(page, label) {
 }
 
 async function playKeyboardStations(page, typeIndex, hooks = {}) {
+  await waitForStage(page, "wick");
+  await placeWickWithKeyboard(page);
+  await clickEnabled(page, "wick-continue");
+
   await waitForStage(page, "melt");
   await heatWithKeyboard(page);
   await hooks.onMelt?.();
@@ -359,10 +363,6 @@ async function playKeyboardStations(page, typeIndex, hooks = {}) {
     timeout: 15000,
   });
   await clickEnabled(page, "pour-continue");
-
-  await waitForStage(page, "wick");
-  await placeWickWithKeyboard(page);
-  await clickEnabled(page, "wick-continue");
 
   await waitForStage(page, "cool");
   await coolWithKeyboard(page, typeIndex);
@@ -410,6 +410,14 @@ export async function flowPointerClassic({ browser, baseUrl, outDir, report }) {
     await auditState(page, report, "design");
     await click(page, "design-continue");
 
+    await waitForStage(page, "wick");
+    await capture(page, outDir, "1280-light-clasico-wick", report);
+    await placeWickWithPointer(page);
+    const wickQuality = await text(page, "wick-quality");
+    assertIncludes(wickQuality, "Colocada", "La mecha no quedó colocada");
+    await capture(page, outDir, "1280-light-clasico-wick-placed", report);
+    await clickEnabled(page, "wick-continue");
+
     await waitForStage(page, "melt");
     const fps = await sampleFps(page, 2200);
     recordFps(report, "melt 1280 claro", fps, {
@@ -427,14 +435,6 @@ export async function flowPointerClassic({ browser, baseUrl, outDir, report }) {
     await pourWithPointer(page);
     await capture(page, outDir, "1280-light-clasico-pour-filled", report);
     await clickEnabled(page, "pour-continue");
-
-    await waitForStage(page, "wick");
-    await capture(page, outDir, "1280-light-clasico-wick", report);
-    await placeWickWithPointer(page);
-    const wickQuality = await text(page, "wick-quality");
-    assertIncludes(wickQuality, "Colocada", "La mecha no quedó colocada");
-    await capture(page, outDir, "1280-light-clasico-wick-placed", report);
-    await clickEnabled(page, "wick-continue");
 
     await waitForStage(page, "cool");
     await capture(page, outDir, "1280-light-clasico-cool", report);
@@ -593,6 +593,10 @@ export async function flowSandbox({ browser, baseUrl, outDir, report }) {
     await capture(page, outDir, "1280-light-sandbox-figure-design", report);
 
     await click(page, "sandbox-craft");
+    await waitForStage(page, "wick");
+    await placeWickWithKeyboard(page);
+    await capture(page, outDir, "1280-light-sandbox-wick", report);
+    await clickEnabled(page, "wick-continue");
     await waitForStage(page, "melt");
     await capture(page, outDir, "1280-light-sandbox-melt", report);
   } finally {
@@ -665,13 +669,16 @@ export async function flowMobile({ browser, baseUrl, outDir, report }) {
     await auditState(page, report, "design");
     await click(page, "design-continue");
 
-    await waitForStage(page, "melt");
-    const fps = await sampleFps(page, 2200);
-    recordFps(report, "melt 390 claro", fps, { width: 390, theme: "light" });
-    await capture(page, outDir, "390-light-clasico-melt", report);
-    await auditState(page, report, "melt");
-
     await playKeyboardStations(page, 0, {
+      onMelt: async () => {
+        const fps = await sampleFps(page, 2200);
+        recordFps(report, "melt 390 claro", fps, {
+          width: 390,
+          theme: "light",
+        });
+        await capture(page, outDir, "390-light-clasico-melt", report);
+        await auditState(page, report, "melt");
+      },
       onScore: async () => {
         await capture(page, outDir, "390-light-clasico-score", report);
         await auditState(page, report, "score");

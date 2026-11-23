@@ -57,10 +57,11 @@ Sitio de **ParafinaGel**, negocio familiar de velas que vende **insumos y materi
 - `src/config/site.ts`: WhatsApp, correo, Instagram y ciudad centralizados (placeholders `TODO`).
 - `scripts/qa-game.mjs` y `scripts/qa/`: harness de QA con Puppeteer Core y axe.
 - `qa/`: reportes, JSON y capturas del QA; ignorada por git.
+- `docs/proceso-de-fabricacion.md`: notas del proceso real, correspondencia con estaciones y datos pendientes.
 
 ## Juego WebGL
 
-- Flujo guiado: `brief → design → melt → pour → wick → cool → finish → score`, 4 pedidos y resumen del día.
+- Flujo guiado: `brief → design → wick (preparación) → melt → pour → cool → finish → score`, 4 pedidos y resumen del día.
 - **WebGL con PixiJS 8** para el escenario y los retos. No uses Three.js/Threlte: la decisión es 2D WebGL.
 - `StageCanvas` importa Pixi dinámicamente solo en cliente; el resto del sitio no carga el motor.
 - **Escenario virtual 1000×640** escalado a la caja disponible, con coordenadas compartidas para evitar desalineaciones.
@@ -68,10 +69,10 @@ Sitio de **ParafinaGel**, negocio familiar de velas que vende **insumos y materi
 - **Cuatro tipos**: clásica, capas (2–4), figura (molde con partes) y gel (transparente con montajes).
 - **Diseño**: cera, tamaño, recipiente o molde, capas/colores, aroma, mecha y etiqueta. Los materiales se eligen con botones; las validaciones aparecen en el panel.
 - **Retos manuales**:
+  - Preparación: colocar el porta pabilo, ajustar la mecha al centro y usar el sostenedor antes de verter.
   - Cera: mantener la palanca para calentar y arrastrar la cuchara en círculos.
   - Vertido: arrastrar la jarra sobre la boca del frasco y soltar para cerrar la capa.
-  - Mecha: arrastrar al centro de la vista superior.
-  - Curado: tocar el ventilador; en gel, tocar las burbujas.
+  - Curado: retirar el sostenedor, tocar el ventilador; en gel, tocar las burbujas.
   - Acabado: arrastrar la etiqueta y su tirador, cortar la mecha sobre la vela, tocar tapa y empaque.
 - **Sin sliders ni botones para los retos**. El teclado es la alternativa accesible: flechas, Espacio, Enter, Mayús + flechas, 1–4 en acabado.
 - **Simulación de líquido viscoso**: superficie ondulada, volumen, película entre capas, salpicaduras, mezcla de color por temperatura y burbujas de gel. Afecta el puntaje (`mix` y `spill`).
@@ -129,6 +130,8 @@ Sitio de **ParafinaGel**, negocio familiar de velas que vende **insumos y materi
 - Catálogo real de insumos y precios: hoy el catálogo sigue siendo de velas de ejemplo; migrar a ceras, mechas, aromas, colorantes, moldes, recipientes y kits.
 - Briefs, cantidades de receta y disponibilidad: validar con el negocio.
 - Juego: temperaturas, tiempos, rangos de mecha y medidas de corte son placeholders; no mostrarlos como datos reales.
+- Proceso: porcentaje de ácido esteárico, base del 8–10 % de aroma, tabla de pabilos por diámetro y medidas de lata/cerámica están pendientes de validar.
+- Envases: vidrio, lata y cerámica tienen capacidades/diámetros de ejemplo.
 - Fotos: los placeholders SVG se reemplazan por imágenes en `src/assets/productos/...`.
 - Arte: retratos en `portrait.ts` y escenas Pixi se pueden reemplazar por arte final manteniendo anclas y `data-testid`.
 

@@ -16,9 +16,9 @@
 
   const hotspots: { station: StationId; left: string; top: string }[] = [
     { station: "design", left: "20%", top: "30%" },
+    { station: "wick", left: "70%", top: "38%" },
     { station: "melt", left: "14%", top: "48%" },
     { station: "pour", left: "50%", top: "58%" },
-    { station: "wick", left: "70%", top: "38%" },
     { station: "cool", left: "85%", top: "48%" },
     { station: "finish", left: "50%", top: "25%" },
     { station: "counter", left: "50%", top: "82%" },
@@ -29,8 +29,8 @@
     design: "Elige cera, forma, colores, aroma, mecha y etiqueta.",
     melt: "Calienta despacio y remueve tres veces.",
     pour: "Llena cada capa o parte hasta la zona verde.",
-    wick: "Mueve la mecha al centro de la pieza.",
-    cool: "Espera el curado; en gel, quita las burbujas.",
+    wick: "Prepara el envase, el porta pabilo y la mecha.",
+    cool: "Retira el sostenedor y espera el curado; en gel, quita las burbujas.",
     finish: "Alinea la etiqueta, corta la mecha y empaca.",
   };
 
@@ -45,8 +45,8 @@
     if (scene === "pour") {
       if (game.craft.waitingFilm)
         return "Deja que la capa cuaje antes de seguir";
-      if (game.pourComplete) return "Vertido completo · ahora coloca la mecha";
-      return "Arrastra la jarra sobre la boca del frasco y suelta al terminar";
+      if (game.pourComplete) return "Vertido completo · deja curar la vela";
+      return "La mecha ya está lista; arrastra la jarra sobre la boca y suelta al terminar";
     }
     if (scene === "cool" && game.craft.cooled) {
       return "La vela está lista · pasa al acabado";

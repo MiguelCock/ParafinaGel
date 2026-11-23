@@ -25,19 +25,19 @@
       return "Resultado de la vela. Revisa la receta y pide los insumos en el panel.";
     }
     if (game.phase === "wick") {
-      return "Vista superior de la vela. Arrastra la mecha al centro con el puntero o las flechas y pulsa Enter para colocarla.";
+      return "Preparación. Coloca el porta pabilo y la mecha en el centro con el puntero o las flechas, usa el sostenedor y pulsa Enter para fijar.";
     }
     if (game.phase === "finish") {
       return "Acabado. Arrastra la etiqueta y su tirador, corta la mecha, y toca la tapa y el empaque.";
     }
     if (game.phase === "pour") {
-      return "Vertido. Arrastra la jarra sobre la boca del frasco y suelta para terminar la capa.";
+      return "Vertido. La mecha ya está preparada. Arrastra la jarra sobre la boca del frasco y suelta para terminar la capa.";
     }
     if (game.phase === "melt") {
       return "Estación de cera. Mantén la palanca para calentar y arrastra la cuchara en círculos para remover.";
     }
     if (game.phase === "cool") {
-      return "Curado. Toca el ventilador para abanicar; en gel, toca las burbujas o pulsa B.";
+      return "Curado. Retira el sostenedor, toca el ventilador para abanicar; en gel, toca las burbujas o pulsa B.";
     }
     return `Vista previa del diseño. ${stationLabels[scene]}.`;
   });

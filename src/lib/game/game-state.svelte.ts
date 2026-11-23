@@ -128,7 +128,11 @@ export class GameState {
   }
 
   get canGoWick(): boolean {
-    return this.pourComplete;
+    return this.canDesign;
+  }
+
+  get canGoCool(): boolean {
+    return this.pourComplete && this.craft.wick.placed;
   }
 
   get canFinish(): boolean {
@@ -294,9 +298,16 @@ export class GameState {
     this.design.labelId = id;
   }
 
-  goMelt(): void {
-    if (!this.canDesign) return;
+  goWick(): void {
+    if (!this.canGoWick) return;
     this.craft = createCraft(this.design);
+    this.score = null;
+    this.phase = "wick";
+    this.view = "wick";
+  }
+
+  goMelt(): void {
+    if (!this.craft.wick.placed) return;
     this.score = null;
     this.phase = "melt";
     this.view = "melt";
@@ -319,7 +330,7 @@ export class GameState {
   }
 
   goPour(): void {
-    if (!this.canContinueMelt) return;
+    if (!this.canContinueMelt || !this.craft.wick.placed) return;
     this.craft.heating = false;
     this.craft.pourOffset = 0.55;
     this.phase = "pour";
@@ -366,12 +377,6 @@ export class GameState {
     finishPourUnit(this.craft, this.design.mode === "capas");
   }
 
-  goWick(): void {
-    if (!this.canGoWick) return;
-    this.phase = "wick";
-    this.view = "wick";
-  }
-
   moveWick(dx: number, dy: number): void {
     this.craft.wick.x = clamp(this.craft.wick.x + dx, -30, 30);
     this.craft.wick.y = clamp(this.craft.wick.y + dy, -30, 30);
@@ -394,7 +399,7 @@ export class GameState {
   }
 
   goCool(): void {
-    if (!this.craft.wick.placed) return;
+    if (!this.canGoCool) return;
     const coolTime = this.wax?.coolTime ?? 8;
     this.craft.coolingRemaining = coolTime;
     this.craft.cooled = false;

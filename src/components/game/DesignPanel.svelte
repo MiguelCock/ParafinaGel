@@ -81,7 +81,7 @@
       <button
         class="game-action game-action--secondary"
         type="button"
-        onclick={() => game.goMelt()}
+        onclick={() => game.goWick()}
         disabled={!game.canDesign}
         data-testid="sandbox-craft"
       >
@@ -99,14 +99,15 @@
       <button
         class="game-action game-primary"
         type="button"
-        onclick={() => game.goMelt()}
+        onclick={() => game.goWick()}
         disabled={!game.canDesign}
         data-testid="design-continue"
       >
-        Ir al taller
+        Preparar la mecha
       </button>
       <p class="design-hint">
-        El taller empieza por derretir la cera. Podrás volver a mirar la nota.
+        Primero preparamos el envase, el porta pabilo y la mecha. Podrás volver
+        a mirar la nota.
       </p>
     {/if}
   </div>
