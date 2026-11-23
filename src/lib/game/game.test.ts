@@ -7,7 +7,7 @@ import {
   trimAccuracy,
   wickAccuracy,
 } from "./craft";
-import { briefs, recommendedWickTypes, waxesById } from "./data";
+import { briefs, recommendedWickTypes, stationOrder, waxesById } from "./data";
 import {
   createDesign,
   resizeLayer,
@@ -64,6 +64,18 @@ function perfectCraft(design: CandleDesign): Craft {
 }
 
 describe("briefs", () => {
+  it("prepares the wick before melting and pouring", () => {
+    expect(stationOrder.indexOf("wick")).toBeGreaterThan(
+      stationOrder.indexOf("design"),
+    );
+    expect(stationOrder.indexOf("wick")).toBeLessThan(
+      stationOrder.indexOf("melt"),
+    );
+    expect(stationOrder.indexOf("melt")).toBeLessThan(
+      stationOrder.indexOf("pour"),
+    );
+  });
+
   it("ships the four order types", () => {
     expect(briefs.map((brief) => brief.type)).toEqual([
       "clasico",
