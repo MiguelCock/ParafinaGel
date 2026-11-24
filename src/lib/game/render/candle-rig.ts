@@ -439,22 +439,12 @@ export class CandleRig extends Container {
     const length =
       trimMm === undefined ? 32 : Math.max(10, Math.min(38, trimMm * 2.4));
     const y = waxTop + (lift === -1 ? 2 : -2);
-    const width = wickId === "madera" ? 5 : 3.4;
+    const width = wickId ? 3.4 : 3;
 
-    if (wickId === "doble") {
-      this.wick
-        .moveTo(offsetX - 7, y)
-        .lineTo(offsetX - 7, y - length)
-        .stroke({ width: 3, color: stageColors.ink })
-        .moveTo(offsetX + 7, y)
-        .lineTo(offsetX + 7, y - length)
-        .stroke({ width: 3, color: stageColors.ink });
-    } else {
-      this.wick
-        .moveTo(offsetX, y)
-        .lineTo(offsetX, y - length)
-        .stroke({ width, color: stageColors.ink, cap: "round" });
-    }
+    this.wick
+      .moveTo(offsetX, y)
+      .lineTo(offsetX, y - length)
+      .stroke({ width, color: stageColors.ink, cap: "round" });
     this.wick
       .moveTo(offsetX, y - length)
       .lineTo(offsetX, y - length - 5)

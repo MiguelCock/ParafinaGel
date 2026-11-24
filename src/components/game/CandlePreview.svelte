@@ -49,8 +49,6 @@
   );
   const wax = $derived(design.waxId ? (waxesById[design.waxId] ?? null) : null);
   const gel = $derived(design.mode === "gel");
-  const doble = $derived(design.wickId === "doble");
-  const madera = $derived(design.wickId === "madera");
 
   const jarTop = 86;
   const jarBottom = 222;
@@ -329,45 +327,18 @@
     {/if}
 
     {#if showWick}
-      {#if doble}
-        <path
-          d={`M94 ${waxTop + 2}V${waxTop - wickLength}`}
-          stroke="#3b2d25"
-          stroke-width="2.4"
-          stroke-linecap="round"
-        />
-        <path
-          d={`M106 ${waxTop + 2}V${waxTop - wickLength}`}
-          stroke="#3b2d25"
-          stroke-width="2.4"
-          stroke-linecap="round"
-        />
-        <path
-          d={`M94 ${waxTop - wickLength}V${waxTop - wickLength - 4}`}
-          stroke="#b4552f"
-          stroke-width="2.4"
-          stroke-linecap="round"
-        />
-        <path
-          d={`M106 ${waxTop - wickLength}V${waxTop - wickLength - 4}`}
-          stroke="#b4552f"
-          stroke-width="2.4"
-          stroke-linecap="round"
-        />
-      {:else}
-        <path
-          d={`M100 ${waxTop + 2}V${waxTop - wickLength}`}
-          stroke="#3b2d25"
-          stroke-width={madera ? 3.4 : 2.6}
-          stroke-linecap="round"
-        />
-        <path
-          d={`M100 ${waxTop - wickLength}V${waxTop - wickLength - 5}`}
-          stroke="#b4552f"
-          stroke-width={madera ? 3 : 2.4}
-          stroke-linecap="round"
-        />
-      {/if}
+      <path
+        d={`M100 ${waxTop + 2}V${waxTop - wickLength}`}
+        stroke="#3b2d25"
+        stroke-width="2.6"
+        stroke-linecap="round"
+      />
+      <path
+        d={`M100 ${waxTop - wickLength}V${waxTop - wickLength - 5}`}
+        stroke="#b4552f"
+        stroke-width="2.4"
+        stroke-linecap="round"
+      />
 
       {#if showFlame}
         <g transform={`translate(100 ${waxTop - wickLength - 8})`}>

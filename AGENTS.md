@@ -7,7 +7,7 @@ Sitio de **ParafinaGel**, negocio familiar de velas que vende **insumos y materi
 - **Astro 7 + Svelte 5**, salida 100 % estática.
 - El escenario interactivo del juego usa **WebGL con PixiJS 8**; la UI de paneles sigue en Svelte/DOM.
 - La versión 2.2 incluye pedido progresivo, cuatro tipos de vela, diseñador, retos manuales, simulación de líquido viscoso, sistema de motion, modo libre y fallback sin WebGL.
-- El catálogo es de ejemplo: `src/content/productos/*.md` con `borrador: true`. En producción se excluye salvo `PUBLIC_SHOW_DRAFTS=true`.
+- El catálogo tiene 16 productos oficiales en `src/content/productos/*.md`, con precios de venta en COP y venta por kg, pote o unidad. Faltan fotos y los insumos que aún no están en la lista. `borrador: true` sigue disponible para placeholders futuros.
 - Los retratos se generan por capas en `src/lib/game/portrait.ts` (pelo trasero, cara y flequillo) para evitar desalineaciones.
 - Hay tests del motor (`npm test`), typecheck de Astro/Svelte y build.
 
@@ -34,12 +34,13 @@ Sitio de **ParafinaGel**, negocio familiar de velas que vende **insumos y materi
   - `WorkshopStage.svelte`: escenario ilustrado, hotspots y cabecera de estación.
   - `StageCanvas.svelte`: monta PixiJS en cliente, importa el renderer dinámicamente y muestra el fallback sin WebGL.
   - `CounterScene`, `CustomerPortrait`, `BriefTicket`, `BriefSummary`: mostrador y pedido progresivo.
-  - `DesignPanel`, `DesignBasics`, `DesignColors`, `ColorDots`: diseñador.
+  - `DesignPanel`, `DesignStructure`: diseñador y estructura de capas.
+  - `MaterialShelf`, `AccessibleMaterialPicker`: estantería física y selector accesible de materiales.
   - `MeltPanel`, `PourPanel`, `WickPanel`, `CoolPanel`, `FinishPanel`, `ScorePanel`, `ShoppingList`: paneles y receta.
   - `CandlePreview`/`MoldPreview`: vista SVG de respaldo sin WebGL.
 - `src/lib/game/`:
   - `types.ts`: diseño, brief, fabricación, scoring y receta.
-  - `data.ts`: clientes, briefs, ceras, colores, aromas, recipientes, moldes, mechas, etiquetas, montajes y catálogo placeholder de insumos.
+  - `data.ts`: clientes, briefs, ceras oficiales, colores, aromas, recipientes, moldes, pabilos, etiquetas, montajes y catálogo de insumos.
   - `design.ts`: `CandleDesign`, capas, validación y resumen.
   - `craft.ts`: unidades de vertido, precisión de mecha/etiqueta/corte y burbujas.
   - `liquid.ts`: simulación de superficie, salpicaduras, mezcla y burbujas.
@@ -67,7 +68,7 @@ Sitio de **ParafinaGel**, negocio familiar de velas que vende **insumos y materi
 - **Escenario virtual 1000×640** escalado a la caja disponible, con coordenadas compartidas para evitar desalineaciones.
 - **Pedido progresivo**: el cliente revela líneas y “Crear nota” fija el brief.
 - **Cuatro tipos**: clásica, capas (2–4), figura (molde con partes) y gel (transparente con montajes).
-- **Diseño**: cera, tamaño, recipiente o molde, capas/colores, aroma, mecha y etiqueta. Los materiales se eligen con botones; las validaciones aparecen en el panel.
+- **Diseño**: cera, tamaño, recipiente o molde, capas/colores, aroma, pabilo y etiqueta. Los materiales se eligen como objetos en la estantería física; el selector accesible es la alternativa de teclado/lector. Las validaciones aparecen en el panel.
 - **Retos manuales**:
   - Preparación: colocar el porta pabilo, ajustar la mecha al centro y usar el sostenedor antes de verter.
   - Cera: mantener la palanca para calentar y arrastrar la cuchara en círculos.
@@ -77,7 +78,7 @@ Sitio de **ParafinaGel**, negocio familiar de velas que vende **insumos y materi
 - **Sin sliders ni botones para los retos**. El teclado es la alternativa accesible: flechas, Espacio, Enter, Mayús + flechas, 1–4 en acabado.
 - **Simulación de líquido viscoso**: superficie ondulada, volumen, película entre capas, salpicaduras, mezcla de color por temperatura y burbujas de gel. Afecta el puntaje (`mix` y `spill`).
 - **Puntaje**: diseño 60 + taller 40 (temperatura, vertido, mezcla, derrame, mecha, etiqueta, corte y gel). Estrellas y puntos; sin precio ni propina.
-- **Cierre comercial**: receta con cantidades y CTA de WhatsApp. El catálogo público de insumos es placeholder.
+- **Cierre comercial**: receta con cantidades y CTA de WhatsApp. El catálogo público ya tiene precios oficiales de 16 insumos; faltan envases, aromas, colorantes, moldes y etiquetas.
 - **Modo libre**: sin brief ni reloj; se puede ver la receta o probar el taller.
 - **Modo experto**: oculta pistas numéricas del diseño y del acabado.
 - **Fallback**: si no hay WebGL, se muestra el diseño en SVG y se ofrece “Ver receta sin taller”.
@@ -127,11 +128,11 @@ Sitio de **ParafinaGel**, negocio familiar de velas que vende **insumos y materi
 
 - WhatsApp, correo, Instagram y ciudad: `src/config/site.ts`.
 - Dominio: `astro.config.mjs`.
-- Catálogo real de insumos y precios: hoy el catálogo sigue siendo de velas de ejemplo; migrar a ceras, mechas, aromas, colorantes, moldes, recipientes y kits.
+- Catálogo: 16 productos oficiales cargados desde la lista de precios. Faltan envases, aromas, colorantes, moldes, etiquetas, fotos y descripciones ampliadas.
 - Briefs, cantidades de receta y disponibilidad: validar con el negocio.
 - Juego: temperaturas, tiempos, rangos de mecha y medidas de corte son placeholders; no mostrarlos como datos reales.
 - Proceso: porcentaje de ácido esteárico, base del 8–10 % de aroma, tabla de pabilos por diámetro y medidas de lata/cerámica están pendientes de validar.
-- Envases: vidrio, lata y cerámica tienen capacidades/diámetros de ejemplo.
+- Ceras y pabilos: los precios y referencias son oficiales; las capacidades/diámetros de envases siguen siendo de ejemplo.
 - Fotos: los placeholders SVG se reemplazan por imágenes en `src/assets/productos/...`.
 - Arte: retratos en `portrait.ts` y escenas Pixi se pueden reemplazar por arte final manteniendo anclas y `data-testid`.
 

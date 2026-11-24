@@ -9,11 +9,27 @@ export type GameMode = "guided" | "sandbox";
 
 export type OrderType = "clasico" | "capas" | "figura" | "gel";
 
-export type WaxId = "soya" | "parafina" | "gel";
+export type WaxId =
+  | "vaso"
+  | "soya-apf"
+  | "soya-bpf"
+  | "coco"
+  | "palma"
+  | "molde"
+  | "desmoldable"
+  | "china"
+  | "ecopetrol"
+  | "gel";
+
+export type WaxFormat = "block" | "flakes" | "gel";
+
+export type WaxUse = "container" | "mold" | "gel";
 
 export type SupplyCategory =
   | "cera"
   | "mecha"
+  | "aditivo"
+  | "aceite"
   | "aroma"
   | "color"
   | "recipiente"
@@ -33,6 +49,13 @@ export interface Wax {
   heatRate: number;
   coolTime: number;
   transparent: boolean;
+  format: WaxFormat;
+  use: WaxUse[];
+  price: number;
+  priceUnit: "kg" | "pote";
+  supplyId: string;
+  fragranceMin: number;
+  fragranceMax: number;
 }
 
 export interface WaxColor {
@@ -80,6 +103,8 @@ export interface WickType {
   diameterMin: number;
   diameterMax: number;
   note: string;
+  price: number;
+  supplyId: string;
 }
 
 export interface Label {
@@ -264,6 +289,7 @@ export interface SupplyItem {
   categoria: SupplyCategory;
   unidad: string;
   detalle: string;
+  precio?: number;
 }
 
 export interface RecipeLine {
@@ -273,4 +299,5 @@ export interface RecipeLine {
   cantidad: number;
   unidad: string;
   detalle: string;
+  precioUnitario?: number;
 }

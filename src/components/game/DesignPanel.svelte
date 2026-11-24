@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { GameState } from "@lib/game/game-state.svelte";
-  import DesignBasics from "./DesignBasics.svelte";
-  import DesignColors from "./DesignColors.svelte";
+  import DesignStructure from "./DesignStructure.svelte";
+  import MaterialShelf from "./MaterialShelf.svelte";
 
   interface Props {
     game: GameState;
@@ -42,8 +42,8 @@
     </p>
   {/if}
 
-  <DesignBasics {game} />
-  <DesignColors {game} />
+  <DesignStructure {game} />
+  <MaterialShelf {game} />
 
   {#if errors.length > 0}
     <ul class="design-issues" data-testid="design-issues" aria-live="polite">

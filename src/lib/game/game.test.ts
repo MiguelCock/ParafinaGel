@@ -148,7 +148,7 @@ describe("design validation", () => {
 
   it("rejects a wick that does not fit the vessel diameter", () => {
     const design = designForBrief(briefs[0]);
-    design.wickId = "eco";
+    design.wickId = "pabilo-3";
 
     const error = validateDesign(design).find(
       (issue) => issue.field === "wick" && issue.severity === "error",
@@ -159,10 +159,9 @@ describe("design validation", () => {
   it("recommends wicks that fit the vessel diameter", () => {
     const recommended = recommendedWickTypes(70).map((wick) => wick.id);
 
-    expect(recommended).toContain("algodon");
-    expect(recommended).toContain("madera");
-    expect(recommended).toContain("doble");
-    expect(recommended).not.toContain("eco");
+    expect(recommended).toContain("pabilo-67");
+    expect(recommended).not.toContain("pabilo-3");
+    expect(recommended).not.toContain("pabilo-45");
   });
 });
 
@@ -349,17 +348,17 @@ describe("supply list", () => {
     const recipe = buildRecipe(design);
     const ids = recipe.map((line) => line.supplyId);
 
-    expect(ids).toContain("cera-soya");
+    expect(ids).toContain("cera-vaso");
     expect(ids).toContain("aroma-lavanda");
     expect(ids).toContain("color-crema");
     expect(ids).toContain("recipiente-ambar");
-    expect(ids).toContain("mecha-algodon");
+    expect(ids).toContain("mecha-pabilo-67");
     expect(ids).toContain("mecha-porta-pabilo");
     expect(ids).toContain("herramienta-sostenedor");
     expect(ids).toContain("etiqueta-clasica");
     expect(ids).toContain("herramienta-termometro");
 
-    const wax = recipe.find((line) => line.supplyId === "cera-soya");
+    const wax = recipe.find((line) => line.supplyId === "cera-vaso");
     expect(wax?.cantidad).toBe(225);
     expect(wax?.unidad).toBe("g");
   });
@@ -380,16 +379,15 @@ describe("supply list", () => {
     expect(ids).toContain("montaje-brillo");
   });
 
-  it("asks for two units of double wick", () => {
+  it("asks for one pabilo and one porta pabilo", () => {
     const design = designForBrief(briefs[0]);
-    design.wickId = "doble";
     const recipe = buildRecipe(design);
-    const line = recipe.find((item) => item.supplyId === "mecha-doble");
+    const wick = recipe.find((item) => item.supplyId === "mecha-pabilo-67");
     const holder = recipe.find(
       (item) => item.supplyId === "mecha-porta-pabilo",
     );
 
-    expect(line?.cantidad).toBe(2);
-    expect(holder?.cantidad).toBe(2);
+    expect(wick?.cantidad).toBe(1);
+    expect(holder?.cantidad).toBe(1);
   });
 });

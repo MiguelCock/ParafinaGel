@@ -38,7 +38,7 @@ export function createDesign(type: OrderType = "clasico"): CandleDesign {
 
   return {
     mode: type,
-    waxId: type === "gel" ? "gel" : "soya",
+    waxId: type === "gel" ? "gel" : type === "figura" ? "molde" : "vaso",
     vesselId: type === "figura" ? null : type === "gel" ? "cristal" : "ambar",
     moldId: mold?.id ?? null,
     sizeId: type === "figura" ? "180" : "250",
@@ -183,6 +183,21 @@ export function validateDesign(design: CandleDesign): DesignIssue[] {
       message: "Elige una cera.",
       severity: "error",
     });
+  } else {
+    const wax = waxesById[design.waxId];
+    const requiredUse =
+      design.mode === "figura"
+        ? "mold"
+        : design.mode === "gel"
+          ? "gel"
+          : "container";
+    if (wax && !wax.use.includes(requiredUse)) {
+      issues.push({
+        field: "wax",
+        message: `La ${wax.nombre} no está pensada para este tipo de vela.`,
+        severity: "error",
+      });
+    }
   }
 
   if (!design.sizeId) {

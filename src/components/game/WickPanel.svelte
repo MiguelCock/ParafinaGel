@@ -41,11 +41,9 @@
 
   {#if game.wickInfo}
     <div class="game-note">
-      Mecha {game.wickInfo.nombre.toLowerCase()} ·
-      {game.wickInfo.diameterMin}–{game.wickInfo.diameterMax} mm.
-      {game.design.wickId === "doble"
-        ? "La mecha doble se centra como una sola pieza."
-        : game.wickInfo.note}
+      {game.wickInfo.nombre} · {game.wickInfo.diameterMin}–{game.wickInfo
+        .diameterMax}
+      mm. {game.wickInfo.note}
     </div>
   {/if}
 

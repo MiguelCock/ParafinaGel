@@ -3,12 +3,15 @@ import {
   suppliesById,
   waxColorsById,
   waxesById,
+  wickTypesById,
 } from "./data";
 import { designSummary } from "./design";
 import type { CandleDesign, RecipeLine, SupplyCategory } from "./types";
 
 const categoryOrder: SupplyCategory[] = [
   "cera",
+  "aditivo",
+  "aceite",
   "mecha",
   "aroma",
   "color",
@@ -30,6 +33,7 @@ function recipeLine(supplyId: string, cantidad: number): RecipeLine | null {
     cantidad: Math.max(1, Math.round(cantidad)),
     unidad: supply.unidad,
     detalle: supply.detalle,
+    precioUnitario: supply.precio,
   };
 }
 
@@ -40,10 +44,10 @@ export function buildRecipe(design: CandleDesign): RecipeLine[] {
   if (wax) {
     const grams =
       Math.ceil(((design.sizeId === "180" ? 180 : 250) * 0.9) / 5) * 5;
-    lines.push(recipeLine(`cera-${wax.id}`, grams));
+    lines.push(recipeLine(wax.supplyId, grams));
 
     if (design.scentIds.length > 0) {
-      const milliliters = Math.ceil(grams * 0.08);
+      const milliliters = Math.ceil(grams * wax.fragranceMin);
       const perScent = milliliters / design.scentIds.length;
       for (const scentId of design.scentIds) {
         lines.push(recipeLine(`aroma-${scentId}`, Math.ceil(perScent)));
@@ -70,12 +74,11 @@ export function buildRecipe(design: CandleDesign): RecipeLine[] {
   }
 
   if (design.wickId) {
-    lines.push(
-      recipeLine(`mecha-${design.wickId}`, design.wickId === "doble" ? 2 : 1),
-    );
-    lines.push(
-      recipeLine("mecha-porta-pabilo", design.wickId === "doble" ? 2 : 1),
-    );
+    const wick = wickTypesById[design.wickId];
+    if (wick) {
+      lines.push(recipeLine(wick.supplyId, 1));
+      lines.push(recipeLine("mecha-porta-pabilo", 1));
+    }
   }
 
   for (const inclusionId of design.inclusions) {

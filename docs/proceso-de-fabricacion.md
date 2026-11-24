@@ -62,6 +62,30 @@ brief → diseño → preparación → cera → mezcla → vertido → curado �
 - El aroma se usa entre 8 y 10 %.
 - Las velas terminadas pueden formar parte de una colección.
 
+## Datos del curso de gel
+
+El PDF del curso aporta datos específicos para velas de gel:
+
+- **Aroma:** 3–6 % (distinto del 8–10 % de las ceras de recipiente).
+- **Corte de mecha:** 1–1,5 cm.
+- **Orden:** preparar recipiente → colocar mecha al fondo → decorar → trocear/fundir gel → aromatizar y colorear → verter → enfriar → cortar mecha → empacar.
+- **Medición:** peso del agua en el recipiente o volumen del cilindro.
+- **Seguridad:** cera caliente, guantes, protección térmica, papel periódico, ventilación y limpieza sin agua.
+- **Materiales:** pabilos, porta pabilos, centradores, recipientes, esencias, colorantes a la grasa, decoraciones no inflamables, arena, piedritas, flores secas, cuarzo y conchas.
+
+El juego debe usar una **carga de aroma por cera** y un **corte de mecha por cera**, no un único porcentaje global.
+
+## Catálogo oficial
+
+La lista oficial de venta tiene 16 productos:
+
+- 10 ceras/parafinas: vaso, soya APF, soya BPF, coco, palma, molde, desmoldable, china, Ecopetrol y gel.
+- Ácido esteárico.
+- 3 pabilos parafinados de 65 cm para recipientes de 3, 4–5 y 6–7 cm.
+- Aceite cristal 250 ml.
+
+Los precios de venta se cargan en `src/content/productos/`. No se incluyen costos, márgenes ni datos de proveedores.
+
 ## Datos pendientes de validar
 
 - Porcentaje de ácido esteárico y si se usa en todas las ceras.

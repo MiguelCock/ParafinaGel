@@ -3,7 +3,6 @@ import {
   assertIncludes,
   capture,
   click,
-  clickSelector,
   createPage,
   exists,
   focusCanvas,
@@ -27,51 +26,58 @@ async function startSandbox(page) {
   await waitForStage(page, "design");
 }
 
+async function pickMaterial(page, category, id) {
+  await click(page, `material-tab-${category}`);
+  await click(page, `material-${category}-${id}`);
+}
+
+async function pickLayerColor(page, layer, color) {
+  await click(page, "material-tab-color");
+  if (layer > 0 || (await page.$(`[data-testid="material-layer-${layer}"]`))) {
+    await click(page, `material-layer-${layer}`, { optional: true });
+  }
+  await click(page, `material-color-${color}`);
+}
+
+async function pickFigureColor(page, part, color) {
+  await click(page, "material-tab-color");
+  await click(page, `material-part-${part}`);
+  await click(page, `material-color-${color}`);
+}
+
 async function designFor(page, index) {
   if (index === 0) {
-    await clickSelector(
-      page,
-      '[aria-label="Color de la capa 1"] [aria-label="Crema"]',
-    );
-    await click(page, "scent-lavanda");
-    await click(page, "wick-type-algodon");
-    await click(page, "label-clasica");
+    await pickMaterial(page, "wax", "vaso");
+    await pickMaterial(page, "vessel", "ambar");
+    await pickLayerColor(page, 0, "crema");
+    await pickMaterial(page, "scent", "lavanda");
+    await pickMaterial(page, "wick", "pabilo-67");
+    await pickMaterial(page, "label", "clasica");
   } else if (index === 1) {
-    await click(page, "vessel-claro");
-    await clickSelector(
-      page,
-      '[aria-label="Color de la capa 1"] [aria-label="Terracota"]',
-    );
-    await clickSelector(
-      page,
-      '[aria-label="Color de la capa 2"] [aria-label="Ámbar"]',
-    );
-    await clickSelector(
-      page,
-      '[aria-label="Color de la capa 3"] [aria-label="Crema"]',
-    );
-    await click(page, "scent-vainilla");
-    await click(page, "wick-type-algodon");
-    await click(page, "label-regalo");
+    await pickMaterial(page, "wax", "soya-apf");
+    await pickMaterial(page, "vessel", "claro");
+    await pickLayerColor(page, 0, "terracota");
+    await pickLayerColor(page, 1, "ambar");
+    await pickLayerColor(page, 2, "crema");
+    await pickMaterial(page, "scent", "vainilla");
+    await pickMaterial(page, "wick", "pabilo-67");
+    await pickMaterial(page, "label", "regalo");
   } else if (index === 2) {
-    await click(page, "mold-luna");
-    await clickSelector(
-      page,
-      '[aria-label="Color de Luna"] [aria-label="Ámbar"]',
-    );
-    await clickSelector(
-      page,
-      '[aria-label="Color de Estrella"] [aria-label="Crema"]',
-    );
-    await click(page, "scent-cafe");
-    await click(page, "wick-type-madera");
-    await click(page, "label-minimal");
+    await pickMaterial(page, "wax", "molde");
+    await pickMaterial(page, "mold", "luna");
+    await pickFigureColor(page, "luna", "ambar");
+    await pickFigureColor(page, "estrella", "crema");
+    await pickMaterial(page, "scent", "cafe");
+    await pickMaterial(page, "wick", "pabilo-67");
+    await pickMaterial(page, "label", "minimal");
   } else {
-    await click(page, "inclusion-flores");
-    await click(page, "inclusion-brillo");
-    await click(page, "scent-rosas");
-    await click(page, "wick-type-algodon");
-    await click(page, "label-minimal");
+    await pickMaterial(page, "wax", "gel");
+    await pickMaterial(page, "vessel", "cristal");
+    await pickMaterial(page, "inclusion", "flores");
+    await pickMaterial(page, "inclusion", "brillo");
+    await pickMaterial(page, "scent", "rosas");
+    await pickMaterial(page, "wick", "pabilo-67");
+    await pickMaterial(page, "label", "minimal");
   }
 
   await page.waitForSelector('[data-testid="design-ready"]', {
@@ -91,17 +97,14 @@ async function clickEnabled(page, testid, timeout = 20000) {
   await click(page, testid);
 }
 
-async function waitForTemperature(page, minimum, timeout = 30000) {
+async function waitForMeltRange(page, timeout = 60000) {
   await page.waitForFunction(
-    (value) => {
-      const content =
-        document.querySelector('[data-testid="temperature"]')?.textContent ??
-        "";
-      const match = content.match(/(\d+)/);
-      return match ? Number(match[1]) >= value : false;
+    () => {
+      const panel = document.querySelector('[data-testid="melt-panel"]');
+      const content = panel?.textContent ?? "";
+      return content.includes("En rango") || content.includes("Lista para seguir");
     },
     { timeout },
-    minimum,
   );
 }
 
@@ -143,7 +146,7 @@ async function heatWithKeyboard(page) {
   await focusCanvas(page, "melt");
   await page.keyboard.down(" ");
   try {
-    await waitForTemperature(page, 66);
+    await waitForMeltRange(page);
   } finally {
     await page.keyboard.up(" ");
   }
@@ -159,7 +162,7 @@ async function heatWithPointer(page) {
   await page.mouse.move(lever.x, lever.y);
   await page.mouse.down();
   try {
-    await waitForTemperature(page, 66);
+    await waitForMeltRange(page);
   } finally {
     await page.mouse.up();
   }
@@ -553,13 +556,35 @@ export async function flowSandbox({ browser, baseUrl, outDir, report }) {
     await gotoGame(page, baseUrl);
     await startSandbox(page);
 
+    await click(page, "material-accessible-summary");
+    await page.select('[data-testid="accessible-wax"]', "vaso");
+    await page.select('[data-testid="accessible-vessel"]', "ambar");
+    await page.select('[data-testid="accessible-wick"]', "pabilo-67");
+    await page.select('[data-testid="accessible-scent"]', "lavanda");
+    await page.select('[data-testid="accessible-label"]', "clasica");
+    await page.select('[data-testid="accessible-layer-color-0"]', "crema");
+    await page.waitForSelector('[data-testid="design-ready"]');
+    recordCheck(
+      report,
+      "selector accesible de materiales",
+      "pass",
+      "cera, envase, pabilo, aroma, etiqueta y color",
+    );
+    await scanAxe(page, report, {
+      state: "selector accesible",
+      theme: "light",
+      width: 1280,
+    });
+
     await click(page, "type-gel");
-    await click(page, "inclusion-flores");
-    await click(page, "inclusion-brillo");
-    await click(page, "inclusion-hierbas");
-    await click(page, "scent-rosas");
-    await click(page, "wick-type-algodon");
-    await click(page, "label-minimal");
+    await pickMaterial(page, "wax", "gel");
+    await pickMaterial(page, "vessel", "cristal");
+    await pickMaterial(page, "inclusion", "flores");
+    await pickMaterial(page, "inclusion", "brillo");
+    await pickMaterial(page, "inclusion", "hierbas");
+    await pickMaterial(page, "scent", "rosas");
+    await pickMaterial(page, "wick", "pabilo-67");
+    await pickMaterial(page, "label", "minimal");
     await page.waitForSelector('[data-testid="design-ready"]');
     await capture(page, outDir, "1280-light-sandbox-gel-design", report);
     await auditState(page, report, "sandbox design");
@@ -573,22 +598,14 @@ export async function flowSandbox({ browser, baseUrl, outDir, report }) {
     await click(page, "back-to-design");
     await page.waitForSelector('[data-testid="design-panel"]');
     await click(page, "type-figura");
-    await click(page, "mold-flor");
-    await clickSelector(
-      page,
-      '[aria-label="Color de Pétalos"] [aria-label="Rosa"]',
-    );
-    await clickSelector(
-      page,
-      '[aria-label="Color de Centro"] [aria-label="Ámbar"]',
-    );
-    await clickSelector(
-      page,
-      '[aria-label="Color de Hoja"] [aria-label="Salvia"]',
-    );
-    await click(page, "scent-citricos");
-    await click(page, "wick-type-doble");
-    await click(page, "label-regalo");
+    await pickMaterial(page, "wax", "molde");
+    await pickMaterial(page, "mold", "flor");
+    await pickFigureColor(page, "petalos", "rosa");
+    await pickFigureColor(page, "centro", "ambar");
+    await pickFigureColor(page, "hoja", "salvia");
+    await pickMaterial(page, "scent", "citricos");
+    await pickMaterial(page, "wick", "pabilo-67");
+    await pickMaterial(page, "label", "regalo");
     await page.waitForSelector('[data-testid="design-ready"]');
     await capture(page, outDir, "1280-light-sandbox-figure-design", report);
 

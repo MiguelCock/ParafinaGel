@@ -22,7 +22,7 @@ El sitio vende **insumos y materias primas**, no velas terminadas. El juego perm
   - `palette.ts`: colores para WebGL (no lee CSS vars).
   - `scenes/design-scene.ts`, `melt-scene.ts`, `pour-scene.ts`, `wick-scene.ts`, `cool-scene.ts`, `finish-scene.ts`.
 - Pedido: `BriefTicket`, `BriefSummary`, `CounterScene`.
-- Diseño: `DesignPanel`, `DesignBasics`, `DesignColors`, `ColorDots`.
+- Diseño: `DesignPanel`, `DesignStructure`, `MaterialShelf`, `AccessibleMaterialPicker`.
 - Paneles: `MeltPanel`, `PourPanel`, `WickPanel`, `CoolPanel`, `FinishPanel`, `ScorePanel`, `ShoppingList`.
 - Fallback: `CandlePreview` y `MoldPreview` (SVG) si no hay WebGL.
 - Motor: `src/lib/game/` (`types`, `data`, `design`, `craft`, `liquid`, `motion`, `scoring`, `supplies`, `portrait`, `game-state.svelte.ts`, tests).
@@ -33,7 +33,7 @@ El sitio vende **insumos y materias primas**, no velas terminadas. El juego perm
 `brief → design → wick (preparación) → melt → pour → cool → finish → score`
 
 1. **Mostrador**: el cliente revela el pedido por líneas. “Crear nota” fija el brief.
-2. **Diseño**: tipo, cera, tamaño, recipiente/molde, capas/partes/montajes, aroma, mecha y etiqueta.
+2. **Diseño**: tipo, cera, tamaño, recipiente/molde, capas/partes/montajes, aroma, pabilo y etiqueta. Los materiales se eligen como objetos físicos en la estantería; el selector accesible es la alternativa de teclado/lector.
 3. **Preparación**: colocar el porta pabilo, ajustar la mecha al centro y usar el sostenedor.
 4. **Cera**: mantener la palanca para calentar; arrastrar la cuchara en círculos.
 5. **Vertido**: arrastrar la jarra sobre la boca; el líquido cae, se ondula y llena. Soltar cierra la capa.
@@ -69,7 +69,7 @@ El sitio vende **insumos y materias primas**, no velas terminadas. El juego perm
 - **Vertido**: arrastrar la jarra; `game.setPourOffset` alinea. Si `|offset| <= 0.32`, el tick llena la unidad; si no, acumula `spill`. Al soltar, `game.releasePour()` cierra la capa si hay suficiente cera. Teclado: flechas + Espacio.
 - **Curado**: clic en el ventilador (`game.fan()`); burbujas de gel (`game.popBubble()`). Teclado: Espacio y B.
 - **Acabado**: etiqueta arrastrable con tirador de giro; corte de mecha con regla; tapa y empaque clicables. Teclado: 1 etiqueta, 2 mecha, 3 tapa, 4 empaque, flechas, Mayús + flechas, Enter.
-- No reintroduzcas sliders/botones para estos retos. Los botones de navegación, selección de materiales y CTA sí se quedan.
+- No reintroduzcas sliders/botones para estos retos. Los botones de navegación, selección de materiales, estantería y CTA sí se quedan.
 
 ## Líquido y puntaje
 
