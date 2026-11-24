@@ -56,7 +56,7 @@ flowchart LR
 - **Preparación de mecha**: porta pabilo y sostenedor de madera antes del vertido.
 - **Fogones de mezcla**: un lote por capa o parte; palanca de calor, color por gotas y un aroma por fogón.
 - **Estantería física**: los materiales se eligen como objetos, no como listas; incluye un selector accesible para teclado y lectores de pantalla.
-- **Simulación de líquido viscoso**: superficie, volumen, película entre capas, salpicaduras, mezcla y burbujas. Afecta el puntaje.
+- **Simulación de líquido viscoso**: superficie con menisco, chorro, salpicaduras, derrame, película entre capas, mezcla, gel con brillo y burbujas. Afecta el puntaje.
 - **Retos manuales**: sin sliders ni botones para las estaciones; el teclado es la alternativa accesible.
 - **Modo libre**: diseño sin brief ni reloj, con receta o taller.
 - **Modo experto**: oculta las pistas numéricas.

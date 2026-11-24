@@ -9,8 +9,9 @@ import {
   waxesById,
 } from "../data";
 import type { GameState } from "../game-state.svelte";
-import { surfaceAt, type LiquidState } from "../liquid";
+import type { LiquidState } from "../liquid";
 import type { Mold } from "../types";
+import { drawLiquidSurface } from "./liquid-rig";
 import { motion } from "./motion";
 import { clamp, hexColor, mixHex, stageColors } from "./palette";
 
@@ -111,7 +112,7 @@ export class CandleRig extends Container {
     if (figure && mold) {
       this.drawMold(mold, design, fills);
     } else {
-      this.drawJar(game, fills, options.liquid ?? null);
+      this.drawJar(game, fills, options.liquid ?? null, time);
     }
 
     const waxTop = figure ? -112 : this.waxTop(game, fills);
@@ -133,6 +134,7 @@ export class CandleRig extends Container {
     game: GameState,
     fills: Record<string, number>,
     liquid: LiquidState | null,
+    time: number,
   ): void {
     const design = game.design;
     const vessel = design.vesselId ? vesselsById[design.vesselId] : null;
@@ -180,30 +182,28 @@ export class CandleRig extends Container {
           color: wax ? hexColor(wax.hex) : 0xeaf3ee,
           alpha: 0.32,
         });
-        this.drawGelTop(top, liquid);
-        this.drawGelInclusions(game, top, INNER_H - height);
+        this.drawGelTop(top, liquid, time);
+        this.drawGelInclusions(game, top, INNER_H - height, time);
       }
     } else {
       let cursor = INNER_Y + INNER_H;
       let previousColor: string | null = null;
 
-      for (const layer of design.layers) {
+      for (const [index, layer] of design.layers.entries()) {
         const bandHeight = (layer.height / 100) * INNER_H;
         const fraction = clamp((fills[layer.id] ?? 100) / 100, 0, 1);
         const filled = bandHeight * fraction;
         const color = waxColorsById[layer.colorId]?.hex ?? "#efe2cf";
         const y = cursor - filled;
+        const unitMix = game.craft.units[index]?.mix ?? game.craft.mix;
 
         if (filled > 0.5) {
           this.layerGraphics
             .rect(INNER_X, y, INNER_W, filled + 1)
             .fill(hexColor(color));
 
-          if (previousColor && game.craft.mix > 0.02) {
-            const interfaceHeight = Math.min(
-              filled,
-              Math.max(4, 20 * game.craft.mix),
-            );
+          if (previousColor && unitMix > 0.02) {
+            const interfaceHeight = Math.min(filled, Math.max(4, 20 * unitMix));
             this.layerGraphics
               .rect(
                 INNER_X,
@@ -212,10 +212,20 @@ export class CandleRig extends Container {
                 interfaceHeight,
               )
               .fill(
-                hexColor(
-                  mixHex(previousColor, color, 0.35 + game.craft.mix * 0.5),
-                ),
+                hexColor(mixHex(previousColor, color, 0.35 + unitMix * 0.5)),
               );
+          }
+
+          if (previousColor) {
+            this.layerGraphics
+              .moveTo(INNER_X + 10, y + filled - 1)
+              .lineTo(INNER_X + INNER_W - 10, y + filled - 1)
+              .stroke({
+                width: 1.5,
+                color: stageColors.white,
+                alpha: 0.35,
+                cap: "round",
+              });
           }
         }
 
@@ -233,63 +243,61 @@ export class CandleRig extends Container {
         ? mixHex(
             waxColorsById[previousLayer.colorId]?.hex ?? topHex,
             topHex,
-            0.2 + game.craft.mix * 0.6,
+            0.2 + (game.craft.mix ?? 0) * 0.6,
           )
         : topHex;
-      this.drawLiquidLine(top, liquid, hexColor(surfaceHex));
+      drawLiquidSurface(
+        this.surfaceGraphics,
+        liquid,
+        { x: INNER_X, y: top, width: INNER_W, amplitude: 5 },
+        surfaceHex,
+        {
+          gel: false,
+          reduced: motion.reduced,
+          quality: "high",
+          time,
+        },
+      );
     }
   }
 
-  private drawLiquidLine(
+  private drawGelTop(
     top: number,
     liquid: LiquidState | null,
-    color: number,
+    time: number,
   ): void {
-    this.surfaceGraphics.moveTo(INNER_X, top);
-    for (let i = 1; i <= 24; i += 1) {
-      const t = i / 24;
-      const x = INNER_X + INNER_W * t;
-      const y = top + (liquid ? surfaceAt(liquid, t) * 5 : 0);
-      this.surfaceGraphics.lineTo(x, y);
-    }
-    this.surfaceGraphics.stroke({
-      width: 5,
-      color: hexColor(
-        mixHex(`#${color.toString(16).padStart(6, "0")}`, "#6f5541", 0.68),
-      ),
-      alpha: 0.9,
-    });
-    this.surfaceGraphics
-      .rect(INNER_X, top - 5, INNER_W, 5)
-      .fill({ color: hexColor("#6f5541"), alpha: 0.13 })
-      .moveTo(INNER_X, top - 7)
-      .lineTo(INNER_X + INNER_W, top - 7)
-      .stroke({ width: 2, color: stageColors.white, alpha: 0.45 });
-  }
+    drawLiquidSurface(
+      this.surfaceGraphics,
+      liquid,
+      { x: INNER_X, y: top, width: INNER_W, amplitude: 5 },
+      "#eaf3ee",
+      {
+        gel: true,
+        reduced: motion.reduced,
+        quality: "high",
+        time,
+      },
+    );
 
-  private drawGelTop(top: number, liquid: LiquidState | null): void {
-    this.surfaceGraphics.moveTo(INNER_X, top);
-    for (let i = 1; i <= 24; i += 1) {
-      const t = i / 24;
-      const x = INNER_X + INNER_W * t;
-      const y = top + (liquid ? surfaceAt(liquid, t) * 5 : 0);
-      this.surfaceGraphics.lineTo(x, y);
+    const shimmer = motion.reduced ? 0.5 : 0.42 + Math.sin(time * 1.6) * 0.12;
+    for (let index = 0; index < 3; index += 1) {
+      this.surfaceGraphics
+        .moveTo(INNER_X + 25 + index * 54, top + 28 + index * 8)
+        .lineTo(INNER_X + 48 + index * 54, top + 112 + index * 14)
+        .stroke({
+          width: 9,
+          color: stageColors.white,
+          alpha: 0.045 * shimmer,
+          cap: "round",
+        });
     }
-    this.surfaceGraphics.stroke({
-      width: 3.5,
-      color: hexColor("#7f95ab"),
-      alpha: 0.6,
-    });
-    this.surfaceGraphics
-      .moveTo(INNER_X, top - 3)
-      .lineTo(INNER_X + INNER_W, top - 3)
-      .stroke({ width: 2, color: stageColors.white, alpha: 0.55 });
   }
 
   private drawGelInclusions(
     game: GameState,
     top: number,
     emptyHeight: number,
+    time: number,
   ): void {
     const positions = [
       { x: -76, y: 88 },
@@ -307,28 +315,30 @@ export class CandleRig extends Container {
 
       for (let i = 0; i < 3; i += 1) {
         const spot = positions[index % positions.length]!;
-        const y = Math.max(top + 8, spot.y + emptyHeight * 0.1);
+        const wobble = motion.reduced ? 0 : Math.sin(time * 0.55 + index) * 2.5;
+        const x = spot.x + wobble;
+        const y =
+          Math.max(top + 8, spot.y + emptyHeight * 0.1) +
+          (motion.reduced ? 0 : Math.cos(time * 0.45 + index) * 1.5);
         const color = hexColor(inclusion.color);
         index += 1;
 
         if (inclusion.kind === "petal") {
           this.inclusionsGraphics
-            .ellipse(spot.x, y, 7, 4)
+            .ellipse(x, y, 7, 4)
             .fill({ color, alpha: 0.85 })
-            .ellipse(spot.x + 5, y + 4, 4, 2.4)
+            .ellipse(x + 5, y + 4, 4, 2.4)
             .fill({ color, alpha: 0.6 });
         } else if (inclusion.kind === "flake") {
           this.inclusionsGraphics
-            .rect(spot.x - 5, y, 10, 3)
+            .rect(x - 5, y, 10, 3)
             .fill({ color, alpha: 0.9 });
         } else if (inclusion.kind === "bead") {
-          this.inclusionsGraphics
-            .circle(spot.x, y, 4)
-            .fill({ color, alpha: 0.85 });
+          this.inclusionsGraphics.circle(x, y, 4).fill({ color, alpha: 0.85 });
         } else {
           this.inclusionsGraphics
-            .moveTo(spot.x, y)
-            .lineTo(spot.x + 7, y - 10)
+            .moveTo(x, y)
+            .lineTo(x + 7, y - 10)
             .stroke({ width: 2.4, color, alpha: 0.85 });
         }
       }
@@ -515,21 +525,63 @@ export class CandleRig extends Container {
     const liquid = options.liquid;
     if (!liquid) return;
 
+    const time = options.time ?? 0;
     const remaining = Math.max(0, game.craft.gelBubbles - game.craft.gelPopped);
+    const bubblePosition = (index: number) => {
+      const bubble = liquid.bubbles[index];
+      if (!bubble) return null;
+      const wobble = motion.reduced ? 0 : Math.sin(time * 1.8 + index) * 2.2;
+      return {
+        x: -80 + bubble.x * 160 + wobble,
+        y:
+          INNER_Y +
+          INNER_H -
+          30 -
+          (1 - ((bubble.phase + index * 0.11) % 1)) * (INNER_H - 70),
+        radius: bubble.radius,
+      };
+    };
 
     for (let i = 0; i < remaining; i += 1) {
-      const bubble = liquid.bubbles[i];
+      const bubble = bubblePosition(i);
       if (!bubble) continue;
-      const x = -80 + bubble.x * 160;
-      const y =
-        INNER_Y +
-        INNER_H -
-        30 -
-        (1 - ((bubble.phase + i * 0.11) % 1)) * (INNER_H - 70);
       this.bubblesGraphics
-        .circle(x, y, bubble.radius)
-        .fill({ color: stageColors.white, alpha: 0.55 })
-        .stroke({ width: 1.5, color: hexColor("#7f95ab"), alpha: 0.55 });
+        .circle(bubble.x, bubble.y, bubble.radius)
+        .fill({ color: stageColors.white, alpha: 0.5 })
+        .stroke({ width: 1.5, color: hexColor("#7f95ab"), alpha: 0.55 })
+        .circle(
+          bubble.x - bubble.radius * 0.3,
+          bubble.y - bubble.radius * 0.35,
+          bubble.radius * 0.28,
+        )
+        .fill({ color: stageColors.white, alpha: 0.75 });
+    }
+
+    const pulse = game.craft.gelPopPulse;
+    if (pulse > 0) {
+      const popped = bubblePosition(game.craft.gelPopIndex);
+      if (popped) {
+        this.bubblesGraphics
+          .circle(popped.x, popped.y, popped.radius + (1 - pulse) * 14)
+          .stroke({
+            width: 2,
+            color: stageColors.white,
+            alpha: pulse * 0.8,
+          });
+        if (!motion.reduced) {
+          for (let index = 0; index < 4; index += 1) {
+            const angle = (index / 4) * Math.PI * 2;
+            const distance = 8 + (1 - pulse) * 12;
+            this.bubblesGraphics
+              .circle(
+                popped.x + Math.cos(angle) * distance,
+                popped.y + Math.sin(angle) * distance,
+                1.8,
+              )
+              .fill({ color: stageColors.white, alpha: pulse * 0.6 });
+          }
+        }
+      }
     }
   }
 }

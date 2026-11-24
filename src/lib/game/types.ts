@@ -256,6 +256,8 @@ export interface Craft {
   cooled: boolean;
   gelBubbles: number;
   gelPopped: number;
+  gelPopPulse: number;
+  gelPopIndex: number;
   wick: WickState;
   label: LabelState;
   lidOn: boolean;

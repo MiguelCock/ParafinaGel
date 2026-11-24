@@ -437,14 +437,21 @@ async function pourWithKeyboard(page) {
   }
 }
 
-async function pourWithPointer(page) {
+async function pourWithPointer(page, hooks = {}) {
   const start = await stagePoint(page, "pour", 637, 150);
   const end = await stagePoint(page, "pour", 500, 150);
+  const spill = await stagePoint(page, "pour", 700, 150);
 
   await page.mouse.move(start.x, start.y);
   await page.mouse.down();
   try {
     await page.mouse.move(end.x, end.y, { steps: 18 });
+    await waitForFill(page, 20);
+    await hooks.onPouring?.();
+    await page.mouse.move(spill.x, spill.y, { steps: 8 });
+    await wait(450);
+    await hooks.onSpill?.();
+    await page.mouse.move(end.x, end.y, { steps: 8 });
     await waitForFill(page, 84);
   } finally {
     await page.mouse.up();
@@ -576,6 +583,7 @@ async function playKeyboardStations(page, typeIndex, hooks = {}) {
   await clickEnabled(page, "mix-continue");
 
   await waitForStage(page, "pour");
+  await hooks.onPour?.();
   await pourWithKeyboard(page);
   await page.waitForSelector('[data-testid="pour-complete"]', {
     timeout: 15000,
@@ -583,6 +591,7 @@ async function playKeyboardStations(page, typeIndex, hooks = {}) {
   await clickEnabled(page, "pour-continue");
 
   await waitForStage(page, "cool");
+  await hooks.onCool?.();
   await coolWithKeyboard(page, typeIndex);
   await clickEnabled(page, "cool-continue");
 
@@ -657,7 +666,14 @@ export async function flowPointerClassic({ browser, baseUrl, outDir, report }) {
 
     await waitForStage(page, "pour");
     await capture(page, outDir, "1280-light-clasico-pour", report);
-    await pourWithPointer(page);
+    await pourWithPointer(page, {
+      onPouring: async () => {
+        await capture(page, outDir, "1280-light-clasico-pour-stream", report);
+      },
+      onSpill: async () => {
+        await capture(page, outDir, "1280-light-clasico-pour-spill", report);
+      },
+    });
     await capture(page, outDir, "1280-light-clasico-pour-filled", report);
     await clickEnabled(page, "pour-continue");
 
@@ -725,6 +741,12 @@ export async function flowKeyboardFourOrders({
       await click(page, "design-continue");
 
       await playKeyboardStations(page, index, {
+        onCool: async () => {
+          if (index === 3) {
+            await capture(page, outDir, "1280-light-gel-cool", report);
+            await auditState(page, report, "gel cool");
+          }
+        },
         onMix: async () => {
           if (index === 1) {
             assert(
@@ -867,6 +889,45 @@ export async function flowSandbox({ browser, baseUrl, outDir, report }) {
     await auditState(page, report, "sandbox mix");
   } finally {
     recordConsoleErrors(report, "sandbox", page.__qa.errors);
+    await page.close();
+  }
+}
+
+export async function flowMobileGel({ browser, baseUrl, outDir, report }) {
+  const page = await createPage(browser, {
+    width: 390,
+    height: 844,
+    theme: "light",
+  });
+
+  try {
+    await gotoGame(page, baseUrl);
+    await startSandbox(page);
+    await click(page, "type-gel");
+    await designFor(page, 3);
+    await capture(page, outDir, "390-light-gel-design", report);
+    await auditState(page, report, "gel design");
+    await click(page, "sandbox-craft");
+    await playKeyboardStations(page, 3, {
+      onMix: async () => {
+        await capture(page, outDir, "390-light-gel-mix", report);
+        await auditState(page, report, "gel mix");
+      },
+      onPour: async () => {
+        await capture(page, outDir, "390-light-gel-pour", report);
+        await auditState(page, report, "gel pour");
+      },
+      onCool: async () => {
+        await capture(page, outDir, "390-light-gel-cool", report);
+        await auditState(page, report, "gel cool");
+      },
+      onScore: async () => {
+        await capture(page, outDir, "390-light-gel-score", report);
+        await auditState(page, report, "gel score");
+      },
+    });
+  } finally {
+    recordConsoleErrors(report, "mobile-gel-390", page.__qa.errors);
     await page.close();
   }
 }

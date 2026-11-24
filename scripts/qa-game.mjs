@@ -16,6 +16,7 @@ import {
   flowFallback,
   flowKeyboardFourOrders,
   flowMobile,
+  flowMobileGel,
   flowMotionOverrides,
   flowOverflowMatrix,
   flowPointerClassic,
@@ -108,6 +109,7 @@ async function main() {
         flowKeyboardFourOrders(context),
       );
       await runFlow(report, "mobile-390", () => flowMobile(context));
+      await runFlow(report, "mobile-gel-390", () => flowMobileGel(context));
       await runFlow(report, "dark-1280-390", () => flowDark(context));
     }
 

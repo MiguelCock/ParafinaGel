@@ -237,6 +237,8 @@ export function createCraft(design: CandleDesign): Craft {
     cooled: false,
     gelBubbles: design.mode === "gel" ? GEL_BUBBLES : 0,
     gelPopped: 0,
+    gelPopPulse: 0,
+    gelPopIndex: 0,
     wick: {
       x: WICK_START_X,
       y: WICK_START_Y,

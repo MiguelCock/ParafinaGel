@@ -50,7 +50,7 @@ Sitio de **ParafinaGel**, negocio familiar de velas que vende **insumos y materi
   - `supplies.ts`: receta, cantidades y mensaje de WhatsApp.
   - `portrait.ts`: SVG por capas de los retratos.
   - `game-state.svelte.ts`: orquestación con runes.
-  - `render/`: `stage-renderer.ts`, `scene.ts`, `candle-rig.ts`, `palette.ts`, `motion.ts` y `scenes/` (design, melt, mix, pour, wick, cool, finish).
+  - `render/`: `stage-renderer.ts`, `scene.ts`, `candle-rig.ts`, `liquid-rig.ts`, `palette.ts`, `motion.ts` y `scenes/` (design, melt, mix, pour, wick, cool, finish).
   - `game.test.ts` y `motion.test.ts`: tests del motor, líquido y motion.
 - `src/styles/game.css`: estilos compartidos de la UI del juego.
 - `src/content.config.ts`: schema Zod de productos con loader `glob`.
@@ -79,7 +79,7 @@ Sitio de **ParafinaGel**, negocio familiar de velas que vende **insumos y materi
   - Curado: retirar el sostenedor, tocar el ventilador; en gel, tocar las burbujas.
   - Acabado: arrastrar la etiqueta y su tirador, cortar la mecha sobre la vela, tocar tapa y empaque.
 - **Sin sliders ni botones para los retos**. El teclado es la alternativa accesible: flechas, Espacio, Enter, Mayús + flechas, 1–4 para fogones y 1–4 en acabado.
-- **Simulación de líquido viscoso**: superficie ondulada, volumen, película entre capas, salpicaduras, mezcla de color al revolver y burbujas de gel. Afecta el puntaje (`mix` y `spill`).
+- **Simulación de líquido viscoso**: superficie con menisco y brillo, chorro, película entre capas, salpicaduras, derrame, mezcla de color al revolver y gel con refracción simulada y burbujas. `liquid.ts` es el solver puro; `render/liquid-rig.ts` dibuja la superficie y las gotas. Afecta el puntaje (`mix` y `spill`).
 - **Puntaje**: diseño 60 + taller 40 (temperatura, vertido, mezcla, derrame, mecha, etiqueta, corte y gel). Estrellas y puntos; sin precio ni propina.
 - **Cierre comercial**: receta con cantidades y CTA de WhatsApp. El catálogo público ya tiene precios oficiales de 16 insumos; faltan envases, aromas, colorantes, moldes y etiquetas.
 - **Modo libre**: sin brief ni reloj; se puede ver la receta o probar el taller.

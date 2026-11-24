@@ -592,6 +592,8 @@ export class GameState {
     this.craft.cooled = false;
     this.craft.gelBubbles = this.design.mode === "gel" ? GEL_BUBBLES : 0;
     this.craft.gelPopped = 0;
+    this.craft.gelPopPulse = 0;
+    this.craft.gelPopIndex = 0;
     this.phase = "cool";
     this.view = "cool";
   }
@@ -608,9 +610,10 @@ export class GameState {
   }
 
   popBubble(): void {
-    if (this.craft.gelPopped < this.craft.gelBubbles) {
-      this.craft.gelPopped += 1;
-    }
+    if (this.craft.gelPopped >= this.craft.gelBubbles) return;
+    this.craft.gelPopIndex = this.craft.gelPopped;
+    this.craft.gelPopPulse = 1;
+    this.craft.gelPopped += 1;
   }
 
   goFinish(): void {
@@ -818,13 +821,19 @@ export class GameState {
       }
     }
 
-    if (this.phase === "cool" && !this.craft.cooled) {
-      this.craft.coolingRemaining = Math.max(
+    if (this.phase === "cool") {
+      this.craft.gelPopPulse = Math.max(
         0,
-        this.craft.coolingRemaining - delta,
+        this.craft.gelPopPulse - delta * 2.4,
       );
-      if (this.craft.coolingRemaining <= 0) {
-        this.craft.cooled = true;
+      if (!this.craft.cooled) {
+        this.craft.coolingRemaining = Math.max(
+          0,
+          this.craft.coolingRemaining - delta,
+        );
+        if (this.craft.coolingRemaining <= 0) {
+          this.craft.cooled = true;
+        }
       }
     }
   }

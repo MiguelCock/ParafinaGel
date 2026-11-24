@@ -31,6 +31,7 @@ import {
   validateDesign,
 } from "./design";
 import { createLiquidState, stepLiquid, surfaceAt } from "./liquid";
+import { surfacePoints } from "./render/liquid-rig";
 import { scoreCandle, scoreDesign, starsFor } from "./scoring";
 import { buildRecipe } from "./supplies";
 import type { Brief, CandleDesign, Craft } from "./types";
@@ -510,6 +511,47 @@ describe("liquid simulation", () => {
 
     expect(a.particles.length).toBe(b.particles.length);
     expect(a.surface).toEqual(b.surface);
+  });
+
+  it("samples the whole jar at high and low quality", () => {
+    const high = surfacePoints(
+      null,
+      { x: 10, y: 30, width: 100, amplitude: 5 },
+      "high",
+    );
+    const low = surfacePoints(
+      null,
+      { x: 10, y: 30, width: 100, amplitude: 5 },
+      "low",
+    );
+
+    expect(high).toHaveLength(29);
+    expect(low).toHaveLength(15);
+    expect(high[0]).toEqual({ x: 10, y: 30 });
+    expect(high[high.length - 1]).toEqual({ x: 110, y: 30 });
+  });
+
+  it("clamps the visual surface to the wave amplitude", () => {
+    const liquid = createLiquidState(11);
+    for (let i = 0; i < 24; i += 1) {
+      stepLiquid(liquid, 1 / 60, {
+        pouring: true,
+        offset: 0.2,
+        heat: 1,
+        fill: 0.4,
+        gel: false,
+        reducedMotion: false,
+      });
+    }
+
+    const points = surfacePoints(
+      liquid,
+      { x: 0, y: 50, width: 200, amplitude: 5 },
+      "high",
+    );
+
+    expect(points.every((point) => Number.isFinite(point.y))).toBe(true);
+    expect(points.every((point) => Math.abs(point.y - 50) <= 5)).toBe(true);
   });
 });
 

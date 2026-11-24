@@ -3,6 +3,7 @@ import { pourFills } from "../../craft";
 import type { GameState } from "../../game-state.svelte";
 import { createLiquidState, stepLiquid, type LiquidState } from "../../liquid";
 import { CandleRig } from "../candle-rig";
+import { drawLiquidParticles } from "../liquid-rig";
 import { motion } from "../motion";
 import { clamp, hexColor, stageColors } from "../palette";
 import type { StageScene } from "../scene";
@@ -21,6 +22,16 @@ export class PourScene implements StageScene {
   private stream = new Graphics();
   private splashes = new Graphics();
   private spill = new Graphics();
+  private targetText = new Text({
+    text: "",
+    style: {
+      fontFamily: "Manrope Variable, sans-serif",
+      fontSize: 11,
+      fontWeight: "800",
+      fill: stageColors.muted,
+      letterSpacing: 0.8,
+    },
+  });
   private label = new Text({
     text: "",
     style: {
@@ -48,6 +59,7 @@ export class PourScene implements StageScene {
 
     this.drawPitcher();
 
+    this.targetText.anchor.set(1, 1);
     this.label.anchor.set(0.5);
     this.label.position.set(JAR_X, 552);
 
@@ -59,6 +71,7 @@ export class PourScene implements StageScene {
       this.stream,
       this.splashes,
       this.spill,
+      this.targetText,
       this.label,
     );
   }
@@ -131,33 +144,63 @@ export class PourScene implements StageScene {
       ? stageColors.sage
       : stageColors.muted;
 
-    this.drawTarget(unit?.target ?? 88);
-    this.drawStream(game, pitcherX, unit?.colorHex ?? "#e9c9a8");
-    this.drawSplashes();
-    this.drawSpill(game.craft.spill);
+    const color = unit?.colorHex ?? "#e9c9a8";
+    const aligned = Math.abs(offset) <= 0.32;
+    const impact = this.drawStream(game, pitcherX, color);
+    this.drawTarget(unit?.target ?? 88, unit?.fill ?? 0, aligned);
+    this.drawSplashes(impact.x, impact.y, color);
+    this.drawSpill(game.craft.spill, color);
   }
 
-  private drawTarget(target: number): void {
+  private drawTarget(target: number, fill: number, aligned: boolean): void {
     this.target.clear();
+
     const y = JAR_Y - 150 + 300 * (1 - target / 100);
+    const inZone = aligned && fill >= target - 8 && fill <= target + 7;
+    const pulse = motion.reduced ? 1 : 1 + Math.sin(this.time * 4.2) * 0.12;
+    const color = inZone ? stageColors.sage : stageColors.accent;
+
+    this.target
+      .roundRect(414 - (pulse - 1) * 12, y - 2, 172 + (pulse - 1) * 24, 5)
+      .fill({ color, alpha: inZone ? 0.12 : 0.06 });
+
     for (let x = 420; x < 580; x += 18) {
       this.target
         .moveTo(x, y)
         .lineTo(x + 9, y)
-        .stroke({ width: 2, color: stageColors.accent, alpha: 0.45 });
+        .stroke({ width: 2, color, alpha: inZone ? 0.85 : 0.5 });
     }
+
+    this.target
+      .moveTo(414, y - 8)
+      .lineTo(420, y)
+      .lineTo(414, y + 8)
+      .moveTo(586, y - 8)
+      .lineTo(580, y)
+      .lineTo(586, y + 8)
+      .stroke({ width: 2, color, alpha: 0.7 });
+
+    this.targetText.text = inZone ? "META" : `META ${Math.round(target)}%`;
+    this.targetText.position.set(386, y - 7);
+    this.targetText.style.fill = inZone ? stageColors.sage : stageColors.ink;
   }
 
-  private drawStream(game: GameState, pitcherX: number, color: string): void {
+  private drawStream(
+    game: GameState,
+    pitcherX: number,
+    color: string,
+  ): { x: number; y: number } {
     this.stream.clear();
-    if (!game.craft.pouring) return;
-
-    const startX = pitcherX - 4;
-    const startY = 122;
     const aligned = Math.abs(game.craft.pourOffset) <= 0.32;
     const endX = aligned ? JAR_X + game.craft.pourOffset * 60 : pitcherX - 30;
     const endY = aligned ? JAR_MOUTH_Y + 18 : 560;
+    if (!game.craft.pouring) return { x: endX, y: endY };
+
+    const startX = pitcherX - 4;
+    const startY = 122;
     const wobble = motion.reduced ? 0 : Math.sin(this.time * 10) * 7;
+    const flow = motion.reduced ? 1 : 0.7 + Math.sin(this.time * 8.5) * 0.3;
+    const width = aligned ? 9 + flow * 5 : 8;
 
     this.stream
       .moveTo(startX, startY)
@@ -170,41 +213,119 @@ export class PourScene implements StageScene {
         endY,
       )
       .stroke({
-        width: aligned ? 10 : 8,
+        width: width + 3,
+        color: hexColor("#6f5541"),
+        alpha: 0.16,
+        cap: "round",
+      })
+      .moveTo(startX, startY)
+      .bezierCurveTo(
+        startX - 40,
+        startY + 90,
+        endX + wobble,
+        endY - 90,
+        endX,
+        endY,
+      )
+      .stroke({
+        width,
         color: hexColor(color),
-        alpha: 0.9,
+        alpha: 0.95,
+        cap: "round",
+      })
+      .moveTo(startX + 2, startY + 8)
+      .bezierCurveTo(
+        startX - 34,
+        startY + 96,
+        endX + wobble + 2,
+        endY - 82,
+        endX + 2,
+        endY - 4,
+      )
+      .stroke({
+        width: Math.max(2, width * 0.28),
+        color: stageColors.white,
+        alpha: 0.28,
         cap: "round",
       });
 
     if (aligned) {
       this.stream
         .ellipse(endX, endY, 24, 7)
-        .fill({ color: hexColor(color), alpha: 0.35 });
+        .fill({ color: hexColor(color), alpha: 0.35 })
+        .ellipse(endX, endY - 1, 13, 3)
+        .fill({ color: stageColors.white, alpha: 0.22 });
+
+      if (!motion.reduced) {
+        for (let index = 0; index < 4; index += 1) {
+          const t = 0.2 + index * 0.2;
+          const x = startX + (endX - startX) * t + Math.sin(t * 12) * 10;
+          const y = startY + (endY - startY) * t;
+          this.stream
+            .circle(x, y, 2.4 + (index % 2))
+            .fill({ color: hexColor(color), alpha: 0.55 });
+        }
+      }
+
+      for (let index = 0; index < 3; index += 1) {
+        const spread = (index - 1) * 13;
+        this.stream
+          .ellipse(endX + spread, endY - 4, 5, 2.2)
+          .fill({ color: stageColors.white, alpha: 0.32 });
+      }
     }
+
+    return { x: endX, y: endY };
   }
 
-  private drawSplashes(): void {
+  private drawSplashes(x: number, y: number, color: string): void {
     this.splashes.clear();
-    for (const particle of this.liquid.particles) {
-      this.splashes
-        .circle(
-          JAR_X + particle.x * 60 - 30,
-          JAR_MOUTH_Y + particle.y * 60,
-          particle.size,
-        )
-        .fill({
-          color: stageColors.white,
-          alpha: Math.min(0.8, particle.life),
-        });
-    }
+    if (this.liquid.particles.length === 0) return;
+    drawLiquidParticles(
+      this.splashes,
+      this.liquid.particles,
+      x - 30,
+      y - 6,
+      color,
+      {
+        scaleX: 60,
+        scaleY: 52,
+        reduced: motion.reduced,
+      },
+    );
   }
 
-  private drawSpill(amount: number): void {
+  private drawSpill(amount: number, color: string): void {
     this.spill.clear();
     if (amount <= 0.01) return;
+
+    const base = 34 + amount * 120;
+    const sheen = motion.reduced ? 0.5 : 0.5 + Math.sin(this.time * 2.5) * 0.15;
     this.spill
-      .ellipse(700, 566, 40 + amount * 70, 8 + amount * 12)
-      .fill({ color: stageColors.amber, alpha: 0.22 + amount * 0.2 });
+      .ellipse(700, 548, base, 11 + amount * 16)
+      .fill({ color: hexColor(color), alpha: 0.3 + amount * 0.3 })
+      .stroke({
+        width: 2,
+        color: hexColor("#6f5541"),
+        alpha: 0.14 + amount * 0.12,
+      })
+      .ellipse(700 - base * 0.45, 544, base * 0.3, 7)
+      .fill({ color: hexColor(color), alpha: 0.26 + amount * 0.2 })
+      .ellipse(700 + base * 0.5, 552, base * 0.24, 5)
+      .fill({ color: hexColor(color), alpha: 0.24 + amount * 0.2 })
+      .ellipse(700, 548, base * 0.62, 4)
+      .fill({ color: stageColors.white, alpha: 0.18 * sheen });
+
+    for (let index = 0; index < 4; index += 1) {
+      const angle = (index / 4) * Math.PI * 2;
+      this.spill
+        .circle(
+          700 + Math.cos(angle) * (base * 0.75),
+          548 + Math.sin(angle) * (8 + amount * 6),
+          2.4,
+        )
+        .fill({ color: hexColor(color), alpha: 0.5 });
+    }
   }
 
   pointerDown(x: number, y: number, game: GameState): void {
