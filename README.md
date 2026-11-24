@@ -143,12 +143,14 @@ src/
   lib/game/render/  escenas PixiJS, candle rig, paleta y motion
   styles/           tokens y estilos globales
 scripts/qa/         harness de QA
-docs/               capturas y notas del proceso de fabricación
+docs/               capturas, notas de proceso y roadmap
 ```
 
 Rutas: `/`, `/productos`, `/productos/[slug]`, `/nosotros`, `/juego`, `/contacto` y 404. `/about` redirige a `/nosotros`.
 
 Notas del proceso real y datos pendientes: [`docs/proceso-de-fabricacion.md`](docs/proceso-de-fabricacion.md).
+
+Ruta de construcción: [`docs/roadmap.md`](docs/roadmap.md) · [issue #124](https://github.com/MiguelCock/ParafinaGel/issues/124).
 
 ## Estado
 
@@ -166,7 +168,7 @@ El sitio y el juego están funcionales. El catálogo ya tiene **16 productos ofi
 | Briefs y datos técnicos                 | `src/lib/game/data.ts`             |
 | Revisión final del copy                 | `src/pages/*` y `src/components/*` |
 
-Historias relacionadas: [catálogo de insumos](https://github.com/MiguelCock/ParafinaGel/issues/90) · [datos técnicos](https://github.com/MiguelCock/ParafinaGel/issues/87) · [game juice](https://github.com/MiguelCock/ParafinaGel/issues/107) · [baseline visual](https://github.com/MiguelCock/ParafinaGel/issues/108).
+Historias relacionadas: [ruta de construcción](https://github.com/MiguelCock/ParafinaGel/issues/124) · [catálogo de insumos](https://github.com/MiguelCock/ParafinaGel/issues/90) · [datos técnicos](https://github.com/MiguelCock/ParafinaGel/issues/87) · [game juice](https://github.com/MiguelCock/ParafinaGel/issues/107) · [baseline visual](https://github.com/MiguelCock/ParafinaGel/issues/108).
 
 ## Licencia
 

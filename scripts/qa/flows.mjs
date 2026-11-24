@@ -102,7 +102,9 @@ async function waitForMeltRange(page, timeout = 60000) {
     () => {
       const panel = document.querySelector('[data-testid="melt-panel"]');
       const content = panel?.textContent ?? "";
-      return content.includes("En rango") || content.includes("Lista para seguir");
+      return (
+        content.includes("En rango") || content.includes("Lista para seguir")
+      );
     },
     { timeout },
   );
