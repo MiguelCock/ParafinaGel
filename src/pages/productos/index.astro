@@ -6,22 +6,24 @@ import WhatsAppCTA from "@components/WhatsAppCTA.astro";
 import { getProductos } from "@lib/products";
 
 const productos = await getProductos();
-const hayBorradores = productos.some((producto) => producto.data.borrador);
+const sinFotos = productos.some(
+  (producto) => producto.data.imagenes.length === 0,
+);
 ---
 
 <BaseLayout
   title="Insumos"
-  description="Explora ceras, mechas, aromas, moldes, kits y accesorios de ParafinaGel."
+  description="Explora ceras, mechas, aditivos y aceites para hacer velas en ParafinaGel."
 >
   <PageHero
     eyebrow="Catálogo"
     title="Insumos para tu taller."
-    description="Estamos migrando el catálogo a ceras, mechas, aromas, moldes y kits. Mientras tanto, escríbenos para confirmar disponibilidad y precios."
+    description="Ceras, mechas, aditivos y aceites para hacer velas. Precios oficiales por kilo, pote o unidad."
   >
-    {hayBorradores && (
+    {sinFotos && (
       <p class="catalog-note">
-        Estás viendo productos de ejemplo. El catálogo de insumos, los precios y
-        las fotos se reemplazarán antes de publicar.
+        Precios oficiales de venta. Fotos y descripciones ampliadas en
+        preparación; envases, aromas y colorantes se agregarán pronto.
       </p>
     )}
   </PageHero>
@@ -47,11 +49,9 @@ const hayBorradores = productos.some((producto) => producto.data.borrador);
         <div class="catalog__toolbar">
           <p>
             {productos.length}{" "}
-            {productos.length === 1
-              ? "producto de ejemplo"
-              : "productos de ejemplo"}
+            {productos.length === 1 ? "producto" : "productos"}
           </p>
-          <p>Ceras · Mechas · Aromas · Moldes · Kits</p>
+          <p>Ceras · Mechas · Aditivos · Aceites</p>
         </div>
 
         <div class="catalog__grid">

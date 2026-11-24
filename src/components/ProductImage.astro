@@ -30,92 +30,145 @@ const categoria = producto.data.categoria;
       aria-hidden="true"
     >
       <svg viewBox="0 0 400 500" fill="none" role="presentation">
-        {categoria === "velas" && (
-          <g transform="translate(200 250) scale(1.45)">
-            <ellipse cx="0" cy="150" rx="112" ry="18" class="ph-shadow" />
+        <ellipse cx="200" cy="390" rx="120" ry="18" class="ph-shadow" />
+
+        {categoria === "ceras" && (
+          <g>
+            <path d="M120 220h160v120H120z" class="ph-stroke" />
+            <path d="M140 240h120v80H140z" class="ph-soft" />
+            <path d="M120 220l30-40h160l-30 40" class="ph-stroke" />
+            <path d="M280 220l30-40v120l-30 40" class="ph-stroke" />
+          </g>
+        )}
+
+        {categoria === "mechas" && (
+          <g>
+            <circle cx="200" cy="280" r="70" class="ph-stroke" />
+            <circle cx="200" cy="280" r="26" class="ph-soft" />
+            <path d="M200 350v80" class="ph-stroke" />
+          </g>
+        )}
+
+        {categoria === "aditivos" && (
+          <g>
             <path
-              d="M-70 -10h140v120a30 30 0 0 1-30 30h-80a30 30 0 0 1-30-30z"
+              d="M150 210h100v140a20 20 0 0 1-20 20h-60a20 20 0 0 1-20-20z"
+              class="ph-stroke"
+            />
+            <path d="M165 245h70v95h-70z" class="ph-soft" />
+            <rect
+              x="175"
+              y="180"
+              width="50"
+              height="30"
+              rx="6"
+              class="ph-stroke"
+            />
+          </g>
+        )}
+
+        {categoria === "aceites" && (
+          <g>
+            <path
+              d="M170 210h60v20l20 30v100a20 20 0 0 1-20 20h-60a20 20 0 0 1-20-20V260l20-30z"
+              class="ph-stroke"
+            />
+            <path d="M175 270h50v80h-50z" class="ph-soft" />
+            <rect
+              x="185"
+              y="175"
+              width="30"
+              height="35"
+              rx="5"
+              class="ph-stroke"
+            />
+          </g>
+        )}
+
+        {categoria === "moldes" && (
+          <g>
+            <path
+              d="M130 220c30-50 110-50 140 0v100c0 30-30 50-70 50s-70-20-70-50z"
               class="ph-stroke"
             />
             <path
-              d="M-58 10h116v70a16 16 0 0 1-16 16h-84a16 16 0 0 1-16-16z"
+              d="M160 235c20-30 60-30 80 0v70c0 20-20 30-40 30s-40-10-40-30z"
               class="ph-soft"
             />
+          </g>
+        )}
+
+        {categoria === "etiquetas" && (
+          <g>
             <rect
-              x="-34"
-              y="34"
-              width="68"
-              height="34"
+              x="130"
+              y="210"
+              width="140"
+              height="90"
+              rx="10"
+              class="ph-stroke"
+            />
+            <rect
+              x="150"
+              y="235"
+              width="100"
+              height="10"
               rx="5"
               class="ph-soft"
             />
-            <text
-              x="0"
-              y="55"
-              text-anchor="middle"
-              font-family="Fraunces Variable, Georgia, serif"
-              font-size="12"
-              font-weight="600"
-              fill="var(--color-heading)"
-            >
-              ParafinaGel
-            </text>
-            <path d="M0 -10v-28" class="ph-stroke" />
-            <path
-              d="M0 -88c16 18 24 30 24 44a24 24 0 1 1-48 0c0-14 8-26 24-44z"
-              class="ph-flame"
-            />
-            <path
-              d="M0 -72c6 7 9 12 9 17a9 9 0 1 1-18 0c0-5 3-10 9-17z"
-              fill="#f6d36f"
-            />
-            <path d="M-34 96h68" class="ph-stroke" />
-          </g>
-        )}
-
-        {categoria === "difusores" && (
-          <g transform="translate(200 260) scale(1.3)">
-            <ellipse cx="0" cy="150" rx="96" ry="16" class="ph-shadow" />
-            <path
-              d="M-45 -40h90v170a25 25 0 0 1-25 25h-40a25 25 0 0 1-25-25z"
-              class="ph-stroke"
-            />
-            <path
-              d="M-35 -20h70v120a15 15 0 0 1-15 15h-40a15 15 0 0 1-15-15z"
+            <rect
+              x="150"
+              y="260"
+              width="70"
+              height="8"
+              rx="4"
               class="ph-soft"
             />
-            <path d="M-30 -40V-150" class="ph-stroke" />
-            <path d="M0 -40V-178" class="ph-stroke" />
-            <path d="M30 -40V-142" class="ph-stroke" />
-            <path d="M-70 45h140" class="ph-stroke" />
           </g>
         )}
 
-        {categoria === "kits" && (
-          <g transform="translate(200 260) scale(1.35)">
-            <ellipse cx="0" cy="150" rx="118" ry="18" class="ph-shadow" />
-            <path d="M-110 -20h220v150h-220z" class="ph-stroke" />
-            <path d="M-110 28h220" class="ph-stroke" />
-            <path d="M-70 62h60v58h-60z" class="ph-soft" />
-            <path d="M20 18h58v102h-58z" class="ph-soft" />
-            <path d="M49 18v-22" class="ph-stroke" />
-            <path
-              d="M49 -4c10 8 16 14 16 22a16 16 0 1 1-32 0c0-8 6-14 16-22z"
-              class="ph-flame"
+        {categoria === "herramientas" && (
+          <g>
+            <path d="M150 350l100-130" class="ph-stroke" />
+            <circle cx="145" cy="360" r="22" class="ph-stroke" />
+            <path d="M235 210l30-30 20 20-30 30" class="ph-stroke" />
+          </g>
+        )}
+
+        {["envases", "aromas", "colorantes", "kits"].includes(categoria) && (
+          <g>
+            <rect
+              x="120"
+              y="220"
+              width="160"
+              height="130"
+              rx="12"
+              class="ph-stroke"
+            />
+            <path d="M120 270h160" class="ph-stroke" />
+            <path d="M170 220v-30h60v30" class="ph-stroke" />
+            <rect
+              x="150"
+              y="290"
+              width="100"
+              height="40"
+              rx="8"
+              class="ph-soft"
             />
           </g>
         )}
 
-        {categoria === "accesorios" && (
-          <g transform="translate(200 260) scale(1.3)">
-            <ellipse cx="0" cy="150" rx="108" ry="16" class="ph-shadow" />
-            <path d="M-86 -54c44-40 128-40 172 0" class="ph-stroke" />
-            <path d="M-64 10l128 104" class="ph-stroke" />
-            <path d="M64 10L-64 114" class="ph-stroke" />
-            <circle cx="0" cy="62" r="18" class="ph-flame" />
-            <path d="M-104 132h208" class="ph-stroke" />
-          </g>
-        )}
+        <text
+          x="200"
+          y="435"
+          text-anchor="middle"
+          font-family="Fraunces Variable, Georgia, serif"
+          font-size="16"
+          font-weight="600"
+          fill="var(--color-heading)"
+        >
+          ParafinaGel
+        </text>
       </svg>
     </div>
   )}
@@ -146,7 +199,15 @@ const categoria = producto.data.categoria;
     );
   }
 
-  .product-placeholder--difusores {
+  .product-placeholder--ceras {
+    background: linear-gradient(
+      145deg,
+      var(--color-accent-soft),
+      var(--color-surface)
+    );
+  }
+
+  .product-placeholder--mechas {
     background: linear-gradient(
       145deg,
       var(--color-sage-soft),
@@ -154,7 +215,7 @@ const categoria = producto.data.categoria;
     );
   }
 
-  .product-placeholder--kits {
+  .product-placeholder--aditivos {
     background: linear-gradient(
       145deg,
       var(--color-surface-strong),
@@ -162,10 +223,10 @@ const categoria = producto.data.categoria;
     );
   }
 
-  .product-placeholder--accesorios {
+  .product-placeholder--aceites {
     background: linear-gradient(
       145deg,
-      var(--color-border),
+      color-mix(in srgb, var(--color-sage-soft) 60%, var(--color-surface)),
       var(--color-surface)
     );
   }

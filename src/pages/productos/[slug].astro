@@ -31,6 +31,7 @@ const { producto } = Astro.props;
 const { Content } = await render(producto);
 const relacionados = await getRelacionados(producto);
 const precio = getPrecio(producto);
+const unidad = producto.data.unidad;
 const disponible = producto.data.disponible;
 const categoria = categoriaLabels[producto.data.categoria];
 const canonical = Astro.site
@@ -109,7 +110,12 @@ const jsonLd = {
 
         <p class="product-detail__description">{producto.data.descripcion}</p>
 
-        <p class="product-detail__price">{precio ?? "Precio por confirmar"}</p>
+        <p class="product-detail__price">
+          {precio ?? "Precio por confirmar"}
+          {precio && unidad && (
+            <span class="product-detail__unit">/ {unidad}</span>
+          )}
+        </p>
 
         <div class="product-detail__actions">
           <WhatsAppCTA
@@ -130,8 +136,14 @@ const jsonLd = {
           </div>
           {producto.data.tamano && (
             <div>
-              <dt>Tamaño</dt>
+              <dt>Presentación</dt>
               <dd>{producto.data.tamano}</dd>
+            </div>
+          )}
+          {unidad && (
+            <div>
+              <dt>Venta</dt>
+              <dd>Por {unidad}</dd>
             </div>
           )}
           <div>
@@ -257,6 +269,12 @@ const jsonLd = {
   .product-detail__price {
     font-size: var(--text-2xl);
     font-weight: 800;
+  }
+
+  .product-detail__unit {
+    color: var(--color-text-muted);
+    font-size: var(--text-base);
+    font-weight: 600;
   }
 
   .product-detail__actions {

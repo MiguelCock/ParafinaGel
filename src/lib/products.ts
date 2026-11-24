@@ -5,21 +5,41 @@ export type Producto = CollectionEntry<"productos">;
 export type Categoria = Producto["data"]["categoria"];
 
 export const categoriaLabels: Record<Categoria, string> = {
-  velas: "Velas",
-  difusores: "Difusores",
-  accesorios: "Accesorios",
+  ceras: "Ceras",
+  aditivos: "Aditivos",
+  mechas: "Mechas",
+  aceites: "Aceites",
+  envases: "Envases",
+  aromas: "Aromas",
+  colorantes: "Colorantes",
+  moldes: "Moldes",
+  etiquetas: "Etiquetas",
+  herramientas: "Herramientas",
   kits: "Kits",
 };
 
 const categoriaOrder: Record<Categoria, number> = {
-  velas: 0,
-  difusores: 1,
-  kits: 2,
-  accesorios: 3,
+  ceras: 0,
+  mechas: 1,
+  aditivos: 2,
+  aceites: 3,
+  envases: 4,
+  aromas: 5,
+  colorantes: 6,
+  moldes: 7,
+  etiquetas: 8,
+  herramientas: 9,
+  kits: 10,
 };
 
 export const mostrarBorradores =
   import.meta.env.DEV || import.meta.env.PUBLIC_SHOW_DRAFTS === "true";
+
+export const unidadLabels: Record<"kg" | "pote" | "unidad", string> = {
+  kg: "kg",
+  pote: "pote",
+  unidad: "unidad",
+};
 
 export async function getProductos(): Promise<Producto[]> {
   const productos = await getCollection(

@@ -12,10 +12,11 @@ const productos = defineCollection({
   schema: ({ image }) =>
     z.object({
       nombre: z.string().min(3),
-      categoria: z.enum(["velas", "difusores", "accesorios", "kits"]),
+      categoria: z.enum(["ceras", "aditivos", "mechas", "aceites", "envases", "aromas", "colorantes", "moldes", "etiquetas", "herramientas", "kits"]),
       precio: z.number().int().positive().optional(),
       precioDesde: z.number().int().positive().optional(),
       moneda: z.literal("COP").default("COP"),
+      unidad: z.enum(["kg", "pote", "unidad"]).optional(),
       tamano: z.string().optional(),
       aromas: z.array(z.string()).default([]),
       descripcion: z.string().min(20),
@@ -37,9 +38,10 @@ export const collections = { productos };
 | Campo | Tipo | Obligatorio | Nota |
 |---|---|---|---|
 | `nombre` | string | sí | Nombre comercial, sin código interno |
-| `categoria` | enum | sí | `velas`, `difusores`, `accesorios`, `kits` |
+| `categoria` | enum | sí | `ceras`, `aditivos`, `mechas`, `aceites`, `envases`, `aromas`, `colorantes`, `moldes`, `etiquetas`, `herramientas`, `kits` |
 | `precio` / `precioDesde` | int COP | no | Si faltan, se muestra “Precio por confirmar” |
 | `moneda` | literal `COP` | no | Default `COP` |
+| `unidad` | enum | no | `kg`, `pote` o `unidad`; se muestra junto al precio |
 | `tamano` | string | no | Peso o volumen visible al cliente |
 | `aromas` | string[] | no | Uno o varios; vacío para accesorios |
 | `descripcion` | string | sí | 1–2 frases concretas |
@@ -53,25 +55,22 @@ export const collections = { productos };
 
 ```yaml
 ---
-nombre: "Vela de lavanda"
-categoria: velas
-tamano: "250 g"
-aromas:
-  - Lavanda
-  - Bergamota
-descripcion: "Una vela floral y suave para cerrar el día, con lavanda y un fondo cítrico de bergamota."
-cuidados:
-  - "Recorta la mecha a 5 mm antes de cada uso."
+nombre: "Cera vaso"
+categoria: ceras
+precio: 15500
+unidad: kg
+tamano: "1 kg"
+descripcion: "Cera para velas en vaso, de acabado cremoso. Precio por kilo."
 disponible: true
 destacado: true
-borrador: true
+borrador: false
 ---
-Texto de ejemplo. Aquí irá la historia real del producto.
+Producto oficial de ParafinaGel.
 ```
 
 ## Reglas
 
 - `borrador: true` es obligatorio para placeholders; el build de producción los excluye.
-- Para ver el catálogo de ejemplo en un build: `PUBLIC_SHOW_DRAFTS=true npm run build`.
+- Para ver borradores futuros en un build: `PUBLIC_SHOW_DRAFTS=true npm run build`.
 - Cuando existan fotos reales, considera endurecer `imagenes` con `.min(1)`.
 - No agregues campos que nadie vaya a completar.
