@@ -665,6 +665,7 @@ export async function flowSandbox({ browser, baseUrl, outDir, report }) {
     await capture(page, outDir, "1280-light-sandbox-melt", report);
     await prepareBlockWithPointer(page);
     await capture(page, outDir, "1280-light-sandbox-melt-cut", report);
+    await auditState(page, report, "sandbox melt cut");
   } finally {
     recordConsoleErrors(report, "sandbox", page.__qa.errors);
     await page.close();
