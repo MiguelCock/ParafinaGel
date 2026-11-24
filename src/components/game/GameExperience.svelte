@@ -183,7 +183,7 @@
             <li>Escucha el brief y crea la nota.</li>
             <li>Diseña la vela: capas, figura o gel.</li>
             <li>Prepara el envase, el porta pabilo y la mecha.</li>
-            <li>Calienta, vierte y espera el curado.</li>
+            <li>Calienta, mezcla color y aroma, vierte y espera el curado.</li>
             <li>Cuida el acabado y recibe tu receta.</li>
           </ol>
           <p class="game-text">
@@ -216,7 +216,7 @@
   >
     <div class="game-help__card">
       <p class="game-eyebrow">Cómo jugar</p>
-      <h3 id="help-title" class="game-title">Siete estaciones, una receta</h3>
+      <h3 id="help-title" class="game-title">Ocho estaciones, una receta</h3>
       <ol>
         <li><strong>Mostrador:</strong> escucha el brief y crea la nota.</li>
         <li>
@@ -230,6 +230,10 @@
         <li>
           <strong>Cera:</strong> mantén la palanca para calentar y gira la cuchara
           dentro de la olla.
+        </li>
+        <li>
+          <strong>Mezcla:</strong> cada capa o parte tiene su fogón. Calienta, dosifica
+          color gota a gota, agrega el aroma y revuelve.
         </li>
         <li>
           <strong>Vertido:</strong> la mecha ya está lista; arrastra la jarra sobre

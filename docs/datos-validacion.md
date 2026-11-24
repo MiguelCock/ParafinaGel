@@ -120,6 +120,21 @@ reto de temperatura; no son una tabla técnica validada.
 1–1,5 cm. Falta decidir si el corte depende del tipo de vela. Bloquea #90 y
 #114.
 
+### 3.1 Mezcla y dosificación
+
+| Código | Dato                       | Valor actual                                                  | Estado          |
+| ------ | -------------------------- | ------------------------------------------------------------- | --------------- |
+| MIX-01 | Fogones por vela           | 1 por capa o parte del molde; máximo 4                        | **Placeholder** |
+| MIX-02 | Color por gotas            | `max(1, round(gramos / 60))`; el colorante es concentrado     | **Placeholder** |
+| MIX-03 | Aroma manual               | 8–10 % en recipiente; 3–6 % en gel, dosificado en ml          | **Placeholder** |
+| MIX-04 | Aroma por fogón            | Un aroma por fogón; hasta 4 aromas elegidos en el diseño      | **Placeholder** |
+| MIX-05 | Palanca de calor por fogón | Cada fogón empieza 6 °C bajo el mínimo y sube hasta el máximo | **Placeholder** |
+| MIX-06 | Receta por lote            | Aroma y gotas de color se reparten entre los fogones          | **Placeholder** |
+
+**Pendiente MIX-03:** confirmar si el aroma se mide por peso o volumen, la
+temperatura de incorporación y la equivalencia de las gotas de colorante.
+Bloquea #111, #90 y #114.
+
 ## 4. Envases, moldes y materiales sin lista oficial
 
 | Código | Material                 | Valores actuales                                               | Estado          |
@@ -159,6 +174,8 @@ Checklist para revisar con el negocio antes de publicar datos como reales:
 
 - Temperaturas, tiempos de curado y velocidad de fusión de las 10 ceras.
 - Carga de aroma (8–10 % / 3–6 %) y su unidad.
+- Gotas reales de colorante por peso de cera y temperatura de mezcla.
+- Reparto de aromas y colores entre los fogones de cada capa o parte.
 - Porcentaje de ácido esteárico y su aplicación a soya o gel.
 - Capacidades y diámetros de envases, medidas de moldes y etiquetas.
 - Nombres y precios de envases, aromas, colorantes, moldes, etiquetas,

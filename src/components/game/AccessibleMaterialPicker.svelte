@@ -154,21 +154,23 @@
       </select>
     </label>
 
-    <label>
-      <span>Aroma</span>
-      <select
-        value={game.design.scentIds[0] ?? ""}
-        onchange={(event) =>
-          event.currentTarget.value &&
-          game.selectScent(event.currentTarget.value)}
-        data-testid="accessible-scent"
-      >
-        <option value="">Sin elegir</option>
+    <fieldset class="accessible-picker__fieldset">
+      <legend>Aroma</legend>
+      <div class="accessible-picker__checks">
         {#each scents as scent}
-          <option value={scent.id}>{scent.nombre}</option>
+          <label>
+            <input
+              type="checkbox"
+              checked={game.design.scentIds.includes(scent.id)}
+              onchange={() => game.selectScent(scent.id)}
+              data-testid={`accessible-scent-${scent.id}`}
+            />
+            {scent.nombre}
+          </label>
         {/each}
-      </select>
-    </label>
+      </div>
+      <small>Hasta 4 aromas; cada fogón usará uno.</small>
+    </fieldset>
 
     <label>
       <span>Etiqueta</span>
@@ -303,8 +305,23 @@
     align-items: center;
   }
 
-  .accessible-picker__block > p {
+  .accessible-picker__block > p,
+  .accessible-picker__fieldset legend {
     color: var(--color-heading);
     font-weight: 800;
+  }
+
+  .accessible-picker__fieldset {
+    display: grid;
+    gap: 0.35rem;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .accessible-picker__fieldset small {
+    color: var(--color-text-muted);
+    font-size: 0.55rem;
+    font-weight: 500;
   }
 </style>

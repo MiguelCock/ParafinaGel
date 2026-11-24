@@ -93,8 +93,7 @@
     background-color var(--motion-fast, 160ms) var(--motion-ease, ease),
     border-color var(--motion-fast, 160ms) var(--motion-ease, ease),
     color var(--motion-fast, 160ms) var(--motion-ease, ease),
-    transform var(--motion-fast, 160ms) var(--motion-ease, ease),
-    opacity var(--motion-fast, 160ms) var(--motion-ease, ease);
+    transform var(--motion-fast, 160ms) var(--motion-ease, ease);
 }
 
 .game-action:hover:not(:disabled) {

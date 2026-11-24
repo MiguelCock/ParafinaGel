@@ -7,6 +7,7 @@
   import FinishPanel from "./FinishPanel.svelte";
   import LockedPanel from "./LockedPanel.svelte";
   import MeltPanel from "./MeltPanel.svelte";
+  import MixPanel from "./MixPanel.svelte";
   import OverviewPanel from "./OverviewPanel.svelte";
   import PourPanel from "./PourPanel.svelte";
   import ScorePanel from "./ScorePanel.svelte";
@@ -33,6 +34,8 @@
   <DesignPanel {game} />
 {:else if game.phase === "melt"}
   <MeltPanel {game} />
+{:else if game.phase === "mix"}
+  <MixPanel {game} />
 {:else if game.phase === "pour"}
   <PourPanel {game} />
 {:else if game.phase === "wick"}

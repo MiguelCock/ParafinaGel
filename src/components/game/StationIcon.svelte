@@ -33,6 +33,11 @@
     <path
       d="M3 11h2M19 11h2M8 7c0-2 1-2 1-4M12 7c0-2 1-2 1-4M16 7c0-2 1-2 1-4"
     />
+  {:else if station === "mix"}
+    <path d="M4 11h6v3a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-3Z" />
+    <path d="M14 11h6v3a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2v-3Z" />
+    <path d="M6 11V9h2v2M16 11V9h2v2" />
+    <path d="M8 6c0-1.5 1-1.5 1-3M18 6c0-1.5 1-1.5 1-3" />
   {:else if station === "pour"}
     <path d="M7 4h8l-1 8H8L7 4Z" />
     <path d="M10 12v3M6 15h12v5H6z" />

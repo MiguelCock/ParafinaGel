@@ -91,6 +91,8 @@ Los precios de venta se cargan en `src/content/productos/`. No se incluyen costo
 - Porcentaje de ácido esteárico y si se usa en todas las ceras.
 - Si el 8–10 % de aroma es por peso o por volumen.
 - Temperatura para agregar color y aroma.
+- Gotas reales de colorante por peso de cera y temperatura de mezcla.
+- Si cada capa o parte lleva su propio lote y su propio aroma.
 - Tabla real de pabilos por diámetro y tipo de cera.
 - Capacidades y diámetros de latas, cerámicas y vidrios.
 - Tiempos de curado y temperaturas reales.
@@ -111,3 +113,10 @@ Implementación actual:
 - El ácido esteárico se aplica solo a parafinas en bloque. La dosis usa un 10 %
   de ejemplo, marcado como “por confirmar” en la receta y en el proceso.
 - No se aplica a soya ni gel hasta que el negocio confirme compatibilidad y dosis.
+- La estación de mezcla reparte la cera en un fogón por capa o parte del molde
+  (hasta 4). Cada fogón tiene su palanca de calor, su color por gotas y su aroma.
+- El color se dosifica gota a gota porque los colorantes son concentrados; el
+  aroma se dosifica aparte y cada fogón usa un solo aroma de los elegidos en el
+  diseño.
+- La receta reparte el aroma y las gotas de color por fogón. Las cantidades
+  siguen siendo de ejemplo hasta validar peso/volumen, temperatura y dosis.

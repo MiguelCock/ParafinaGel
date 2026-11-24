@@ -1,4 +1,11 @@
-import { STEARIC_RATIO, waxNeedsStearic } from "./craft";
+import {
+  STEARIC_RATIO,
+  createPourUnits,
+  mixAromaRange,
+  mixTargetColorDrops,
+  totalWaxGrams,
+  waxNeedsStearic,
+} from "./craft";
 import {
   orderTypeLabels,
   suppliesById,
@@ -7,7 +14,7 @@ import {
   wickTypesById,
 } from "./data";
 import { designSummary } from "./design";
-import type { CandleDesign, RecipeLine, SupplyCategory } from "./types";
+import type { CandleDesign, Craft, RecipeLine, SupplyCategory } from "./types";
 
 const categoryOrder: SupplyCategory[] = [
   "cera",
@@ -38,13 +45,13 @@ function recipeLine(supplyId: string, cantidad: number): RecipeLine | null {
   };
 }
 
-export function buildRecipe(design: CandleDesign): RecipeLine[] {
+export function buildRecipe(design: CandleDesign, craft?: Craft): RecipeLine[] {
   const lines: (RecipeLine | null)[] = [];
   const wax = design.waxId ? waxesById[design.waxId] : null;
 
   if (wax) {
-    const grams =
-      Math.ceil(((design.sizeId === "180" ? 180 : 250) * 0.9) / 5) * 5;
+    const grams = totalWaxGrams(design);
+    const units = craft?.units ?? createPourUnits(design);
     lines.push(recipeLine(wax.supplyId, grams));
 
     if (waxNeedsStearic(design)) {
@@ -61,23 +68,44 @@ export function buildRecipe(design: CandleDesign): RecipeLine[] {
       }
     }
 
-    if (design.scentIds.length > 0) {
-      const milliliters = Math.ceil(grams * wax.fragranceMin);
-      const perScent = milliliters / design.scentIds.length;
-      for (const scentId of design.scentIds) {
-        lines.push(recipeLine(`aroma-${scentId}`, Math.ceil(perScent)));
+    const aromaByScent = new Map<string, number>();
+    for (const unit of units) {
+      if (!unit.scentId) continue;
+      const range = mixAromaRange(unit.grams, wax);
+      aromaByScent.set(
+        unit.scentId,
+        (aromaByScent.get(unit.scentId) ?? 0) + range.min,
+      );
+    }
+    for (const [scentId, milliliters] of aromaByScent) {
+      const aroma = recipeLine(`aroma-${scentId}`, Math.ceil(milliliters));
+      if (aroma) {
+        lines.push({
+          ...aroma,
+          detalle: `${Math.round(wax.fragranceMin * 100)}–${Math.round(wax.fragranceMax * 100)} % · falta confirmar peso/volumen.`,
+          porConfirmar: true,
+        });
       }
     }
 
-    const colors = new Set<string>();
-    if (design.mode === "figura") {
-      Object.values(design.figureColors).forEach((color) => colors.add(color));
-    } else if (design.mode !== "gel") {
-      design.layers.forEach((layer) => colors.add(layer.colorId));
+    const dropsByColor = new Map<string, number>();
+    if (design.mode !== "gel") {
+      for (const unit of units) {
+        dropsByColor.set(
+          unit.colorId,
+          (dropsByColor.get(unit.colorId) ?? 0) +
+            mixTargetColorDrops(unit.grams),
+        );
+      }
     }
-    if (colors.size > 0) {
-      for (const colorId of colors) {
-        lines.push(recipeLine(`color-${colorId}`, 4));
+    for (const [colorId, drops] of dropsByColor) {
+      const color = recipeLine(`color-${colorId}`, drops);
+      if (color) {
+        lines.push({
+          ...color,
+          detalle: "Gotas de ejemplo; el colorante es concentrado.",
+          porConfirmar: true,
+        });
       }
     }
   }

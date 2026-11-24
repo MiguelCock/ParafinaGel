@@ -6,10 +6,13 @@ import {
   wickTypesById,
 } from "./data";
 import {
+  AROMA_POUR_RATE,
   GEL_BUBBLES,
   MAX_CUTS,
+  MIX_FULL_STIRS,
   POUR_MIN_TO_FINISH,
   POUR_SPEED,
+  TEMP_START,
   completeFilm,
   createCraft,
   currentUnit,
@@ -17,6 +20,7 @@ import {
   finishPourUnit,
   isPourComplete,
   meltHeatMultiplier,
+  mixUnitReady,
   stearicReady as isStearicReady,
   waxNeedsCutting,
   waxNeedsStearic,
@@ -38,6 +42,7 @@ import type {
   GameMode,
   OrderType,
   Phase,
+  PourUnit,
   RecipeLine,
   ScoreBreakdown,
   StationId,
@@ -63,6 +68,7 @@ export class GameState {
   served = $state(0);
   paused = $state(false);
   expert = $state(false);
+  mixIndex = $state(0);
 
   get brief(): Brief {
     return briefs[this.briefIndex] ?? briefs[0];
@@ -151,6 +157,30 @@ export class GameState {
     );
   }
 
+  get mixUnit() {
+    return this.craft.units[this.mixIndex] ?? null;
+  }
+
+  private mixTemperatureReady(unit: PourUnit): boolean {
+    const wax = this.wax;
+    return (
+      Boolean(wax) &&
+      unit.temperature >= (wax?.meltMin ?? 0) &&
+      unit.temperature <= (wax?.meltMax ?? 100)
+    );
+  }
+
+  get mixReadyCount(): number {
+    return this.craft.units.filter((unit) => mixUnitReady(unit)).length;
+  }
+
+  get canContinueMix(): boolean {
+    return (
+      this.craft.units.length > 0 &&
+      this.craft.units.every((unit) => mixUnitReady(unit))
+    );
+  }
+
   get unit() {
     return currentUnit(this.craft);
   }
@@ -186,7 +216,10 @@ export class GameState {
   }
 
   get recipe(): RecipeLine[] {
-    return buildRecipe(this.design);
+    const mixed = this.craft.units.some(
+      (unit) => unit.colorDrops > 0 || unit.aromaMl > 0 || unit.mix > 0,
+    );
+    return buildRecipe(this.design, mixed ? this.craft : undefined);
   }
 
   get wickInfo(): WickType | null {
@@ -210,6 +243,7 @@ export class GameState {
     this.noted = false;
     this.design = createDesign(this.brief.type);
     this.craft = createCraft(this.design);
+    this.mixIndex = 0;
     this.score = null;
     this.totalStars = 0;
     this.totalPoints = 0;
@@ -225,6 +259,7 @@ export class GameState {
     this.noted = false;
     this.design = createDesign("clasico");
     this.craft = createCraft(this.design);
+    this.mixIndex = 0;
     this.score = null;
     this.phase = "design";
     this.view = "design";
@@ -256,6 +291,7 @@ export class GameState {
     this.noted = true;
     this.design = createDesign(this.brief.type);
     this.craft = createCraft(this.design);
+    this.mixIndex = 0;
     this.phase = "design";
     this.view = "design";
   }
@@ -264,6 +300,7 @@ export class GameState {
     if (this.mode !== "sandbox") return;
     this.design = createDesign(type);
     this.craft = createCraft(this.design);
+    this.mixIndex = 0;
     this.score = null;
   }
 
@@ -292,7 +329,26 @@ export class GameState {
   }
 
   selectScent(id: string): void {
-    this.design.scentIds = this.design.scentIds.includes(id) ? [] : [id];
+    if (this.design.scentIds.includes(id)) {
+      this.design.scentIds = this.design.scentIds.filter(
+        (scentId) => scentId !== id,
+      );
+      this.refreshMixScents();
+      return;
+    }
+    if (this.design.scentIds.length >= 4) return;
+    this.design.scentIds = [...this.design.scentIds, id];
+    this.refreshMixScents();
+  }
+
+  private refreshMixScents(): void {
+    if (this.phase !== "design") return;
+    const scents = this.design.scentIds;
+    this.craft.units.forEach((unit, index) => {
+      if (unit.aromaMl > 0) return;
+      unit.scentId =
+        scents.length > 0 ? (scents[index % scents.length] ?? null) : null;
+    });
   }
 
   setLayerColor(index: number, colorId: string): void {
@@ -333,6 +389,7 @@ export class GameState {
   goWick(): void {
     if (!this.canGoWick) return;
     this.craft = createCraft(this.design);
+    this.mixIndex = 0;
     this.score = null;
     this.phase = "wick";
     this.view = "wick";
@@ -375,9 +432,93 @@ export class GameState {
     this.craft.stirs = Math.min(3, this.craft.stirs + 1);
   }
 
-  goPour(): void {
+  goMix(): void {
     if (!this.canContinueMelt || !this.craft.wick.placed) return;
     this.craft.heating = false;
+    this.stopAroma();
+    const temperature = this.wax
+      ? Math.max(TEMP_START, this.wax.meltMin - 6)
+      : 54;
+    for (const unit of this.craft.units) {
+      unit.temperature = temperature;
+      unit.heating = false;
+    }
+    this.craft.mix = 0;
+    this.mixIndex = 0;
+    this.phase = "mix";
+    this.view = "mix";
+  }
+
+  selectMixBatch(index: number): void {
+    if (this.phase !== "mix") return;
+    this.stopAroma();
+    for (const unit of this.craft.units) unit.heating = false;
+    this.mixIndex = clamp(index, 0, Math.max(0, this.craft.units.length - 1));
+  }
+
+  startMixHeat(index: number): void {
+    if (this.phase !== "mix") return;
+    const unit = this.craft.units[index];
+    if (!unit) return;
+    this.selectMixBatch(index);
+    for (const item of this.craft.units) item.heating = false;
+    unit.heating = true;
+  }
+
+  stopMixHeat(index: number): void {
+    const unit = this.craft.units[index];
+    if (unit) unit.heating = false;
+  }
+
+  addColorDrop(index: number): void {
+    if (this.phase !== "mix") return;
+    const unit = this.craft.units[index];
+    if (!unit || !this.mixTemperatureReady(unit)) return;
+    unit.colorDrops = Math.min(30, unit.colorDrops + 1);
+  }
+
+  startAroma(index: number): void {
+    if (this.phase !== "mix") return;
+    const unit = this.craft.units[index];
+    if (!unit || !this.mixTemperatureReady(unit)) return;
+    this.selectMixBatch(index);
+    this.stopAroma();
+    unit.aromaPouring = true;
+  }
+
+  stopAroma(): void {
+    for (const unit of this.craft.units) unit.aromaPouring = false;
+  }
+
+  stirMix(index: number): void {
+    if (this.phase !== "mix") return;
+    const unit = this.craft.units[index];
+    if (
+      !unit ||
+      !this.mixTemperatureReady(unit) ||
+      unit.colorDrops <= 0 ||
+      unit.aromaMl <= 0
+    ) {
+      return;
+    }
+    unit.stirs = Math.min(MIX_FULL_STIRS, unit.stirs + 1);
+    unit.mix = unit.stirs / MIX_FULL_STIRS;
+    this.craft.mix =
+      this.craft.units.reduce((sum, item) => sum + item.mix, 0) /
+      this.craft.units.length;
+  }
+
+  setMixScent(index: number, scentId: string): void {
+    if (this.phase !== "mix" || !this.design.scentIds.includes(scentId)) return;
+    const unit = this.craft.units[index];
+    if (!unit || unit.aromaMl > 0) return;
+    unit.scentId = scentId;
+  }
+
+  goPour(): void {
+    if (!this.canContinueMix || !this.craft.wick.placed) return;
+    for (const unit of this.craft.units) unit.heating = false;
+    this.stopAroma();
     this.craft.pourOffset = 0.55;
     this.phase = "pour";
     this.view = "pour";
@@ -567,6 +708,7 @@ export class GameState {
     this.noted = false;
     this.design = createDesign(this.brief.type);
     this.craft = createCraft(this.design);
+    this.mixIndex = 0;
     this.score = null;
     this.phase = "brief";
     this.view = "counter";
@@ -581,6 +723,7 @@ export class GameState {
     this.noted = false;
     this.design = createDesign("clasico");
     this.craft = createCraft(this.design);
+    this.mixIndex = 0;
     this.score = null;
     this.totalStars = 0;
     this.totalPoints = 0;
@@ -623,6 +766,34 @@ export class GameState {
       }
     }
 
+    if (this.phase === "mix") {
+      const wax = this.wax;
+      if (!wax) return;
+
+      for (const unit of this.craft.units) {
+        if (unit.heating) {
+          unit.temperature = Math.min(
+            wax.meltMax,
+            unit.temperature + wax.heatRate * 0.9 * delta,
+          );
+        }
+
+        if (unit.aromaPouring) {
+          if (
+            unit.temperature >= wax.meltMin &&
+            unit.temperature <= wax.meltMax
+          ) {
+            unit.aromaMl = Math.min(
+              999,
+              Math.round((unit.aromaMl + AROMA_POUR_RATE * delta) * 10) / 10,
+            );
+          } else {
+            unit.aromaPouring = false;
+          }
+        }
+      }
+    }
+
     if (this.phase === "pour") {
       if (this.craft.waitingFilm) {
         this.craft.filmRemaining = Math.max(
@@ -634,7 +805,6 @@ export class GameState {
         }
       } else if (this.craft.pouring) {
         const unit = currentUnit(this.craft);
-        const wax = this.wax;
         if (unit) {
           const aligned = Math.abs(this.craft.pourOffset) <= 0.32;
           if (aligned && unit.fill < 100) {
@@ -643,14 +813,6 @@ export class GameState {
 
           if (!aligned || unit.fill >= 100) {
             this.craft.spill = Math.min(1, this.craft.spill + 0.2 * delta);
-          }
-
-          if (
-            wax &&
-            this.craft.temperature >= wax.meltMax - 4 &&
-            !this.craft.overheated
-          ) {
-            this.craft.mix = Math.min(1, this.craft.mix + 0.055 * delta);
           }
         }
       }

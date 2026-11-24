@@ -1,5 +1,5 @@
 export type StationId =
-  "counter" | "design" | "melt" | "pour" | "wick" | "cool" | "finish";
+  "counter" | "design" | "melt" | "pour" | "wick" | "cool" | "finish" | "mix";
 
 export type Phase = "intro" | "brief" | StationId | "score" | "dayEnd";
 
@@ -210,6 +210,15 @@ export interface PourUnit {
   fill: number;
   done: boolean;
   accuracy: number | null;
+  grams: number;
+  temperature: number;
+  heating: boolean;
+  scentId: string | null;
+  colorDrops: number;
+  aromaMl: number;
+  aromaPouring: boolean;
+  stirs: number;
+  mix: number;
 }
 
 export interface WickState {

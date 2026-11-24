@@ -36,7 +36,7 @@ Sitio de **ParafinaGel**, negocio familiar de velas que vende **insumos y materi
   - `CounterScene`, `CustomerPortrait`, `BriefTicket`, `BriefSummary`: mostrador y pedido progresivo.
   - `DesignPanel`, `DesignStructure`: diseñador y estructura de capas.
   - `MaterialShelf`, `AccessibleMaterialPicker`: estantería física y selector accesible de materiales.
-  - `MeltPanel`, `PourPanel`, `WickPanel`, `CoolPanel`, `FinishPanel`, `ScorePanel`, `ShoppingList`: paneles y receta.
+  - `MeltPanel`, `MixPanel`, `PourPanel`, `WickPanel`, `CoolPanel`, `FinishPanel`, `ScorePanel`, `ShoppingList`: paneles y receta.
   - `CandlePreview`/`MoldPreview`: vista SVG de respaldo sin WebGL.
 - `src/lib/game/`:
   - `types.ts`: diseño, brief, fabricación, scoring y receta.
@@ -50,7 +50,7 @@ Sitio de **ParafinaGel**, negocio familiar de velas que vende **insumos y materi
   - `supplies.ts`: receta, cantidades y mensaje de WhatsApp.
   - `portrait.ts`: SVG por capas de los retratos.
   - `game-state.svelte.ts`: orquestación con runes.
-  - `render/`: `stage-renderer.ts`, `scene.ts`, `candle-rig.ts`, `palette.ts`, `motion.ts` y `scenes/` (design, melt, pour, wick, cool, finish).
+  - `render/`: `stage-renderer.ts`, `scene.ts`, `candle-rig.ts`, `palette.ts`, `motion.ts` y `scenes/` (design, melt, mix, pour, wick, cool, finish).
   - `game.test.ts` y `motion.test.ts`: tests del motor, líquido y motion.
 - `src/styles/game.css`: estilos compartidos de la UI del juego.
 - `src/content.config.ts`: schema Zod de productos con loader `glob`.
@@ -64,7 +64,7 @@ Sitio de **ParafinaGel**, negocio familiar de velas que vende **insumos y materi
 
 ## Juego WebGL
 
-- Flujo guiado: `brief → design → wick (preparación) → melt → pour → cool → finish → score`, 4 pedidos y resumen del día.
+- Flujo guiado: `brief → design → wick (preparación) → melt → mix → pour → cool → finish → score`, 4 pedidos y resumen del día.
 - **WebGL con PixiJS 8** para el escenario y los retos. No uses Three.js/Threlte: la decisión es 2D WebGL.
 - `StageCanvas` importa Pixi dinámicamente solo en cliente; el resto del sitio no carga el motor.
 - **Escenario virtual 1000×640** escalado a la caja disponible, con coordenadas compartidas para evitar desalineaciones.
@@ -74,11 +74,12 @@ Sitio de **ParafinaGel**, negocio familiar de velas que vende **insumos y materi
 - **Retos manuales**:
   - Preparación: colocar el porta pabilo, ajustar la mecha al centro y usar el sostenedor antes de verter.
   - Cera: cortar la parafina en bloque (2–4 cortes) antes de calentar; agregar ácido esteárico solo a las parafinas en bloque; mantener la palanca para calentar y arrastrar la cuchara en círculos.
+  - Mezcla: un fogón por capa o parte; calentar cada fogón con su palanca, dosificar color gota a gota, aroma manual y un aroma por fogón; revolver cada lote.
   - Vertido: arrastrar la jarra sobre la boca del frasco y soltar para cerrar la capa.
   - Curado: retirar el sostenedor, tocar el ventilador; en gel, tocar las burbujas.
   - Acabado: arrastrar la etiqueta y su tirador, cortar la mecha sobre la vela, tocar tapa y empaque.
-- **Sin sliders ni botones para los retos**. El teclado es la alternativa accesible: flechas, Espacio, Enter, Mayús + flechas, 1–4 en acabado.
-- **Simulación de líquido viscoso**: superficie ondulada, volumen, película entre capas, salpicaduras, mezcla de color por temperatura y burbujas de gel. Afecta el puntaje (`mix` y `spill`).
+- **Sin sliders ni botones para los retos**. El teclado es la alternativa accesible: flechas, Espacio, Enter, Mayús + flechas, 1–4 para fogones y 1–4 en acabado.
+- **Simulación de líquido viscoso**: superficie ondulada, volumen, película entre capas, salpicaduras, mezcla de color al revolver y burbujas de gel. Afecta el puntaje (`mix` y `spill`).
 - **Puntaje**: diseño 60 + taller 40 (temperatura, vertido, mezcla, derrame, mecha, etiqueta, corte y gel). Estrellas y puntos; sin precio ni propina.
 - **Cierre comercial**: receta con cantidades y CTA de WhatsApp. El catálogo público ya tiene precios oficiales de 16 insumos; faltan envases, aromas, colorantes, moldes y etiquetas.
 - **Modo libre**: sin brief ni reloj; se puede ver la receta o probar el taller.
@@ -132,8 +133,8 @@ Sitio de **ParafinaGel**, negocio familiar de velas que vende **insumos y materi
 - Dominio: `astro.config.mjs`.
 - Catálogo: 16 productos oficiales cargados desde la lista de precios. Faltan envases, aromas, colorantes, moldes, etiquetas, fotos y descripciones ampliadas.
 - Briefs, cantidades de receta y disponibilidad: validar con el negocio.
-- Juego: temperaturas, tiempos, rangos de mecha y medidas de corte son placeholders; no mostrarlos como datos reales.
-- Proceso: porcentaje de ácido esteárico, base del 8–10 % de aroma, tabla de pabilos por diámetro y medidas de lata/cerámica están pendientes de validar.
+- Juego: temperaturas, tiempos, rangos de mecha, medidas de corte, gotas de colorante y dosis de aroma son placeholders; no mostrarlos como datos reales.
+- Proceso: porcentaje de ácido esteárico, base del 8–10 % de aroma, temperatura de mezcla, tabla de pabilos por diámetro y medidas de lata/cerámica están pendientes de validar.
 - Ceras y pabilos: los precios y referencias son oficiales; las capacidades/diámetros de envases siguen siendo de ejemplo.
 - Fotos: los placeholders SVG se reemplazan por imágenes en `src/assets/productos/...`.
 - Arte: retratos en `portrait.ts` y escenas Pixi se pueden reemplazar por arte final manteniendo anclas y `data-testid`.

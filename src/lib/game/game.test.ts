@@ -2,14 +2,23 @@ import { describe, expect, it } from "vitest";
 import {
   MAX_CUTS,
   MIN_CUTS,
+  MIX_FULL_STIRS,
   createCraft,
+  createPourUnits,
   cutReady,
   finishPourUnit,
   labelAccuracy,
   meltHeatMultiplier,
+  mixAromaAccuracy,
+  mixAromaRange,
+  mixColorAccuracy,
+  mixScore,
+  mixTargetColorDrops,
+  mixUnitReady,
   pourAccuracy,
   prepScore,
   stearicReady,
+  totalWaxGrams,
   trimAccuracy,
   wickAccuracy,
   waxNeedsCutting,
@@ -62,7 +71,12 @@ function perfectCraft(design: CandleDesign): Craft {
     fill: unit.target,
     done: true,
     accuracy: 1,
+    colorDrops: mixTargetColorDrops(unit.grams),
+    aromaMl: mixAromaRange(unit.grams, wax).min,
+    stirs: MIX_FULL_STIRS,
+    mix: 1,
   }));
+  craft.mix = 1;
   craft.wick = { x: 0, y: 0, placed: true, trimmed: true, trimMm: 5 };
   craft.label = { x: 0, y: 0, rotation: 0, placed: true };
   craft.gelPopped = craft.gelBubbles;
@@ -259,6 +273,102 @@ describe("wax preparation", () => {
   });
 });
 
+describe("mix station", () => {
+  it("creates one batch per layer and splits the wax", () => {
+    const design = designForBrief(briefs[1]);
+    const units = createPourUnits(design);
+
+    expect(units).toHaveLength(design.layers.length);
+    expect(units.reduce((sum, unit) => sum + unit.grams, 0)).toBeCloseTo(225);
+  });
+
+  it("creates one batch per mold part", () => {
+    const design = designForBrief(briefs[2]);
+    const units = createPourUnits(design);
+
+    expect(units).toHaveLength(2);
+    expect(units.reduce((sum, unit) => sum + unit.grams, 0)).toBeCloseTo(165);
+  });
+
+  it("assigns one aroma per batch and allows two scents", () => {
+    const design = designForBrief(briefs[1]);
+    design.scentIds = ["lavanda", "vainilla"];
+
+    const units = createPourUnits(design);
+
+    expect(units.map((unit) => unit.scentId)).toEqual([
+      "lavanda",
+      "vainilla",
+      "lavanda",
+    ]);
+  });
+
+  it("doses color by drops and aroma by weight", () => {
+    const design = designForBrief(briefs[0]);
+    const wax = waxesById[design.waxId!];
+    const unit = createPourUnits(design)[0]!;
+    const aroma = mixAromaRange(unit.grams, wax);
+
+    expect(totalWaxGrams(design)).toBe(225);
+    expect(mixTargetColorDrops(unit.grams)).toBe(4);
+    expect(aroma.min).toBeCloseTo(18);
+    expect(aroma.max).toBeCloseTo(22.5);
+    expect(mixColorAccuracy({ ...unit, colorDrops: 4 })).toBe(1);
+  });
+
+  it("requires color, aroma and at least one stir", () => {
+    const design = designForBrief(briefs[1]);
+    const unit = createPourUnits(design)[0]!;
+
+    expect(mixUnitReady(unit)).toBe(false);
+
+    unit.colorDrops = 1;
+    unit.aromaMl = 1;
+    unit.stirs = 1;
+    unit.mix = 1 / 3;
+
+    expect(mixUnitReady(unit)).toBe(true);
+  });
+
+  it("splits the aroma recipe across the chosen scents", () => {
+    const design = designForBrief(briefs[1]);
+    design.scentIds = ["lavanda", "vainilla"];
+    const recipe = buildRecipe(design);
+    const aromas = recipe
+      .filter((line) => line.supplyId.startsWith("aroma-"))
+      .map((line) => line.supplyId)
+      .sort();
+
+    expect(aromas).toEqual(["aroma-lavanda", "aroma-vainilla"]);
+  });
+
+  it("accepts any aroma dose inside the range", () => {
+    const design = designForBrief(briefs[0]);
+    const wax = waxesById[design.waxId!];
+    const unit = createPourUnits(design)[0]!;
+
+    expect(mixAromaAccuracy({ ...unit, aromaMl: 18 }, wax)).toBe(1);
+    expect(mixAromaAccuracy({ ...unit, aromaMl: 22.5 }, wax)).toBe(1);
+    expect(mixAromaAccuracy({ ...unit, aromaMl: 12 }, wax)).toBeLessThan(1);
+    expect(mixAromaAccuracy({ ...unit, aromaMl: 30 }, wax)).toBeLessThan(1);
+  });
+
+  it("scores the mix by drops, aroma and stirring", () => {
+    const design = designForBrief(briefs[0]);
+    const wax = waxesById[design.waxId!];
+    const craft = createCraft(design);
+    const unit = craft.units[0]!;
+
+    expect(mixScore(design, craft)).toBe(0);
+
+    unit.colorDrops = mixTargetColorDrops(unit.grams);
+    unit.aromaMl = mixAromaRange(unit.grams, wax).min;
+    unit.mix = 1;
+
+    expect(mixScore(design, craft)).toBeCloseTo(4);
+  });
+});
+
 describe("craft execution", () => {
   it("scores a perfect execution at 40", () => {
     for (const brief of briefs) {
@@ -335,10 +445,16 @@ describe("craft execution", () => {
     expect(result.total).toBe(100);
   });
 
-  it("penalizes mixed layers and spilled wax", () => {
+  it("penalizes an unprepared mix and spilled wax", () => {
     const design = designForBrief(briefs[1]);
     const craft = perfectCraft(design);
-    craft.mix = 1;
+    for (const unit of craft.units) {
+      unit.colorDrops = 0;
+      unit.aromaMl = 0;
+      unit.stirs = 0;
+      unit.mix = 0;
+    }
+    craft.mix = 0;
     craft.spill = 1;
 
     const execution = scoreCandle(design, briefs[1].target, craft).execution;

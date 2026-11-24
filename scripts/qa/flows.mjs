@@ -60,6 +60,7 @@ async function designFor(page, index) {
     await pickLayerColor(page, 1, "ambar");
     await pickLayerColor(page, 2, "crema");
     await pickMaterial(page, "scent", "vainilla");
+    await pickMaterial(page, "scent", "cafe");
     await pickMaterial(page, "wick", "pabilo-67");
     await pickMaterial(page, "label", "regalo");
   } else if (index === 2) {
@@ -131,6 +132,168 @@ async function waitForStirs(page) {
       ),
     { timeout: 20000 },
   );
+}
+
+const MIX_LAYOUTS = {
+  1: [{ x: 500, y: 330 }],
+  2: [
+    { x: 300, y: 330 },
+    { x: 700, y: 330 },
+  ],
+  3: [
+    { x: 300, y: 270 },
+    { x: 700, y: 270 },
+    { x: 500, y: 480 },
+  ],
+  4: [
+    { x: 300, y: 255 },
+    { x: 700, y: 255 },
+    { x: 300, y: 465 },
+    { x: 700, y: 465 },
+  ],
+};
+
+async function mixBurnerCount(page) {
+  return page.$$eval(
+    '[data-testid^="mix-burner-"]',
+    (elements) => elements.length,
+  );
+}
+
+async function waitForMixRange(page) {
+  await page.waitForFunction(
+    () => {
+      const panel = document.querySelector('[data-testid="mix-panel"]');
+      return panel && !panel.innerText.includes("Calienta el fogón");
+    },
+    { timeout: 15000 },
+  );
+}
+
+async function readMixDose(page, testid) {
+  return page.$eval(`[data-testid="${testid}"]`, (element) => ({
+    current: Number(element.dataset.current ?? 0),
+    target: Number(element.dataset.target ?? 0),
+    min: Number(element.dataset.min ?? 0),
+    max: Number(element.dataset.max ?? 0),
+  }));
+}
+
+async function waitForMixStirs(page) {
+  await page.waitForFunction(
+    () =>
+      /Revueltos:\s*3\/3/.test(
+        document.querySelector('[data-testid="mix-panel"]')?.innerText ?? "",
+      ),
+    { timeout: 15000 },
+  );
+}
+
+async function waitForAroma(page, minimum) {
+  await page.waitForFunction(
+    (value) => {
+      const row = document.querySelector('[data-testid="mix-aroma"]');
+      return Number(row?.dataset.current ?? 0) >= value;
+    },
+    { timeout: 15000 },
+    minimum,
+  );
+}
+
+async function mixWithKeyboard(page) {
+  const count = await mixBurnerCount(page);
+
+  for (let index = 0; index < count; index += 1) {
+    await click(page, `mix-burner-${index}`);
+    await focusCanvas(page, "mix");
+    await page.keyboard.down(" ");
+    await waitForMixRange(page);
+
+    const color = await readMixDose(page, "mix-color");
+    for (let drop = 0; drop < color.target; drop += 1) {
+      await page.keyboard.press("c");
+    }
+
+    const aroma = await readMixDose(page, "mix-aroma");
+    await page.keyboard.down("a");
+    await waitForAroma(page, aroma.min);
+    await page.keyboard.up("a");
+
+    for (let step = 0; step < 32; step += 1) {
+      await page.keyboard.press("ArrowRight");
+    }
+    await waitForMixStirs(page);
+    await page.keyboard.up(" ");
+  }
+}
+
+async function heatMixWithPointer(page, position) {
+  const lever = await stagePoint(page, "mix", position.x + 112, position.y);
+  await page.mouse.move(lever.x, lever.y);
+  await page.mouse.down();
+  try {
+    await waitForMixRange(page);
+  } finally {
+    await page.mouse.up();
+  }
+}
+
+async function mixWithPointer(page) {
+  const count = await mixBurnerCount(page);
+  const layout = MIX_LAYOUTS[count] ?? MIX_LAYOUTS[1];
+
+  for (let index = 0; index < count; index += 1) {
+    const position = layout[index];
+    if (!position) continue;
+
+    await click(page, `mix-burner-${index}`);
+    await heatMixWithPointer(page, position);
+
+    const color = await readMixDose(page, "mix-color");
+    const colorBottle = await stagePoint(
+      page,
+      "mix",
+      position.x - 120,
+      position.y + 30,
+    );
+    for (let drop = 0; drop < color.target; drop += 1) {
+      await page.mouse.click(colorBottle.x, colorBottle.y);
+    }
+
+    const aroma = await readMixDose(page, "mix-aroma");
+    const aromaBottle = await stagePoint(
+      page,
+      "mix",
+      position.x - 85,
+      position.y + 30,
+    );
+    await page.mouse.move(aromaBottle.x, aromaBottle.y);
+    await page.mouse.down();
+    try {
+      await waitForAroma(page, aroma.min);
+    } finally {
+      await page.mouse.up();
+    }
+
+    const pot = await stagePoint(page, "mix", position.x, position.y - 22);
+    await page.mouse.move(pot.x + 42, pot.y);
+    await page.mouse.down();
+    try {
+      for (let circle = 0; circle < 3; circle += 1) {
+        for (let step = 1; step <= 18; step += 1) {
+          const angle = (step / 18) * Math.PI * 2;
+          await page.mouse.move(
+            pot.x + Math.cos(angle) * 42,
+            pot.y + Math.sin(angle) * 24,
+          );
+          await wait(12);
+        }
+      }
+    } finally {
+      await page.mouse.up();
+    }
+    await waitForMixStirs(page);
+  }
 }
 
 async function auditState(page, report, state) {
@@ -407,6 +570,11 @@ async function playKeyboardStations(page, typeIndex, hooks = {}) {
   await hooks.onMelt?.();
   await clickEnabled(page, "melt-continue");
 
+  await waitForStage(page, "mix");
+  await mixWithKeyboard(page);
+  await hooks.onMix?.();
+  await clickEnabled(page, "mix-continue");
+
   await waitForStage(page, "pour");
   await pourWithKeyboard(page);
   await page.waitForSelector('[data-testid="pour-complete"]', {
@@ -480,6 +648,13 @@ export async function flowPointerClassic({ browser, baseUrl, outDir, report }) {
     await capture(page, outDir, "1280-light-clasico-melt-ready", report);
     await clickEnabled(page, "melt-continue");
 
+    await waitForStage(page, "mix");
+    await capture(page, outDir, "1280-light-clasico-mix", report);
+    await mixWithPointer(page);
+    await capture(page, outDir, "1280-light-clasico-mix-ready", report);
+    await auditState(page, report, "mix");
+    await clickEnabled(page, "mix-continue");
+
     await waitForStage(page, "pour");
     await capture(page, outDir, "1280-light-clasico-pour", report);
     await pourWithPointer(page);
@@ -550,6 +725,22 @@ export async function flowKeyboardFourOrders({
       await click(page, "design-continue");
 
       await playKeyboardStations(page, index, {
+        onMix: async () => {
+          if (index === 1) {
+            assert(
+              await exists(page, "mix-scent"),
+              "Capas: falta el selector de aroma por fogón.",
+            );
+            recordCheck(
+              report,
+              "aroma por fogón",
+              "pass",
+              "selector visible con dos aromas en el diseño",
+            );
+            await capture(page, outDir, "1280-light-capas-mix", report);
+            await auditState(page, report, "mix capas");
+          }
+        },
         onScore: async () => {
           if (index > 0) {
             await capture(
@@ -607,10 +798,11 @@ export async function flowSandbox({ browser, baseUrl, outDir, report }) {
     await page.select('[data-testid="accessible-wax"]', "vaso");
     await page.select('[data-testid="accessible-vessel"]', "ambar");
     await page.select('[data-testid="accessible-wick"]', "pabilo-67");
-    await page.select('[data-testid="accessible-scent"]', "lavanda");
+    await page.click('[data-testid="accessible-scent-lavanda"]');
     await page.select('[data-testid="accessible-label"]', "clasica");
     await page.select('[data-testid="accessible-layer-color-0"]', "crema");
     await page.waitForSelector('[data-testid="design-ready"]');
+    await wait(250);
     recordCheck(
       report,
       "selector accesible de materiales",
@@ -666,6 +858,13 @@ export async function flowSandbox({ browser, baseUrl, outDir, report }) {
     await prepareBlockWithPointer(page);
     await capture(page, outDir, "1280-light-sandbox-melt-cut", report);
     await auditState(page, report, "sandbox melt cut");
+    await heatWithPointer(page);
+    await clickEnabled(page, "melt-continue");
+    await waitForStage(page, "mix");
+    await capture(page, outDir, "1280-light-sandbox-mix", report);
+    await mixWithPointer(page);
+    await capture(page, outDir, "1280-light-sandbox-mix-ready", report);
+    await auditState(page, report, "sandbox mix");
   } finally {
     recordConsoleErrors(report, "sandbox", page.__qa.errors);
     await page.close();
@@ -745,6 +944,10 @@ export async function flowMobile({ browser, baseUrl, outDir, report }) {
         });
         await capture(page, outDir, "390-light-clasico-melt", report);
         await auditState(page, report, "melt");
+      },
+      onMix: async () => {
+        await capture(page, outDir, "390-light-clasico-mix", report);
+        await auditState(page, report, "mix");
       },
       onScore: async () => {
         await capture(page, outDir, "390-light-clasico-score", report);

@@ -48,7 +48,7 @@
     {:else}
       La mecha ya está preparada en el envase. Mantén la palanca de la olla para
       calentar y arrastra la cuchara en círculos para remover. La temperatura se
-      registra al entrar en el rango.
+      registra al entrar en el rango; después pasas a mezclar color y aroma.
     {/if}
   </p>
 
@@ -165,11 +165,11 @@
   <button
     class="game-action game-primary"
     type="button"
-    onclick={() => game.goPour()}
+    onclick={() => game.goMix()}
     disabled={!game.canContinueMelt}
     data-testid="melt-continue"
   >
-    Ir al vertido
+    Ir a mezcla
   </button>
 </div>
 

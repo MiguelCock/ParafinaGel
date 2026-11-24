@@ -1,4 +1,10 @@
-import { labelAccuracy, prepScore, trimAccuracy, wickAccuracy } from "./craft";
+import {
+  labelAccuracy,
+  mixScore,
+  prepScore,
+  trimAccuracy,
+  wickAccuracy,
+} from "./craft";
 import { waxesById } from "./data";
 import type {
   BriefTarget,
@@ -113,7 +119,7 @@ export function scoreExecution(
         10
       : 0;
 
-  const mix = (1 - Math.min(1, Math.max(0, craft.mix))) * 4;
+  const mix = mixScore(design, craft);
   const spill = (1 - Math.min(1, Math.max(0, craft.spill))) * 3;
   const wick = craft.wick.placed ? wickAccuracy(craft) * 6 : 0;
   const label = craft.label.placed ? labelAccuracy(craft) * 3 : 0;

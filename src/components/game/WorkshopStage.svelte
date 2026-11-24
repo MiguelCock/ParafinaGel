@@ -18,6 +18,7 @@
     { station: "design", left: "20%", top: "30%" },
     { station: "wick", left: "70%", top: "38%" },
     { station: "melt", left: "14%", top: "48%" },
+    { station: "mix", left: "34%", top: "48%" },
     { station: "pour", left: "50%", top: "58%" },
     { station: "cool", left: "85%", top: "48%" },
     { station: "finish", left: "50%", top: "25%" },
@@ -28,6 +29,7 @@
     counter: "Escucha los detalles y crea la nota de diseño.",
     design: "Elige cera, forma, colores, aroma, mecha y etiqueta.",
     melt: "Corta el bloque si hace falta, calienta y remueve tres veces.",
+    mix: "Calienta cada fogón, dosifica color y aroma, y revuelve.",
     pour: "Llena cada capa o parte hasta la zona verde.",
     wick: "Prepara el envase, el porta pabilo y la mecha.",
     cool: "Retira el sostenedor y espera el curado; en gel, quita las burbujas.",
@@ -47,6 +49,11 @@
         return "Deja que la capa cuaje antes de seguir";
       if (game.pourComplete) return "Vertido completo · deja curar la vela";
       return "La mecha ya está lista; arrastra la jarra sobre la boca y suelta al terminar";
+    }
+    if (scene === "mix") {
+      return game.canContinueMix
+        ? "Todos los fogones listos · pasa al vertido"
+        : "Calienta cada fogón y mezcla su color y aroma";
     }
     if (scene === "cool" && game.craft.cooled) {
       return "La vela está lista · pasa al acabado";

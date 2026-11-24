@@ -5,6 +5,7 @@ import { motion, tweens } from "./motion";
 import type { StageScene } from "./scene";
 import { DesignScene } from "./scenes/design-scene";
 import { MeltScene } from "./scenes/melt-scene";
+import { MixScene } from "./scenes/mix-scene";
 import { PourScene } from "./scenes/pour-scene";
 import { WickScene } from "./scenes/wick-scene";
 import { CoolScene } from "./scenes/cool-scene";
@@ -118,6 +119,8 @@ export class StageRenderer {
     switch (sceneId) {
       case "melt":
         return new MeltScene();
+      case "mix":
+        return new MixScene();
       case "pour":
         return new PourScene();
       case "wick":

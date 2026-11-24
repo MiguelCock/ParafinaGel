@@ -217,9 +217,11 @@
         {#if game.design.wickId}
           · {wickTypes.find((wick) => wick.id === game.design.wickId)?.nombre}
         {/if}
-        {#if game.design.scentIds[0]}
-          · {scents.find((scent) => scent.id === game.design.scentIds[0])
-            ?.nombre}
+        {#if game.design.scentIds.length > 0}
+          · {game.design.scentIds
+            .map((id) => scents.find((scent) => scent.id === id)?.nombre)
+            .filter(Boolean)
+            .join(" + ")}
         {/if}
       </p>
     </div>
