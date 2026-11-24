@@ -150,7 +150,7 @@ Rutas: `/`, `/productos`, `/productos/[slug]`, `/nosotros`, `/juego`, `/contacto
 
 Notas del proceso real y datos pendientes: [`docs/proceso-de-fabricacion.md`](docs/proceso-de-fabricacion.md).
 
-Ruta de construcción: [`docs/roadmap.md`](docs/roadmap.md) · [issue #124](https://github.com/MiguelCock/ParafinaGel/issues/124).
+Ruta de construcción: [`docs/roadmap.md`](docs/roadmap.md) · [tablero](https://github.com/users/MiguelCock/projects/6) · [issue #124](https://github.com/MiguelCock/ParafinaGel/issues/124).
 
 ## Estado
 

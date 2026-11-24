@@ -59,7 +59,7 @@ Sitio de **ParafinaGel**, negocio familiar de velas que vende **insumos y materi
 - `scripts/qa-game.mjs` y `scripts/qa/`: harness de QA con Puppeteer Core y axe.
 - `qa/`: reportes, JSON y capturas del QA; ignorada por git.
 - `docs/proceso-de-fabricacion.md`: notas del proceso real, correspondencia con estaciones y datos pendientes.
-- `docs/roadmap.md`: ruta directa de construcción; la fuente operativa son los hitos `Fase 0`–`Fase 6` y el issue #124.
+- `docs/roadmap.md`: ruta directa de construcción; la fuente operativa son los hitos `Fase 0`–`Fase 6`, el issue #124 y el [tablero](https://github.com/users/MiguelCock/projects/6).
 
 ## Juego WebGL
 

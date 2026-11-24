@@ -2,7 +2,15 @@
 
 Fuente operativa: [issue #124](https://github.com/MiguelCock/ParafinaGel/issues/124) y los hitos de GitHub.
 
+Tablero: [ParafinaGel · Ruta directa](https://github.com/users/MiguelCock/projects/6), con los campos `Fase` y `Orden`.
+
 109 issues accionables en 7 fases. Los epics son carpetas y no se construyen aparte.
+
+## Tablero
+
+- **Ruta 1–109**: vista de tabla; ordenar por `Orden` ascendente para seguir la secuencia.
+- **Tablero por fase**: vista de tarjetas; se puede agrupar por `Fase` desde el menú de la vista.
+- `Orden` no depende de la fecha de creación del issue; la numeración es la de este documento.
 
 | Fase | Hito                      | Pasos   |
 | ---- | ------------------------- | ------- |
