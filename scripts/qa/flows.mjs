@@ -110,7 +110,7 @@ async function waitForMeltRange(page, timeout = 60000) {
   );
 }
 
-async function waitForFill(page, minimum, timeout = 25000) {
+async function waitForFill(page, minimum, timeout = 45000) {
   await page.waitForFunction(
     (value) => {
       const content =
@@ -144,7 +144,51 @@ async function designClassic(page) {
   await designFor(page, 0);
 }
 
+async function prepareBlockWithKeyboard(page) {
+  const panel = await text(page, "melt-panel");
+  if (!panel.includes("Corta el bloque")) return;
+
+  await focusCanvas(page, "melt");
+  for (let cut = 0; cut < 4; cut += 1) {
+    await page.keyboard.press("c");
+  }
+  await page.keyboard.press("e");
+  await waitForBlockReady(page);
+}
+
+async function waitForBlockReady(page) {
+  await page.waitForFunction(
+    () => {
+      const content =
+        document.querySelector('[data-testid="melt-panel"]')?.textContent ?? "";
+      return (
+        content.includes("4/4 cortes") && content.includes("Esteárico agregado")
+      );
+    },
+    { timeout: 8000 },
+  );
+}
+
+async function prepareBlockWithPointer(page) {
+  const panel = await text(page, "melt-panel");
+  if (!panel.includes("Corta el bloque")) return;
+
+  const start = await stagePoint(page, "melt", 210, 270);
+  const end = await stagePoint(page, "melt", 300, 270);
+  for (let cut = 0; cut < 4; cut += 1) {
+    await page.mouse.move(start.x, start.y);
+    await page.mouse.down();
+    await page.mouse.move(end.x, end.y, { steps: 8 });
+    await page.mouse.up();
+  }
+
+  const jar = await stagePoint(page, "melt", 650, 344);
+  await page.mouse.click(jar.x, jar.y);
+  await waitForBlockReady(page);
+}
+
 async function heatWithKeyboard(page) {
+  await prepareBlockWithKeyboard(page);
   await focusCanvas(page, "melt");
   await page.keyboard.down(" ");
   try {
@@ -160,6 +204,7 @@ async function heatWithKeyboard(page) {
 }
 
 async function heatWithPointer(page) {
+  await prepareBlockWithPointer(page);
   const lever = await stagePoint(page, "melt", 745, 500);
   await page.mouse.move(lever.x, lever.y);
   await page.mouse.down();
@@ -618,6 +663,8 @@ export async function flowSandbox({ browser, baseUrl, outDir, report }) {
     await clickEnabled(page, "wick-continue");
     await waitForStage(page, "melt");
     await capture(page, outDir, "1280-light-sandbox-melt", report);
+    await prepareBlockWithPointer(page);
+    await capture(page, outDir, "1280-light-sandbox-melt-cut", report);
   } finally {
     recordConsoleErrors(report, "sandbox", page.__qa.errors);
     await page.close();

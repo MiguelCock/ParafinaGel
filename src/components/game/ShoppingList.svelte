@@ -32,7 +32,13 @@
               {line.nombre}
               <small>{line.detalle}</small>
             </span>
-            <strong>{line.cantidad} {line.unidad}</strong>
+            <strong>
+              {line.cantidad}
+              {line.unidad}
+              {#if line.porConfirmar}
+                <small>por confirmar</small>
+              {/if}
+            </strong>
           </li>
         {/each}
       </ul>
@@ -94,5 +100,15 @@
     color: var(--color-heading);
     font-size: 0.65rem;
     white-space: nowrap;
+  }
+
+  .shopping-list strong small {
+    display: block;
+    color: var(--color-accent);
+    font-size: 0.5rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-align: right;
+    text-transform: uppercase;
   }
 </style>

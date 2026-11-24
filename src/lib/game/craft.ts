@@ -16,6 +16,44 @@ export const LABEL_MAX_Y = 10;
 export const LABEL_MAX_ROTATION = 20;
 export const FILM_SECONDS = 1.6;
 export const GEL_BUBBLES = 5;
+export const MIN_CUTS = 2;
+export const MAX_CUTS = 4;
+/** Placeholder dose: the business still has to confirm the stearic ratio. */
+export const STEARIC_RATIO = 0.1;
+
+export function waxNeedsCutting(design: CandleDesign): boolean {
+  const wax = design.waxId ? waxesById[design.waxId] : null;
+  return wax?.format === "block";
+}
+
+export function waxNeedsStearic(design: CandleDesign): boolean {
+  return waxNeedsCutting(design);
+}
+
+export function cutReady(design: CandleDesign, craft: Craft): boolean {
+  return !waxNeedsCutting(design) || craft.cutCuts >= MIN_CUTS;
+}
+
+export function stearicReady(design: CandleDesign, craft: Craft): boolean {
+  return !waxNeedsStearic(design) || craft.stearicAdded;
+}
+
+export function meltHeatMultiplier(design: CandleDesign, craft: Craft): number {
+  if (!waxNeedsCutting(design)) return 1;
+  const cuts = Math.min(MAX_CUTS, Math.max(MIN_CUTS, craft.cutCuts));
+  const extra = cuts - MIN_CUTS;
+  return 0.8 + (extra / (MAX_CUTS - MIN_CUTS)) * 0.2;
+}
+
+export function cutScore(craft: Craft): number {
+  if (craft.cutCuts < MIN_CUTS) return 0;
+  return Math.min(2, (craft.cutCuts / MAX_CUTS) * 2);
+}
+
+export function prepScore(design: CandleDesign, craft: Craft): number {
+  if (!waxNeedsStearic(design)) return 3;
+  return cutScore(craft) + (craft.stearicAdded ? 1 : 0);
+}
 
 export function createPourUnits(design: CandleDesign): PourUnit[] {
   if (design.mode === "figura") {
@@ -73,6 +111,8 @@ export function createCraft(design: CandleDesign): Craft {
     meltTemperature: TEMP_START,
     overheated: false,
     heating: false,
+    cutCuts: 0,
+    stearicAdded: false,
     stirs: 0,
     units: createPourUnits(design),
     unitIndex: 0,

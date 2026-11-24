@@ -118,6 +118,10 @@
             <strong>{Math.round(score.execution.temperature)}</strong>
           </div>
           <div>
+            <span>Preparación</span>
+            <strong>{Math.round(score.execution.prep)}</strong>
+          </div>
+          <div>
             <span>Vertido</span><strong>
               {Math.round(score.execution.pour)}
             </strong>
@@ -143,7 +147,7 @@
             </strong>
           </div>
           <div>
-            <span>Corte</span><strong>
+            <span>Corte de mecha</span><strong>
               {Math.round(score.execution.trim)}
             </strong>
           </div>

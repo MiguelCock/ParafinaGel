@@ -34,6 +34,12 @@
       return "Vertido. La mecha ya está preparada. Arrastra la jarra sobre la boca del frasco y suelta para terminar la capa.";
     }
     if (game.phase === "melt") {
+      if (!game.cutPrepared) {
+        return "Estación de cera. La parafina está en bloque: arrastra el cuchillo de izquierda a derecha sobre el bloque o pulsa C para cortarla.";
+      }
+      if (!game.stearicPrepared) {
+        return "Estación de cera. Toca el frasco de ácido esteárico o pulsa E para agregarlo a la olla.";
+      }
       return "Estación de cera. Mantén la palanca para calentar y arrastra la cuchara en círculos para remover.";
     }
     if (game.phase === "cool") {

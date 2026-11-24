@@ -1,11 +1,18 @@
 import { describe, expect, it } from "vitest";
 import {
+  MAX_CUTS,
+  MIN_CUTS,
   createCraft,
+  cutReady,
   finishPourUnit,
   labelAccuracy,
+  meltHeatMultiplier,
   pourAccuracy,
+  prepScore,
+  stearicReady,
   trimAccuracy,
   wickAccuracy,
+  waxNeedsCutting,
 } from "./craft";
 import { briefs, recommendedWickTypes, stationOrder, waxesById } from "./data";
 import {
@@ -48,6 +55,8 @@ function perfectCraft(design: CandleDesign): Craft {
   const wax = design.waxId ? waxesById[design.waxId] : null;
 
   craft.meltTemperature = wax ? (wax.meltMin + wax.meltMax) / 2 : 70;
+  craft.cutCuts = MAX_CUTS;
+  craft.stearicAdded = true;
   craft.units = craft.units.map((unit) => ({
     ...unit,
     fill: unit.target,
@@ -201,6 +210,52 @@ describe("recipe scoring", () => {
 
     expect(result.colors).toBe(7);
     expect(result.total).toBe(53);
+  });
+});
+
+describe("wax preparation", () => {
+  it("only asks to cut solid block wax", () => {
+    expect(waxNeedsCutting(designForBrief(briefs[2]))).toBe(true);
+    expect(waxNeedsCutting(designForBrief(briefs[0]))).toBe(false);
+    expect(waxNeedsCutting(designForBrief(briefs[3]))).toBe(false);
+  });
+
+  it("requires enough cuts and stearic acid before melting", () => {
+    const design = designForBrief(briefs[2]);
+    const craft = createCraft(design);
+
+    expect(cutReady(design, craft)).toBe(false);
+    expect(stearicReady(design, craft)).toBe(false);
+
+    craft.cutCuts = MIN_CUTS;
+    expect(cutReady(design, craft)).toBe(true);
+
+    craft.stearicAdded = true;
+    expect(stearicReady(design, craft)).toBe(true);
+  });
+
+  it("melts faster when the block is cut into smaller pieces", () => {
+    const design = designForBrief(briefs[2]);
+    const craft = createCraft(design);
+
+    craft.cutCuts = MIN_CUTS;
+    expect(meltHeatMultiplier(design, craft)).toBeCloseTo(0.8);
+
+    craft.cutCuts = MAX_CUTS;
+    expect(meltHeatMultiplier(design, craft)).toBeCloseTo(1);
+  });
+
+  it("awards the preparation score only when the block is ready", () => {
+    const block = designForBrief(briefs[2]);
+    const flakes = designForBrief(briefs[0]);
+    const craft = createCraft(block);
+
+    expect(prepScore(block, craft)).toBe(0);
+
+    craft.cutCuts = MAX_CUTS;
+    craft.stearicAdded = true;
+    expect(prepScore(block, craft)).toBe(3);
+    expect(prepScore(flakes, craft)).toBe(3);
   });
 });
 
@@ -369,6 +424,20 @@ describe("supply list", () => {
 
     expect(ids).toContain("molde-luna");
     expect(ids).not.toContain("recipiente-ambar");
+  });
+
+  it("adds marked stearic acid only for block wax", () => {
+    const block = buildRecipe(designForBrief(briefs[2]));
+    const flakes = buildRecipe(designForBrief(briefs[0]));
+    const stearic = block.find(
+      (line) => line.supplyId === "aditivo-acido-estearico",
+    );
+
+    expect(stearic?.porConfirmar).toBe(true);
+    expect(stearic?.cantidad).toBeGreaterThan(0);
+    expect(
+      flakes.some((line) => line.supplyId === "aditivo-acido-estearico"),
+    ).toBe(false);
   });
 
   it("adds inclusions for gel designs", () => {

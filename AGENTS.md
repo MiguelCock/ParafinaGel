@@ -59,6 +59,7 @@ Sitio de **ParafinaGel**, negocio familiar de velas que vende **insumos y materi
 - `scripts/qa-game.mjs` y `scripts/qa/`: harness de QA con Puppeteer Core y axe.
 - `qa/`: reportes, JSON y capturas del QA; ignorada por git.
 - `docs/proceso-de-fabricacion.md`: notas del proceso real, correspondencia con estaciones y datos pendientes.
+- `docs/datos-validacion.md`: inventario de datos oficiales, notas y placeholders, con códigos para aprobar en #87.
 - `docs/roadmap.md`: ruta directa de construcción; la fuente operativa son los hitos `Fase 0`–`Fase 6`, el issue #124 y el [tablero](https://github.com/users/MiguelCock/projects/6).
 
 ## Juego WebGL
@@ -72,7 +73,7 @@ Sitio de **ParafinaGel**, negocio familiar de velas que vende **insumos y materi
 - **Diseño**: cera, tamaño, recipiente o molde, capas/colores, aroma, pabilo y etiqueta. Los materiales se eligen como objetos en la estantería física; el selector accesible es la alternativa de teclado/lector. Las validaciones aparecen en el panel.
 - **Retos manuales**:
   - Preparación: colocar el porta pabilo, ajustar la mecha al centro y usar el sostenedor antes de verter.
-  - Cera: mantener la palanca para calentar y arrastrar la cuchara en círculos.
+  - Cera: cortar la parafina en bloque (2–4 cortes) antes de calentar; agregar ácido esteárico solo a las parafinas en bloque; mantener la palanca para calentar y arrastrar la cuchara en círculos.
   - Vertido: arrastrar la jarra sobre la boca del frasco y soltar para cerrar la capa.
   - Curado: retirar el sostenedor, tocar el ventilador; en gel, tocar las burbujas.
   - Acabado: arrastrar la etiqueta y su tirador, cortar la mecha sobre la vela, tocar tapa y empaque.

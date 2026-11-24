@@ -1,4 +1,4 @@
-import { labelAccuracy, trimAccuracy, wickAccuracy } from "./craft";
+import { labelAccuracy, prepScore, trimAccuracy, wickAccuracy } from "./craft";
 import { waxesById } from "./data";
 import type {
   BriefTarget,
@@ -94,14 +94,16 @@ export function scoreExecution(
       craft.meltTemperature >= wax.meltMin &&
       craft.meltTemperature <= wax.meltMax
     ) {
-      temperature = 8;
+      temperature = 5;
     } else if (
       craft.meltTemperature >= wax.meltMin - 8 &&
       craft.meltTemperature <= wax.meltMax + 8
     ) {
-      temperature = 4;
+      temperature = 2.5;
     }
   }
+
+  const prep = prepScore(design, craft);
 
   const doneUnits = craft.units.filter((unit) => unit.done);
   const pour =
@@ -123,6 +125,7 @@ export function scoreExecution(
 
   return {
     temperature,
+    prep,
     pour,
     mix,
     spill,
@@ -130,7 +133,7 @@ export function scoreExecution(
     label,
     trim,
     gel,
-    total: temperature + pour + mix + spill + wick + label + trim + gel,
+    total: temperature + prep + pour + mix + spill + wick + label + trim + gel,
   };
 }
 

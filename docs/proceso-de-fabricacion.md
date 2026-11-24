@@ -101,3 +101,13 @@ Los precios de venta se cargan en `src/content/productos/`. No se incluyen costo
 
 Los valores que no estén confirmados se mantienen como placeholders y deben
 marcarse como tales. No inventar porcentajes, temperaturas ni medidas.
+
+Implementación actual:
+
+- El corte solo aparece para parafinas en bloque; soya en escamas y gel no lo
+  muestran.
+- El jugador puede dar de 2 a 4 cortes. Más cortes producen trozos más pequeños
+  y aceleran la fusión; el mínimo permite continuar.
+- El ácido esteárico se aplica solo a parafinas en bloque. La dosis usa un 10 %
+  de ejemplo, marcado como “por confirmar” en la receta y en el proceso.
+- No se aplica a soya ni gel hasta que el negocio confirme compatibilidad y dosis.

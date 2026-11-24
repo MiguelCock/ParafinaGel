@@ -232,6 +232,8 @@ export interface Craft {
   meltTemperature: number;
   overheated: boolean;
   heating: boolean;
+  cutCuts: number;
+  stearicAdded: boolean;
   stirs: number;
   units: PourUnit[];
   unitIndex: number;
@@ -264,6 +266,7 @@ export interface DesignScore {
 
 export interface ExecutionScore {
   temperature: number;
+  prep: number;
   pour: number;
   mix: number;
   spill: number;
@@ -300,4 +303,5 @@ export interface RecipeLine {
   unidad: string;
   detalle: string;
   precioUnitario?: number;
+  porConfirmar?: boolean;
 }

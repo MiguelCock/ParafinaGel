@@ -7,13 +7,19 @@ import {
 } from "./data";
 import {
   GEL_BUBBLES,
+  MAX_CUTS,
   POUR_MIN_TO_FINISH,
   POUR_SPEED,
   completeFilm,
   createCraft,
   currentUnit,
+  cutReady as isCutReady,
   finishPourUnit,
   isPourComplete,
+  meltHeatMultiplier,
+  stearicReady as isStearicReady,
+  waxNeedsCutting,
+  waxNeedsStearic,
 } from "./craft";
 import {
   createDesign,
@@ -110,8 +116,34 @@ export class GameState {
     );
   }
 
+  get needsCutting(): boolean {
+    return waxNeedsCutting(this.design);
+  }
+
+  get needsStearic(): boolean {
+    return waxNeedsStearic(this.design);
+  }
+
+  get cutPrepared(): boolean {
+    return isCutReady(this.design, this.craft);
+  }
+
+  get stearicPrepared(): boolean {
+    return isStearicReady(this.design, this.craft);
+  }
+
+  get canHeat(): boolean {
+    return this.cutPrepared;
+  }
+
+  get meltSpeed(): number {
+    return meltHeatMultiplier(this.design, this.craft);
+  }
+
   get canContinueMelt(): boolean {
     return (
+      this.cutPrepared &&
+      this.stearicPrepared &&
       this.craft.meltTemperature >= this.meltMin &&
       this.craft.meltTemperature <= this.meltMax &&
       !this.craft.overheated &&
@@ -314,10 +346,12 @@ export class GameState {
   }
 
   toggleHeat(): void {
+    if (!this.craft.heating && !this.cutPrepared) return;
     this.craft.heating = !this.craft.heating;
   }
 
   startHeating(): void {
+    if (!this.cutPrepared) return;
     this.craft.heating = true;
   }
 
@@ -325,7 +359,19 @@ export class GameState {
     this.craft.heating = false;
   }
 
+  cutWax(): void {
+    if (this.phase !== "melt" || !this.needsCutting) return;
+    this.craft.cutCuts = Math.min(MAX_CUTS, this.craft.cutCuts + 1);
+  }
+
+  addStearic(): void {
+    if (this.phase !== "melt" || !this.needsStearic || !this.cutPrepared)
+      return;
+    this.craft.stearicAdded = true;
+  }
+
   stir(): void {
+    if (!this.cutPrepared || !this.stearicPrepared) return;
     this.craft.stirs = Math.min(3, this.craft.stirs + 1);
   }
 
@@ -556,7 +602,7 @@ export class GameState {
       if (this.craft.heating) {
         this.craft.temperature = Math.min(
           110,
-          this.craft.temperature + wax.heatRate * delta,
+          this.craft.temperature + wax.heatRate * this.meltSpeed * delta,
         );
         if (this.craft.temperature > wax.meltMax + 12) {
           this.craft.overheated = true;

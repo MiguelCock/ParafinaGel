@@ -1,4 +1,5 @@
 import { Container, Graphics, Text } from "pixi.js";
+import { MAX_CUTS } from "../../craft";
 import { scentsById, waxesById } from "../../data";
 import type { GameState } from "../../game-state.svelte";
 import { easings, motion, motionDurations, tweens } from "../motion";
@@ -7,12 +8,16 @@ import type { StageScene } from "../scene";
 
 const POT_X = 400;
 const POT_Y = 360;
+const BOARD = { x: 170, y: 226, width: 180, height: 96 };
+const STEARIC = { x: 650, y: 344 };
 
 export class MeltScene implements StageScene {
   view = new Container();
   private background = new Graphics();
   private pot = new Graphics();
   private bottles = new Graphics();
+  private cuttingBoard = new Graphics();
+  private stearicJar = new Graphics();
   private spoon = new Graphics();
   private steam = new Graphics();
   private lever = new Graphics();
@@ -45,6 +50,24 @@ export class MeltScene implements StageScene {
       wordWrapWidth: 82,
     },
   });
+  private stearicLabel = new Text({
+    text: "Esteárico",
+    style: {
+      fontFamily: "Manrope Variable, sans-serif",
+      fontSize: 11,
+      fontWeight: "700",
+      fill: stageColors.muted,
+    },
+  });
+  private stearicCheck = new Text({
+    text: "✓",
+    style: {
+      fontFamily: "Manrope Variable, sans-serif",
+      fontSize: 20,
+      fontWeight: "800",
+      fill: stageColors.sage,
+    },
+  });
   private help = new Text({
     text: "",
     style: {
@@ -56,6 +79,9 @@ export class MeltScene implements StageScene {
 
   private draggingSpoon = false;
   private draggingLever = false;
+  private cutting = false;
+  private cutStartX = 0;
+  private cutStrokeDone = false;
   private lastAngle = 0;
   private accumulated = 0;
   private spoonAngle = -0.8;
@@ -75,20 +101,28 @@ export class MeltScene implements StageScene {
     this.status.anchor.set(0.5);
     this.status.position.set(POT_X, 198);
     this.aroma.position.set(760, 250);
+    this.stearicLabel.anchor.set(0.5);
+    this.stearicLabel.position.set(STEARIC.x, STEARIC.y + 50);
+    this.stearicCheck.anchor.set(0.5);
+    this.stearicCheck.position.set(STEARIC.x + 22, STEARIC.y - 34);
     this.help.anchor.set(0.5);
     this.help.position.set(500, 596);
     this.help.visible = false;
 
     this.view.addChild(
       this.background,
+      this.cuttingBoard,
       this.pot,
       this.bottles,
+      this.stearicJar,
       this.steam,
       this.spoon,
       this.lever,
       this.temperature,
       this.status,
       this.aroma,
+      this.stearicLabel,
+      this.stearicCheck,
       this.help,
     );
   }
@@ -97,6 +131,7 @@ export class MeltScene implements StageScene {
     if (!motion.paused) this.time += delta;
     const wax = game.design.waxId ? waxesById[game.design.waxId] : null;
     const waxColor = wax ? wax.hex : "#e9c9a8";
+    const format = wax?.format ?? "flakes";
     const heating = game.craft.heating;
     if (heating !== this.wasHeating) {
       this.wasHeating = heating;
@@ -126,13 +161,17 @@ export class MeltScene implements StageScene {
         ? stageColors.accent
         : stageColors.ink;
 
-    this.status.text = game.craft.overheated
-      ? "Se pasó de calor · retira la olla"
-      : inRange
-        ? "En rango · puedes seguir"
-        : heating
-          ? "Calentando despacio…"
-          : "Toca la palanca y mantenla";
+    this.status.text = !game.cutPrepared
+      ? "Corta el bloque antes de calentar"
+      : !game.stearicPrepared
+        ? "Agrega el ácido esteárico"
+        : game.craft.overheated
+          ? "Se pasó de calor · retira la olla"
+          : inRange
+            ? "En rango · puedes seguir"
+            : heating
+              ? "Calentando despacio…"
+              : "Toca la palanca y mantenla";
 
     const scent = game.design.scentIds[0]
       ? scentsById[game.design.scentIds[0]]
@@ -145,11 +184,70 @@ export class MeltScene implements StageScene {
       .fill({ color: stageColors.paper, alpha: 0.88 })
       .stroke({ width: 2, color: stageColors.border });
 
-    this.drawPot(waxColor, heating);
+    this.drawCuttingBoard(game, waxColor);
+    this.drawPot(game, waxColor, heating, format);
     this.drawBottles(waxColor, scent?.nombre ?? "Sin aroma");
+    this.drawStearicJar(game);
     this.drawSteam(game, waxColor);
     this.drawSpoon(waxColor);
-    this.drawLever();
+    this.drawLever(game.canHeat);
+  }
+
+  private drawCuttingBoard(game: GameState, waxColor: string): void {
+    this.cuttingBoard.clear();
+    this.cuttingBoard.visible =
+      game.needsCutting && game.craft.cutCuts < MAX_CUTS;
+    if (!this.cuttingBoard.visible) return;
+
+    const cuts = game.craft.cutCuts;
+    const pieces = Math.max(1, Math.min(5, cuts + 1));
+    const pieceWidth = 126 / pieces;
+    const pieceGap = pieces > 1 ? 3 : 0;
+
+    this.cuttingBoard
+      .ellipse(
+        BOARD.x + BOARD.width / 2,
+        BOARD.y + BOARD.height + 8,
+        BOARD.width * 0.46,
+        10,
+      )
+      .fill({ color: stageColors.shadow, alpha: 0.14 })
+      .roundRect(BOARD.x, BOARD.y, BOARD.width, BOARD.height, 14)
+      .fill(stageColors.woodLight)
+      .stroke({ width: 3, color: stageColors.woodDark });
+
+    for (let index = 0; index < pieces; index += 1) {
+      const offset = index * 3;
+      this.cuttingBoard
+        .roundRect(
+          BOARD.x + 27 + index * pieceWidth,
+          BOARD.y + 22 + (index % 2) * 3,
+          Math.max(8, pieceWidth - pieceGap),
+          52 - offset * 0.4,
+          6,
+        )
+        .fill(hexColor(waxColor))
+        .stroke({ width: 1.5, color: stageColors.woodDark, alpha: 0.55 });
+    }
+
+    this.cuttingBoard
+      .moveTo(BOARD.x + 118, BOARD.y - 12)
+      .lineTo(BOARD.x + 166, BOARD.y + 12)
+      .stroke({ width: 9, color: stageColors.woodDark, cap: "round" })
+      .moveTo(BOARD.x + 118, BOARD.y - 12)
+      .lineTo(BOARD.x + 154, BOARD.y + 10)
+      .stroke({ width: 3, color: stageColors.white, alpha: 0.4 });
+
+    for (let index = 0; index < 4; index += 1) {
+      this.cuttingBoard
+        .circle(BOARD.x + 34 + index * 30, BOARD.y + 88, 5)
+        .fill(
+          index < cuts
+            ? stageColors.sage
+            : { color: stageColors.creamDeep, alpha: 0.9 },
+        )
+        .stroke({ width: 1, color: stageColors.border });
+    }
   }
 
   private drawBottles(waxColor: string, scentName: string): void {
@@ -171,7 +269,30 @@ export class MeltScene implements StageScene {
     this.aroma.style.fontWeight = "700";
   }
 
-  private drawPot(waxColor: string, heating: boolean): void {
+  private drawStearicJar(game: GameState): void {
+    this.stearicJar.clear();
+    this.stearicJar.visible = game.needsStearic;
+    this.stearicLabel.visible = game.needsStearic;
+    this.stearicCheck.visible = game.needsStearic && game.craft.stearicAdded;
+    if (!game.needsStearic) return;
+
+    const added = game.craft.stearicAdded;
+    this.stearicJar
+      .roundRect(STEARIC.x - 25, STEARIC.y - 34, 50, 68, 10)
+      .fill({ color: 0xe5efe8, alpha: added ? 0.55 : 0.92 })
+      .stroke({ width: 2, color: stageColors.woodDark, alpha: 0.7 })
+      .roundRect(STEARIC.x - 28, STEARIC.y - 44, 56, 16, 6)
+      .fill(stageColors.woodDark)
+      .roundRect(STEARIC.x - 16, STEARIC.y - 14, 32, 26, 4)
+      .fill({ color: stageColors.paper, alpha: 0.85 });
+  }
+
+  private drawPot(
+    game: GameState,
+    waxColor: string,
+    heating: boolean,
+    format: "block" | "flakes" | "gel",
+  ): void {
     this.pot.clear();
     this.pot
       .ellipse(POT_X, 516, 190, 22)
@@ -188,6 +309,38 @@ export class MeltScene implements StageScene {
       .stroke({ width: 5, color: hexColor("#4f5f47") })
       .ellipse(POT_X, POT_Y - 44, 168, 30)
       .fill({ color: stageColors.white, alpha: 0.16 });
+
+    if (format === "block" && game.cutPrepared) {
+      const pieces = Math.min(5, game.craft.cutCuts + 1);
+      for (let index = 0; index < pieces; index += 1) {
+        const x = POT_X - 90 + index * 40;
+        const y = POT_Y - 46 + (index % 2) * 8;
+        this.pot
+          .roundRect(x, y, 30, 14, 4)
+          .fill(hexColor(waxColor))
+          .stroke({ width: 1, color: stageColors.woodDark, alpha: 0.35 });
+      }
+    } else if (format === "flakes") {
+      for (let index = 0; index < 7; index += 1) {
+        const x = POT_X - 94 + (index % 4) * 52;
+        const y = POT_Y - 46 + Math.floor(index / 4) * 12;
+        this.pot
+          .ellipse(x, y, 14, 5)
+          .fill({ color: stageColors.white, alpha: 0.32 });
+      }
+    } else if (format === "gel") {
+      this.pot
+        .ellipse(POT_X, POT_Y - 42, 148, 25)
+        .fill({ color: stageColors.white, alpha: 0.22 });
+    }
+
+    if (game.craft.stearicAdded) {
+      for (let index = 0; index < 5; index += 1) {
+        this.pot
+          .circle(POT_X - 60 + index * 30, POT_Y - 52 + (index % 2) * 8, 2.5)
+          .fill({ color: stageColors.white, alpha: 0.55 });
+      }
+    }
 
     if (heating) {
       this.pot
@@ -239,7 +392,7 @@ export class MeltScene implements StageScene {
       .fill({ color: hexColor(waxColor), alpha: 0.8 });
   }
 
-  private drawLever(): void {
+  private drawLever(enabled: boolean): void {
     const x = 745;
     const y = 440;
     const knobY = y + 4 + this.leverProgress * 70;
@@ -247,25 +400,50 @@ export class MeltScene implements StageScene {
     this.lever.clear();
     this.lever
       .roundRect(x - 18, y, 36, 130, 18)
-      .fill({ color: stageColors.creamDeep, alpha: 0.9 })
+      .fill({ color: stageColors.creamDeep, alpha: enabled ? 0.9 : 0.45 })
       .stroke({ width: 2, color: stageColors.border })
       .roundRect(x - 22, knobY, 44, 50, 18)
-      .fill(active ? stageColors.accent : stageColors.woodLight)
+      .fill(
+        active && enabled
+          ? stageColors.accent
+          : enabled
+            ? stageColors.woodLight
+            : stageColors.border,
+      )
       .stroke({ width: 2, color: stageColors.woodDark })
       .circle(x, knobY + 25, 7)
-      .fill({ color: stageColors.white, alpha: 0.7 })
+      .fill({ color: stageColors.white, alpha: enabled ? 0.7 : 0.35 })
       .roundRect(x - 70, y + 146, 140, 28, 14)
       .fill({ color: stageColors.sageSoft, alpha: 0.9 });
   }
 
   pointerDown(x: number, y: number, game: GameState): void {
-    if (x > 700 && x < 790 && y > 420 && y < 590) {
+    if (game.needsStearic && Math.hypot(x - STEARIC.x, y - STEARIC.y) < 48) {
+      game.addStearic();
+      return;
+    }
+
+    if (
+      game.needsCutting &&
+      game.craft.cutCuts < MAX_CUTS &&
+      x > BOARD.x - 10 &&
+      x < BOARD.x + BOARD.width + 30 &&
+      y > BOARD.y - 24 &&
+      y < BOARD.y + BOARD.height + 24
+    ) {
+      this.cutting = true;
+      this.cutStartX = x;
+      this.cutStrokeDone = false;
+      return;
+    }
+
+    if (game.canHeat && x > 700 && x < 790 && y > 420 && y < 590) {
       this.draggingLever = true;
       game.startHeating();
       return;
     }
 
-    if (Math.hypot(x - POT_X, y - (POT_Y - 30)) < 190) {
+    if (game.canHeat && Math.hypot(x - POT_X, y - (POT_Y - 30)) < 190) {
       this.draggingSpoon = true;
       this.lastAngle = Math.atan2(y - POT_Y, x - POT_X);
       this.accumulated = 0;
@@ -273,6 +451,14 @@ export class MeltScene implements StageScene {
   }
 
   pointerMove(x: number, y: number, game: GameState): void {
+    if (this.cutting) {
+      if (!this.cutStrokeDone && x - this.cutStartX >= 70) {
+        this.cutStrokeDone = true;
+        game.cutWax();
+      }
+      return;
+    }
+
     if (!this.draggingSpoon) return;
     const angle = Math.atan2(y - POT_Y, x - POT_X);
     let delta = angle - this.lastAngle;
@@ -289,6 +475,8 @@ export class MeltScene implements StageScene {
 
   pointerUp(_x: number, _y: number, game: GameState): void {
     this.draggingSpoon = false;
+    this.cutting = false;
+    this.cutStrokeDone = false;
     if (this.draggingLever) {
       this.draggingLever = false;
       game.stopHeating();
@@ -296,9 +484,19 @@ export class MeltScene implements StageScene {
   }
 
   keyDown(key: string, game: GameState): void {
+    const normalized = key.toLowerCase();
+    if (normalized === "c") {
+      game.cutWax();
+      return;
+    }
+    if (normalized === "e") {
+      game.addStearic();
+      return;
+    }
     if (key === " ") {
       game.startHeating();
     } else if (key === "ArrowLeft" || key === "ArrowRight") {
+      if (!game.stearicPrepared) return;
       const direction = key === "ArrowLeft" ? -1 : 1;
       this.spoonAngle += direction * 0.55;
       this.accumulated += 0.55;
@@ -313,7 +511,13 @@ export class MeltScene implements StageScene {
     if (key === " ") game.stopHeating();
   }
 
-  ariaLabel(): string {
+  ariaLabel(game: GameState): string {
+    if (!game.cutPrepared) {
+      return "Estación de cera. La parafina está en bloque: arrastra el cuchillo de izquierda a derecha o pulsa C para cortarla.";
+    }
+    if (!game.stearicPrepared) {
+      return "Estación de cera. Toca el frasco de ácido esteárico o pulsa E para agregarlo a la olla.";
+    }
     return "Estación de cera. Mantén la palanca para calentar y arrastra la cuchara en círculos para remover.";
   }
 

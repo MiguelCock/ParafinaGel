@@ -27,7 +27,7 @@
   const hints: Record<StationId, string> = {
     counter: "Escucha los detalles y crea la nota de diseño.",
     design: "Elige cera, forma, colores, aroma, mecha y etiqueta.",
-    melt: "Calienta despacio y remueve tres veces.",
+    melt: "Corta el bloque si hace falta, calienta y remueve tres veces.",
     pour: "Llena cada capa o parte hasta la zona verde.",
     wick: "Prepara el envase, el porta pabilo y la mecha.",
     cool: "Retira el sostenedor y espera el curado; en gel, quita las burbujas.",

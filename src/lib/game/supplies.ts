@@ -1,3 +1,4 @@
+import { STEARIC_RATIO, waxNeedsStearic } from "./craft";
 import {
   orderTypeLabels,
   suppliesById,
@@ -45,6 +46,20 @@ export function buildRecipe(design: CandleDesign): RecipeLine[] {
     const grams =
       Math.ceil(((design.sizeId === "180" ? 180 : 250) * 0.9) / 5) * 5;
     lines.push(recipeLine(wax.supplyId, grams));
+
+    if (waxNeedsStearic(design)) {
+      const stearic = recipeLine(
+        "aditivo-acido-estearico",
+        Math.max(5, Math.round((grams * STEARIC_RATIO) / 5) * 5),
+      );
+      if (stearic) {
+        lines.push({
+          ...stearic,
+          detalle: "Dosis de ejemplo; el porcentaje está pendiente de validar.",
+          porConfirmar: true,
+        });
+      }
+    }
 
     if (design.scentIds.length > 0) {
       const milliliters = Math.ceil(grams * wax.fragranceMin);
@@ -119,7 +134,10 @@ export function buildSuppliesMessage(
     .join("\n");
 
   const supplies = recipe
-    .map((line) => `• ${line.nombre}: ${line.cantidad} ${line.unidad}`)
+    .map(
+      (line) =>
+        `• ${line.nombre}: ${line.cantidad} ${line.unidad}${line.porConfirmar ? " (dosis por confirmar)" : ""}`,
+    )
     .join("\n");
 
   return [
