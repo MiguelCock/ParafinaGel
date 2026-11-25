@@ -36,8 +36,23 @@ import {
   setLayerCount,
   validateDesign,
 } from "./design";
+import {
+  FLUID_AROMA,
+  FLUID_COLOR,
+  FLUID_EMPTY,
+  FLUID_GEL,
+  FLUID_WALL,
+  FLUID_WAX,
+  colorAt,
+  countMaterial,
+  createFluidState,
+  materialAt,
+  setFluidCell,
+  stepFluid,
+} from "./fluid";
 import { createLiquidState, stepLiquid, surfaceAt } from "./liquid";
 import { portraitSvg } from "./portrait";
+import { writeFluidPixels } from "./render/fluid-rig";
 import { surfacePoints } from "./render/liquid-rig";
 import { scoreCandle, scoreDesign, starsFor } from "./scoring";
 import { buildRecipe } from "./supplies";
@@ -472,6 +487,116 @@ describe("craft execution", () => {
     expect(execution.mix).toBe(0);
     expect(execution.spill).toBe(0);
     expect(execution.total).toBe(33);
+  });
+});
+
+describe("side-view fluid", () => {
+  it("falls and stops on the floor", () => {
+    const fluid = createFluidState(3, 8, 3);
+    for (let y = 0; y < 8; y += 1) {
+      setFluidCell(fluid, 0, y, FLUID_WALL);
+      setFluidCell(fluid, 2, y, FLUID_WALL);
+    }
+    for (let x = 0; x < 3; x += 1) setFluidCell(fluid, x, 7, FLUID_WALL);
+    setFluidCell(fluid, 1, 0, FLUID_WAX, 0xf3e3cd);
+
+    for (let step = 0; step < 12; step += 1) stepFluid(fluid);
+
+    expect(materialAt(fluid, 1, 6)).toBe(FLUID_WAX);
+    expect(countMaterial(fluid, FLUID_WAX)).toBe(1);
+  });
+
+  it("spreads sideways with enough volume", () => {
+    const fluid = createFluidState(11, 9, 4);
+    for (let x = 0; x < 11; x += 1) {
+      setFluidCell(fluid, x, 8, FLUID_WALL);
+    }
+    for (let y = 0; y < 6; y += 1) {
+      setFluidCell(fluid, 5, y, FLUID_WAX, 0xf3e3cd);
+    }
+
+    for (let step = 0; step < 80; step += 1) stepFluid(fluid);
+
+    const bottom = Array.from({ length: 11 }, (_, x) =>
+      materialAt(fluid, x, 7),
+    ).filter((material) => material === FLUID_WAX).length;
+    expect(bottom).toBeGreaterThan(1);
+    expect(materialAt(fluid, 0, 8)).toBe(FLUID_WALL);
+  });
+
+  it("lets denser gel sink through wax", () => {
+    const fluid = createFluidState(3, 5, 5);
+    for (let y = 0; y < 5; y += 1) {
+      setFluidCell(fluid, 0, y, FLUID_WALL);
+      setFluidCell(fluid, 2, y, FLUID_WALL);
+    }
+    for (let x = 0; x < 3; x += 1) setFluidCell(fluid, x, 4, FLUID_WALL);
+    setFluidCell(fluid, 1, 3, FLUID_WAX);
+    setFluidCell(fluid, 1, 2, FLUID_GEL);
+
+    for (let step = 0; step < 6; step += 1) stepFluid(fluid);
+
+    expect(materialAt(fluid, 1, 3)).toBe(FLUID_GEL);
+  });
+
+  it("mixes color into wax and consumes the drop", () => {
+    const fluid = createFluidState(5, 5, 6);
+    setFluidCell(fluid, 2, 4, FLUID_WAX, 0xffffff);
+    setFluidCell(fluid, 2, 3, FLUID_COLOR, 0xff0000);
+
+    stepFluid(fluid);
+
+    expect(materialAt(fluid, 2, 3)).toBe(FLUID_EMPTY);
+    expect(colorAt(fluid, 2, 4)).not.toBe(0xffffff);
+    expect(colorAt(fluid, 2, 4)).not.toBe(0xff0000);
+  });
+
+  it("adds aroma to wax without changing the material", () => {
+    const fluid = createFluidState(5, 5, 7);
+    setFluidCell(fluid, 2, 4, FLUID_WAX, 0xf3e3cd);
+    setFluidCell(fluid, 2, 3, FLUID_AROMA, 0xf3e3cd);
+
+    stepFluid(fluid);
+
+    expect(materialAt(fluid, 2, 4)).toBe(FLUID_WAX);
+    expect(materialAt(fluid, 2, 3)).toBe(FLUID_EMPTY);
+  });
+
+  it("maps cells to RGBA with color and transparency", () => {
+    const fluid = createFluidState(2, 1, 1);
+    setFluidCell(fluid, 0, 0, FLUID_WAX, 0xff0000);
+    setFluidCell(fluid, 1, 0, FLUID_GEL, 0x00ff00);
+    const pixels = new Uint8ClampedArray(2 * 4);
+
+    writeFluidPixels(fluid, pixels);
+
+    expect(Array.from(pixels.slice(0, 4))).toEqual([255, 0, 0, 255]);
+    expect(pixels[3]).toBe(255);
+    expect(pixels[7]).toBe(170);
+    expect(pixels[4]).toBe(0);
+    expect(pixels[5]).toBe(255);
+  });
+
+  it("leaves empty cells transparent", () => {
+    const fluid = createFluidState(1, 1, 1);
+    const pixels = new Uint8ClampedArray(4);
+    writeFluidPixels(fluid, pixels);
+    expect(pixels[3]).toBe(0);
+  });
+
+  it("is deterministic for the same seed", () => {
+    const a = createFluidState(10, 10, 9);
+    const b = createFluidState(10, 10, 9);
+    for (const fluid of [a, b]) {
+      for (let x = 2; x < 8; x += 1) {
+        setFluidCell(fluid, x, 1, FLUID_WAX, 0xf3e3cd);
+      }
+      for (let step = 0; step < 20; step += 1) stepFluid(fluid);
+    }
+
+    expect(a.material).toEqual(b.material);
+    expect(a.color).toEqual(b.color);
+    expect(Array.from(a.material).every(Number.isFinite)).toBe(true);
   });
 });
 
