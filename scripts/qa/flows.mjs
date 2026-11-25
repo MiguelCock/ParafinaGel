@@ -849,6 +849,11 @@ export async function flowSandbox({ browser, baseUrl, outDir, report }) {
     await gotoGame(page, baseUrl);
     await startSandbox(page);
 
+    await click(page, "material-tab-wax");
+    await capture(page, outDir, "1280-light-sandbox-wax-shelf", report);
+    await click(page, "material-tab-vessel");
+    await capture(page, outDir, "1280-light-sandbox-vessel-shelf", report);
+
     await click(page, "material-accessible-summary");
     await page.select('[data-testid="accessible-wax"]', "vaso");
     await page.select('[data-testid="accessible-vessel"]', "ambar");

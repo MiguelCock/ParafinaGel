@@ -116,6 +116,16 @@
     return waxColors.find((color) => color.id === id)?.nombre ?? "Natural";
   }
 
+  function waxFormatLabel(
+    format: "block" | "flakes" | "gel",
+    priceUnit: "kg" | "pote",
+  ): string {
+    if (priceUnit === "pote") return "Pote 700 g";
+    if (format === "block") return "Bloque";
+    if (format === "flakes") return "Escamas";
+    return "Gel";
+  }
+
   function activeColor(): string | null {
     if (game.design.mode === "figura") {
       return currentPart
@@ -200,12 +210,17 @@
 <div class="materials" data-testid="material-shelf">
   <div
     class="workbench"
+    class:workbench--dragging={dragged !== null}
     role="region"
     aria-label="Mesa de trabajo de materiales"
     data-testid="material-dropzone"
     ondragover={(event) => event.preventDefault()}
     ondrop={onDrop}
+    ondragend={() => (dragged = null)}
   >
+    {#if dragged}
+      <span class="workbench__drop">Suelta para aplicar</span>
+    {/if}
     <div class="workbench__preview">
       <CandlePreview design={game.design} compact />
     </div>
@@ -306,12 +321,16 @@
             data-testid={`material-wax-${wax.id}`}
           >
             <span
-              class="shelf-object__visual object-wax"
+              class="shelf-object__visual object-wax object-wax--{wax.format}"
+              class:object-wax--pote={wax.priceUnit === "pote"}
               style={`--object-color: ${wax.hex}`}
               aria-hidden="true"
             ></span>
             <span class="shelf-object__body">
               <strong>{wax.nombre}</strong>
+              <span class="shelf-object__tag">
+                {waxFormatLabel(wax.format, wax.priceUnit)}
+              </span>
               <span>
                 {formatCOP(wax.price)}
                 / {wax.priceUnit === "pote" ? "pote 700 g" : "kg"}
@@ -340,6 +359,7 @@
           >
             <span
               class="shelf-object__visual object-vessel object-vessel--{item.material}"
+              class:object-vessel--transparent={item.transparent}
               style={`--object-color: ${item.glass}`}
               aria-hidden="true"
             ></span>
@@ -366,7 +386,9 @@
             aria-pressed={isSelected("mold", item.id)}
             data-testid={`material-mold-${item.id}`}
           >
-            <span class="shelf-object__visual object-mold" aria-hidden="true"
+            <span
+              class="shelf-object__visual object-mold object-mold--{item.id}"
+              aria-hidden="true"
             ></span>
             <span class="shelf-object__body">
               <strong>{item.nombre}</strong>
@@ -390,7 +412,9 @@
             disabled={wickDisabled(wick.id)}
             data-testid={`material-wick-${wick.id}`}
           >
-            <span class="shelf-object__visual object-wick" aria-hidden="true"
+            <span
+              class="shelf-object__visual object-wick object-wick--{wick.id}"
+              aria-hidden="true"
             ></span>
             <span class="shelf-object__body">
               <strong>{wick.nombre}</strong>
@@ -401,6 +425,24 @@
             </span>
           </button>
         {/each}
+      </div>
+      <div class="shelf-tools">
+        <div class="shelf-tool">
+          <span class="shelf-tool__visual object-porta" aria-hidden="true"
+          ></span>
+          <span>
+            <strong>Porta pabilo</strong>
+            <small>Base metálica</small>
+          </span>
+        </div>
+        <div class="shelf-tool">
+          <span class="shelf-tool__visual object-centrador" aria-hidden="true"
+          ></span>
+          <span>
+            <strong>Centrador</strong>
+            <small>Se retira al curar</small>
+          </span>
+        </div>
       </div>
     {:else if visibleCategory === "scent"}
       <div class="materials__grid">
@@ -416,7 +458,7 @@
             data-testid={`material-scent-${scent.id}`}
           >
             <span
-              class="shelf-object__visual object-bottle"
+              class="shelf-object__visual object-bottle object-bottle--aroma"
               style="--object-color: #d9c4ae"
               aria-hidden="true"
             ></span>
@@ -441,7 +483,7 @@
             data-testid={`material-color-${color.id}`}
           >
             <span
-              class="shelf-object__visual object-bottle"
+              class="shelf-object__visual object-bottle object-bottle--color"
               style={`--object-color: ${color.hex}`}
               aria-hidden="true"
             ></span>
@@ -518,6 +560,7 @@
   }
 
   .workbench {
+    position: relative;
     display: grid;
     grid-template-columns: 5rem minmax(0, 1fr);
     gap: 0.65rem;
@@ -527,6 +570,36 @@
     border: 1px dashed var(--color-accent);
     border-radius: 0.75rem;
     background: var(--color-accent-soft);
+    transition:
+      border-color var(--motion-fast, 160ms) var(--motion-ease, ease),
+      background-color var(--motion-fast, 160ms) var(--motion-ease, ease),
+      box-shadow var(--motion-fast, 160ms) var(--motion-ease, ease);
+  }
+
+  .workbench--dragging {
+    border-style: solid;
+    background: color-mix(
+      in srgb,
+      var(--color-accent-soft) 78%,
+      var(--color-bg-elevated)
+    );
+    box-shadow:
+      inset 0 0 0 1px var(--color-accent),
+      0 12px 24px -20px var(--color-accent);
+  }
+
+  .workbench__drop {
+    position: absolute;
+    top: 0.35rem;
+    right: 0.45rem;
+    padding: 0.12rem 0.4rem;
+    border-radius: 999px;
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    font-size: 0.52rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
   }
 
   .workbench__preview {
@@ -760,6 +833,7 @@
   }
 
   .object-wax {
+    position: relative;
     width: 2.4rem;
     height: 1.8rem;
     margin-top: 0.6rem;
@@ -778,22 +852,163 @@
     background: rgba(255, 255, 255, 0.55);
   }
 
+  .object-wax--block::before {
+    content: "";
+    position: absolute;
+    right: 0.25rem;
+    bottom: 0.28rem;
+    left: 0.25rem;
+    height: 1px;
+    background: color-mix(in srgb, var(--object-color) 55%, #5a4634);
+    box-shadow:
+      0 0.3rem 0 color-mix(in srgb, var(--object-color) 55%, #5a4634),
+      0 0.6rem 0 color-mix(in srgb, var(--object-color) 45%, transparent);
+    opacity: 0.35;
+  }
+
+  .object-wax--flakes {
+    height: 2rem;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .object-wax--flakes::before {
+    content: "";
+    position: absolute;
+    right: 0.05rem;
+    bottom: 0;
+    left: 0.05rem;
+    height: 1.35rem;
+    background: var(--object-color);
+    clip-path: polygon(
+      0 100%,
+      12% 42%,
+      30% 62%,
+      48% 20%,
+      64% 55%,
+      82% 30%,
+      100% 100%
+    );
+    filter: drop-shadow(
+      0.12rem 0.14rem 0 color-mix(in srgb, #5a4634 22%, transparent)
+    );
+  }
+
+  .object-wax--flakes::after {
+    top: 0.7rem;
+    left: 0.55rem;
+    width: 0.3rem;
+    height: 0.24rem;
+    background: rgba(255, 255, 255, 0.6);
+    box-shadow:
+      0.55rem 0.35rem 0 rgba(255, 255, 255, 0.4),
+      1.05rem -0.05rem 0 rgba(255, 255, 255, 0.45);
+  }
+
+  .object-wax--gel {
+    background: color-mix(in srgb, var(--object-color) 32%, transparent);
+    border-color: color-mix(in srgb, var(--object-color) 55%, #5a4634);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.5),
+      inset 0 -0.4rem 0.6rem rgba(255, 255, 255, 0.2),
+      0 0.25rem 0.5rem -0.35rem #5a4634;
+  }
+
+  .object-wax--gel::after {
+    background: rgba(255, 255, 255, 0.72);
+  }
+
+  .object-wax--pote {
+    width: 2.2rem;
+    height: 1.55rem;
+    margin-top: 0.85rem;
+    border-radius: 0.55rem 0.55rem 0.4rem 0.4rem;
+  }
+
+  .object-wax--pote::before {
+    content: "";
+    position: absolute;
+    top: -0.25rem;
+    right: -0.12rem;
+    left: -0.12rem;
+    height: 0.36rem;
+    border: 1px solid color-mix(in srgb, var(--object-color) 55%, #5a4634);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--object-color) 68%, #5a4634);
+  }
+
   .object-vessel {
+    position: relative;
     width: 2rem;
     height: 2.8rem;
     margin-top: 0.2rem;
+    overflow: hidden;
     border: 2px solid color-mix(in srgb, var(--object-color) 55%, #5a4634);
     border-radius: 0.35rem 0.35rem 0.5rem 0.5rem;
     background: color-mix(in srgb, var(--object-color) 35%, white);
+    box-shadow: inset 0.3rem 0 0.5rem -0.35rem rgba(255, 255, 255, 0.8);
+  }
+
+  .object-vessel::before {
+    content: "";
+    position: absolute;
+    top: 0.35rem;
+    bottom: 0.35rem;
+    left: 0.28rem;
+    width: 0.22rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.62);
+  }
+
+  .object-vessel::after {
+    content: "";
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    left: -2px;
+    height: 0.32rem;
+    border-bottom: 1px solid
+      color-mix(in srgb, var(--object-color) 55%, #5a4634);
+    background: color-mix(in srgb, var(--object-color) 58%, white);
+  }
+
+  .object-vessel--transparent {
+    background: color-mix(in srgb, var(--object-color) 22%, transparent);
+    box-shadow:
+      inset 0.3rem 0 0.5rem -0.35rem rgba(255, 255, 255, 0.8),
+      inset 0 -0.5rem 0.8rem -0.5rem rgba(255, 255, 255, 0.55);
   }
 
   .object-vessel--metal {
     border-radius: 0.25rem;
-    background: linear-gradient(90deg, #b8bbb4, #eef0ea, #b8bbb4);
+    background: repeating-linear-gradient(
+      90deg,
+      #b8bbb4 0 0.2rem,
+      #eef0ea 0.2rem 0.42rem,
+      #b8bbb4 0.42rem 0.6rem
+    );
+  }
+
+  .object-vessel--metal::after {
+    background: #8b8e87;
+    border-bottom-color: #64675f;
   }
 
   .object-vessel--ceramica {
     border-radius: 0.6rem 0.6rem 0.45rem 0.45rem;
+    background:
+      radial-gradient(
+        circle at 25% 35%,
+        rgba(255, 255, 255, 0.3) 0 0.1rem,
+        transparent 0.12rem
+      ),
+      radial-gradient(
+        circle at 70% 62%,
+        rgba(90, 70, 52, 0.16) 0 0.08rem,
+        transparent 0.1rem
+      ),
+      color-mix(in srgb, var(--object-color) 72%, white);
   }
 
   .object-wick {
@@ -802,7 +1017,9 @@
     margin-top: 0.5rem;
     border: 2px solid #8f5f40;
     border-radius: 50%;
-    background: #f3e3cd;
+    background:
+      radial-gradient(circle at 50% 50%, #6f5541 0 0.18rem, transparent 0.2rem),
+      #f3e3cd;
   }
 
   .object-wick::after {
@@ -813,6 +1030,111 @@
     width: 2px;
     height: 1.1rem;
     background: #3b2d25;
+  }
+
+  .object-wick--pabilo-3 {
+    width: 1.7rem;
+    height: 1.7rem;
+    margin-top: 0.85rem;
+  }
+
+  .object-wick--pabilo-45 {
+    width: 2.1rem;
+    height: 2.1rem;
+    margin-top: 0.65rem;
+  }
+
+  .object-wick--pabilo-67 {
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-top: 0.35rem;
+  }
+
+  .shelf-tools {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.35rem;
+    margin-top: 0.1rem;
+  }
+
+  .shelf-tool {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 3.2rem;
+    padding: 0.35rem 0.4rem;
+    border: 1px dashed var(--color-border-strong);
+    border-radius: 0.5rem;
+    background: color-mix(in srgb, var(--color-surface) 65%, transparent);
+    color: var(--color-text-muted);
+    font-size: 0.58rem;
+    line-height: 1.25;
+  }
+
+  .shelf-tool strong {
+    display: block;
+    color: var(--color-heading);
+    font-size: 0.62rem;
+  }
+
+  .shelf-tool small {
+    display: block;
+    font-size: 0.52rem;
+  }
+
+  .shelf-tool__visual {
+    position: relative;
+    flex: 0 0 auto;
+    width: 1.8rem;
+    height: 1.8rem;
+  }
+
+  .object-porta {
+    border: 2px solid #64675f;
+    border-radius: 50%;
+    background: radial-gradient(circle, #8a8d8a 0 0.3rem, #d8d9d4 0.32rem);
+    box-shadow: inset 0 -0.2rem 0.3rem -0.2rem #64675f;
+  }
+
+  .object-porta::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0.2rem;
+    height: 0.7rem;
+    transform: translate(-50%, -50%);
+    border-radius: 999px;
+    background: #3b2d25;
+  }
+
+  .object-centrador {
+    width: 1.8rem;
+    height: 0.45rem;
+  }
+
+  .object-centrador::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 0.35rem;
+    border-radius: 999px;
+    background: #d2a77e;
+    border: 1px solid #8f5f40;
+  }
+
+  .object-centrador::after {
+    content: "";
+    position: absolute;
+    top: 0.3rem;
+    left: 0.25rem;
+    width: 0.25rem;
+    height: 0.7rem;
+    border-radius: 0 0 0.15rem 0.15rem;
+    background: #8f5f40;
+    box-shadow: 1.15rem 0 0 #8f5f40;
   }
 
   .object-bottle {
@@ -836,13 +1158,73 @@
     background: #8f5f40;
   }
 
+  .object-bottle--color {
+    width: 1.5rem;
+    height: 2.55rem;
+    border-radius: 0.25rem 0.25rem 0.35rem 0.35rem;
+    background:
+      linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.42) 0 0.2rem,
+        transparent 0.2rem
+      ),
+      var(--object-color);
+  }
+
+  .object-bottle--color::before {
+    top: -0.65rem;
+    width: 0.45rem;
+    height: 0.7rem;
+    border-radius: 0.1rem;
+    background: #3b2d25;
+    box-shadow: 0 0.28rem 0 -0.05rem #8f5f40;
+  }
+
+  .object-bottle--color::after {
+    content: "";
+    position: absolute;
+    right: 0.2rem;
+    bottom: 0.55rem;
+    left: 0.2rem;
+    height: 0.38rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.65);
+    border-bottom: 1px solid rgba(42, 36, 30, 0.35);
+  }
+
+  .object-bottle--aroma::after {
+    content: "";
+    position: absolute;
+    top: 0.75rem;
+    right: 0.2rem;
+    left: 0.2rem;
+    height: 0.75rem;
+    border-radius: 0.12rem;
+    background:
+      linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.72),
+        rgba(255, 255, 255, 0.35)
+      ),
+      #f3e3cd;
+    border: 1px solid rgba(90, 70, 52, 0.28);
+  }
+
   .object-label {
     width: 2.3rem;
     height: 1.6rem;
     margin-top: 0.8rem;
     border: 2px solid var(--object-accent);
     border-radius: 0.2rem;
-    background: var(--object-color);
+    background:
+      linear-gradient(
+        180deg,
+        transparent 0.35rem,
+        var(--object-accent) 0.35rem 0.42rem,
+        transparent 0.42rem 0.7rem,
+        color-mix(in srgb, var(--object-accent) 55%, transparent) 0.7rem 0.76rem,
+        transparent 0.76rem
+      ),
+      var(--object-color);
   }
 
   .object-mold {
@@ -852,6 +1234,53 @@
     border: 2px solid #8f5f40;
     border-radius: 50% 50% 45% 45%;
     background: #f3e3cd;
+  }
+
+  .object-mold--corazon {
+    border-radius: 50% 50% 42% 42%;
+    transform: rotate(-6deg);
+  }
+
+  .object-mold--luna {
+    border-radius: 50%;
+    background:
+      radial-gradient(
+        circle at 68% 40%,
+        var(--color-bg-elevated) 0 44%,
+        transparent 45%
+      ),
+      #e4d4bd;
+  }
+
+  .object-mold--flor {
+    border-radius: 45% 55% 42% 58% / 55% 45% 58% 42%;
+    background:
+      radial-gradient(circle at 50% 50%, #d2a77e 0 22%, transparent 24%),
+      #f3e3cd;
+  }
+
+  .object-mold--osito {
+    border-radius: 44% 44% 50% 50%;
+  }
+
+  .object-mold--osito::before,
+  .object-mold--osito::after {
+    content: "";
+    position: absolute;
+    top: -0.35rem;
+    width: 0.75rem;
+    height: 0.75rem;
+    border: 2px solid #8f5f40;
+    border-radius: 50%;
+    background: #f3e3cd;
+  }
+
+  .object-mold--osito::before {
+    left: 0.05rem;
+  }
+
+  .object-mold--osito::after {
+    right: 0.05rem;
   }
 
   .object-inclusion {
@@ -871,6 +1300,19 @@
     color: var(--color-text-muted);
     font-size: 0.62rem;
     line-height: 1.3;
+  }
+
+  .shelf-object__tag {
+    justify-self: start;
+    padding: 0.05rem 0.3rem;
+    border-radius: 999px;
+    background: var(--color-surface);
+    color: var(--color-text-muted);
+    font-size: 0.5rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    line-height: 1.2;
+    text-transform: uppercase;
   }
 
   .shelf-object__body strong {
@@ -896,10 +1338,15 @@
     .materials__shelf-note {
       display: none;
     }
+
+    .shelf-tools {
+      grid-template-columns: 1fr;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .shelf-object {
+    .shelf-object,
+    .workbench {
       transition: none;
     }
 
