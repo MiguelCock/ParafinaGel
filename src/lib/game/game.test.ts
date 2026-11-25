@@ -23,7 +23,13 @@ import {
   wickAccuracy,
   waxNeedsCutting,
 } from "./craft";
-import { briefs, recommendedWickTypes, stationOrder, waxesById } from "./data";
+import {
+  briefs,
+  customers,
+  recommendedWickTypes,
+  stationOrder,
+  waxesById,
+} from "./data";
 import {
   createDesign,
   resizeLayer,
@@ -31,6 +37,7 @@ import {
   validateDesign,
 } from "./design";
 import { createLiquidState, stepLiquid, surfaceAt } from "./liquid";
+import { portraitSvg } from "./portrait";
 import { surfacePoints } from "./render/liquid-rig";
 import { scoreCandle, scoreDesign, starsFor } from "./scoring";
 import { buildRecipe } from "./supplies";
@@ -465,6 +472,27 @@ describe("craft execution", () => {
     expect(execution.mix).toBe(0);
     expect(execution.spill).toBe(0);
     expect(execution.total).toBe(33);
+  });
+});
+
+describe("portrait expressions", () => {
+  it("keeps the same person with three distinct expressions", () => {
+    const customer = customers[0]!;
+    const neutral = portraitSvg(customer, "test", "neutral");
+    const happy = portraitSvg(customer, "test", "happy");
+    const doubt = portraitSvg(customer, "test", "doubt");
+
+    expect(new Set([neutral, happy, doubt]).size).toBe(3);
+    expect(neutral).not.toContain("NaN");
+    expect(happy).not.toContain("NaN");
+    expect(doubt).not.toContain("NaN");
+  });
+
+  it("is deterministic for the same customer and expression", () => {
+    const customer = customers[1]!;
+    expect(portraitSvg(customer, "same", "happy")).toBe(
+      portraitSvg(customer, "same", "happy"),
+    );
   });
 });
 
