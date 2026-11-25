@@ -93,6 +93,10 @@
       ? activeCategory
       : (categories[0]?.id ?? "wax"),
   );
+  const shelfLabel = $derived(
+    categories.find((category) => category.id === visibleCategory)?.label ??
+      "Materiales",
+  );
 
   function waxDisabled(id: string): boolean {
     const wax = waxes.find((item) => item.id === id);
@@ -276,7 +280,16 @@
     </div>
   {/if}
 
-  <div class="materials__shelf">
+  <div
+    class="materials__shelf"
+    role="group"
+    aria-label={`Estantería de ${shelfLabel}`}
+    data-testid="material-shelf-rack"
+  >
+    <div class="materials__shelf-head">
+      <span class="materials__shelf-title">{shelfLabel}</span>
+      <span class="materials__shelf-note">Toca o arrastra a la mesa</span>
+    </div>
     {#if visibleCategory === "wax"}
       <div class="materials__grid">
         {#each waxes as wax}
@@ -582,16 +595,92 @@
     gap: 0.25rem;
   }
 
+  .materials__shelf {
+    position: relative;
+    display: grid;
+    gap: 0.4rem;
+    padding: 0.45rem 0.4rem 0.65rem;
+    border: 1px solid var(--color-border);
+    border-radius: 0.8rem;
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--color-bg-elevated) 88%, transparent),
+        color-mix(in srgb, var(--color-surface) 72%, transparent)
+      ),
+      repeating-linear-gradient(
+        180deg,
+        transparent 0 3.6rem,
+        color-mix(in srgb, var(--color-border) 28%, transparent) 3.6rem 3.7rem
+      );
+    box-shadow:
+      inset 0 8px 18px color-mix(in srgb, var(--color-heading) 5%, transparent),
+      inset 0 -10px 18px
+        color-mix(in srgb, var(--color-heading) 7%, transparent),
+      0 14px 24px -22px var(--color-heading);
+  }
+
+  .materials__shelf::before,
+  .materials__shelf::after {
+    content: "";
+    position: absolute;
+    right: 0.55rem;
+    left: 0.55rem;
+    height: 0.35rem;
+    border-radius: 999px;
+    pointer-events: none;
+  }
+
+  .materials__shelf::before {
+    top: 0.15rem;
+    background: linear-gradient(
+      180deg,
+      var(--color-bg-elevated),
+      color-mix(in srgb, var(--color-border) 55%, transparent)
+    );
+  }
+
+  .materials__shelf::after {
+    bottom: 0.15rem;
+    background: color-mix(in srgb, var(--color-heading) 8%, transparent);
+    filter: blur(2px);
+  }
+
+  .materials__shelf-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.1rem 0.15rem 0;
+  }
+
+  .materials__shelf-title {
+    color: var(--color-heading);
+    font-family: var(--font-display);
+    font-size: 0.82rem;
+    font-weight: 600;
+  }
+
+  .materials__shelf-note {
+    color: var(--color-text-muted);
+    font-size: 0.52rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
   .materials__grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.35rem;
     max-height: 18rem;
     overflow-y: auto;
-    padding-right: 0.15rem;
+    padding: 0.1rem 0.15rem 0.15rem 0.1rem;
+    scrollbar-gutter: stable;
   }
 
   .shelf-object {
+    position: relative;
     display: grid;
     grid-template-columns: 2.5rem minmax(0, 1fr);
     gap: 0.4rem;
@@ -604,16 +693,50 @@
     color: var(--color-heading);
     text-align: left;
     cursor: grab;
+    box-shadow: 0 7px 12px -11px var(--color-heading);
+    transition:
+      border-color var(--motion-fast, 160ms) var(--motion-ease, ease),
+      background-color var(--motion-fast, 160ms) var(--motion-ease, ease),
+      box-shadow var(--motion-fast, 160ms) var(--motion-ease, ease),
+      transform var(--motion-fast, 160ms) var(--motion-ease, ease);
   }
 
   .shelf-object:hover:not(:disabled) {
     border-color: var(--color-accent);
+    box-shadow: 0 12px 18px -14px var(--color-heading);
+    transform: translateY(-1px);
+  }
+
+  .shelf-object:focus-visible,
+  .materials__tab:focus-visible,
+  .materials__target:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
   }
 
   .shelf-object.selected {
     border-color: var(--color-accent);
-    box-shadow: inset 0 0 0 1px var(--color-accent);
+    box-shadow:
+      inset 0 0 0 1px var(--color-accent),
+      0 10px 18px -14px var(--color-accent);
     background: var(--color-accent-soft);
+  }
+
+  .shelf-object.selected::after {
+    content: "✓";
+    position: absolute;
+    top: 0.28rem;
+    right: 0.32rem;
+    display: grid;
+    place-items: center;
+    width: 0.9rem;
+    height: 0.9rem;
+    border-radius: 50%;
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    font-size: 0.55rem;
+    font-weight: 800;
+    line-height: 1;
   }
 
   .shelf-object.selected .shelf-object__body,
@@ -622,7 +745,9 @@
   }
 
   .shelf-object:disabled {
-    opacity: 0.45;
+    opacity: 0.58;
+    border-style: dashed;
+    box-shadow: none;
     cursor: not-allowed;
   }
 
@@ -766,6 +891,20 @@
   @media (max-width: 520px) {
     .materials__grid {
       grid-template-columns: 1fr;
+    }
+
+    .materials__shelf-note {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .shelf-object {
+      transition: none;
+    }
+
+    .shelf-object:hover:not(:disabled) {
+      transform: none;
     }
   }
 </style>
