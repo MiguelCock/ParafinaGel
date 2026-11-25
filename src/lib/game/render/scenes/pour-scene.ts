@@ -4,7 +4,7 @@ import type { GameState } from "../../game-state.svelte";
 import { createLiquidState, stepLiquid, type LiquidState } from "../../liquid";
 import { CandleRig } from "../candle-rig";
 import { drawLiquidParticles } from "../liquid-rig";
-import { motion } from "../motion";
+import { easings, motion, motionDurations, tweens } from "../motion";
 import { clamp, hexColor, stageColors } from "../palette";
 import type { StageScene } from "../scene";
 
@@ -17,8 +17,10 @@ export class PourScene implements StageScene {
   private background = new Graphics();
   private target = new Graphics();
   private candle = new CandleRig();
+  private pitcherShadow = new Graphics();
   private pitcher = new Container();
   private pitcherBody = new Graphics();
+  private pitcherLiquid = new Graphics();
   private stream = new Graphics();
   private splashes = new Graphics();
   private spill = new Graphics();
@@ -45,6 +47,14 @@ export class PourScene implements StageScene {
   private liquid: LiquidState = createLiquidState(23);
   private dragging = false;
   private time = 0;
+  private tilt = -0.1;
+  private lift = 0;
+  private targetTilt = -0.1;
+  private targetLift = 0;
+  private tiltTween: (() => void) | null = null;
+  private liftTween: (() => void) | null = null;
+  private wasPouring = false;
+  private wasDragging = false;
 
   constructor() {
     this.background
@@ -67,6 +77,7 @@ export class PourScene implements StageScene {
       this.background,
       this.target,
       this.candle,
+      this.pitcherShadow,
       this.pitcher,
       this.stream,
       this.splashes,
@@ -97,7 +108,7 @@ export class PourScene implements StageScene {
       .roundRect(44, 0, 56, 12, 6)
       .fill(hexColor("#e4d8ca"))
       .stroke({ width: 2, color: hexColor("#a98769") });
-    this.pitcher.addChild(this.pitcherBody);
+    this.pitcher.addChild(this.pitcherBody, this.pitcherLiquid);
   }
 
   update(game: GameState, delta: number): void {
@@ -131,9 +142,53 @@ export class PourScene implements StageScene {
     });
 
     const pitcherX = JAR_X + offset * 250;
-    const tilt = game.craft.pouring ? -0.42 : -0.12;
-    this.pitcher.position.set(pitcherX, 92);
-    this.pitcher.rotation = tilt;
+    const pouring = game.craft.pouring;
+    const targetTilt = pouring ? -0.42 : this.dragging ? -0.22 : -0.1;
+    const targetLift = this.dragging || pouring ? 10 : 0;
+    const settling =
+      (this.wasPouring || this.wasDragging) && !pouring && !this.dragging;
+
+    if (targetTilt !== this.targetTilt) {
+      this.targetTilt = targetTilt;
+      this.tiltTween?.();
+      if (motion.reduced) {
+        this.tilt = targetTilt;
+      } else {
+        const from = this.tilt;
+        this.tiltTween = tweens.animate({
+          duration: motionDurations.base,
+          easing: settling ? easings.outBack : easings.outCubic,
+          onUpdate: (progress) => {
+            this.tilt = from + (targetTilt - from) * progress;
+          },
+        });
+      }
+    }
+
+    if (targetLift !== this.targetLift) {
+      this.targetLift = targetLift;
+      this.liftTween?.();
+      if (motion.reduced) {
+        this.lift = targetLift;
+      } else {
+        const from = this.lift;
+        this.liftTween = tweens.animate({
+          duration: motionDurations.fast,
+          easing: easings.outCubic,
+          onUpdate: (progress) => {
+            this.lift = from + (targetLift - from) * progress;
+          },
+        });
+      }
+    }
+
+    this.wasPouring = pouring;
+    this.wasDragging = this.dragging;
+
+    this.pitcher.position.set(pitcherX, 92 - this.lift);
+    this.pitcher.rotation = this.tilt;
+    this.drawPitcherShadow(pitcherX);
+    this.drawPitcherLiquid(unit?.colorHex ?? "#e9c9a8", pouring);
 
     this.label.text = game.craft.waitingFilm
       ? "Deja que cuaje la capa"
@@ -150,6 +205,26 @@ export class PourScene implements StageScene {
     this.drawTarget(unit?.target ?? 88, unit?.fill ?? 0, aligned);
     this.drawSplashes(impact.x, impact.y, color);
     this.drawSpill(game.craft.spill, color);
+  }
+
+  private drawPitcherShadow(pitcherX: number): void {
+    const fade = Math.max(0.35, 1 - this.lift / 24);
+    this.pitcherShadow.clear();
+    this.pitcherShadow
+      .ellipse(pitcherX + 72, 282, 78 * fade, 13 * fade)
+      .fill({ color: stageColors.shadow, alpha: 0.16 * fade });
+  }
+
+  private drawPitcherLiquid(color: string, pouring: boolean): void {
+    const slosh = motion.reduced ? 0 : Math.sin(this.time * 2.6) * 3;
+    const surface = 58 + slosh + (pouring ? -4 : 0);
+    this.pitcherLiquid.clear();
+    this.pitcherLiquid
+      .roundRect(8, surface, 116, 186 - surface, 18)
+      .fill({ color: hexColor(color), alpha: 0.72 })
+      .moveTo(14, surface + 1)
+      .lineTo(118, surface + 1 - slosh * 0.5)
+      .stroke({ width: 2, color: stageColors.white, alpha: 0.42 });
   }
 
   private drawTarget(target: number, fill: number, aligned: boolean): void {
@@ -197,7 +272,7 @@ export class PourScene implements StageScene {
     if (!game.craft.pouring) return { x: endX, y: endY };
 
     const startX = pitcherX - 4;
-    const startY = 122;
+    const startY = 122 - this.lift;
     const wobble = motion.reduced ? 0 : Math.sin(this.time * 10) * 7;
     const flow = motion.reduced ? 1 : 0.7 + Math.sin(this.time * 8.5) * 0.3;
     const width = aligned ? 9 + flow * 5 : 8;
