@@ -17,9 +17,12 @@ export class CoolScene implements StageScene {
   private rack = new Graphics();
   private candle = new CandleRig();
   private holderCue = new Graphics();
+  private fanGlow = new Graphics();
   private fan = new Container();
   private fanBase = new Graphics();
   private fanBlades = new Graphics();
+  private wind = new Graphics();
+  private timerRing = new Graphics();
   private steam = new Graphics();
   private timer = new Text({
     text: "",
@@ -40,6 +43,8 @@ export class CoolScene implements StageScene {
   });
   private liquid = createLiquidState(41);
   private time = 0;
+  private fanBoost = 0;
+  private lastCooling = 0;
 
   constructor() {
     this.board
@@ -73,9 +78,9 @@ export class CoolScene implements StageScene {
     this.fan.position.set(FAN_X, FAN_Y);
 
     this.timer.anchor.set(0.5);
-    this.timer.position.set(JAR_X, 580);
+    this.timer.position.set(JAR_X, 592);
     this.help.anchor.set(0.5);
-    this.help.position.set(500, 612);
+    this.help.position.set(500, 622);
 
     this.view.addChild(
       this.board,
@@ -83,7 +88,10 @@ export class CoolScene implements StageScene {
       this.candle,
       this.holderCue,
       this.steam,
+      this.fanGlow,
       this.fan,
+      this.wind,
+      this.timerRing,
       this.timer,
       this.help,
     );
@@ -91,6 +99,13 @@ export class CoolScene implements StageScene {
 
   update(game: GameState, delta: number): void {
     if (!motion.paused) this.time += delta;
+    if (!motion.paused) {
+      const drop = this.lastCooling - game.craft.coolingRemaining;
+      if (drop > 0.05) this.fanBoost = 1;
+      this.fanBoost = Math.max(0, this.fanBoost - delta * 2.2);
+    }
+    this.lastCooling = game.craft.coolingRemaining;
+
     if (!motion.paused) {
       stepLiquid(this.liquid, delta, {
         pouring: false,
@@ -113,7 +128,10 @@ export class CoolScene implements StageScene {
     this.fanBlades.rotation +=
       motion.reduced || motion.paused
         ? 0
-        : (game.craft.cooled ? 0.02 : 0.22) * delta * 6;
+        : (game.craft.cooled ? 0.02 : 0.12 + this.fanBoost * 0.45) * delta * 6;
+
+    this.drawFanCue(game);
+    this.drawTimerRing(game);
 
     this.timer.text = game.craft.cooled
       ? "Vela lista"
@@ -166,6 +184,77 @@ export class CoolScene implements StageScene {
           )
           .fill({ color: stageColors.white, alpha: 0.2 * (1 - phase) });
       }
+    }
+  }
+
+  private drawFanCue(game: GameState): void {
+    this.fanGlow.clear();
+    this.wind.clear();
+    if (motion.reduced || this.fanBoost <= 0.01) return;
+
+    const glow = 0.1 + this.fanBoost * 0.35;
+    this.fanGlow
+      .circle(FAN_X, FAN_Y, 92)
+      .stroke({ width: 6, color: stageColors.sage, alpha: glow });
+
+    for (let index = 0; index < 3; index += 1) {
+      const y = 350 + index * 28 + Math.sin(this.time * 6 + index) * 4;
+      this.wind
+        .moveTo(686, y)
+        .bezierCurveTo(620, y - 12, 540, y + 10, 470, y - 3)
+        .stroke({
+          width: 2,
+          color: stageColors.white,
+          alpha: this.fanBoost * 0.38,
+          cap: "round",
+        });
+    }
+
+    if (game.craft.cooled) {
+      this.fanGlow.circle(FAN_X, FAN_Y, 102).stroke({
+        width: 2,
+        color: stageColors.sage,
+        alpha: this.fanBoost * 0.25,
+      });
+    }
+  }
+
+  private drawTimerRing(game: GameState): void {
+    const progress = Math.min(1, Math.max(0, game.coolingProgress / 100));
+    const cx = JAR_X;
+    const cy = 548;
+    const radius = 20;
+
+    this.timerRing.clear();
+    this.timerRing
+      .circle(cx, cy, radius)
+      .stroke({ width: 4, color: stageColors.border, alpha: 0.65 });
+
+    if (progress > 0) {
+      this.timerRing
+        .moveTo(cx, cy - radius)
+        .arc(
+          cx,
+          cy,
+          radius,
+          -Math.PI / 2,
+          -Math.PI / 2 + progress * Math.PI * 2,
+        )
+        .stroke({
+          width: 4,
+          color: game.craft.cooled ? stageColors.sage : stageColors.accent,
+          alpha: 0.9,
+          cap: "round",
+        });
+    }
+
+    if (game.craft.cooled) {
+      const pulse = motion.reduced ? 1 : 1 + Math.sin(this.time * 3) * 0.08;
+      this.timerRing.circle(cx, cy, radius + 5 * pulse).stroke({
+        width: 2,
+        color: stageColors.sage,
+        alpha: motion.reduced ? 0.4 : 0.35,
+      });
     }
   }
 
