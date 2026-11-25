@@ -56,6 +56,8 @@ export class CandleRig extends Container {
   private mold = new Graphics();
   private inclusionsGraphics = new Graphics();
   private bubblesGraphics = new Graphics();
+  private displayFills: Record<string, number> | null = null;
+  private lastTime = 0;
 
   constructor() {
     super();
@@ -88,10 +90,11 @@ export class CandleRig extends Container {
 
   update(game: GameState, options: CandleRigOptions = {}): void {
     const design = game.design;
-    const fills = options.fills ?? {};
+    const targetFills = options.fills;
+    const time = options.time ?? 0;
+    const fills = this.easedFills(targetFills, time);
     const showLabel = options.showLabel ?? false;
     const showWick = options.showWick ?? true;
-    const time = options.time ?? 0;
     const figure = design.mode === "figura";
     const mold = design.moldId ? moldsById[design.moldId] : null;
 
@@ -440,6 +443,35 @@ export class CandleRig extends Container {
       filled += band * clamp((fills[layer.id] ?? 100) / 100, 0, 1);
     }
     return INNER_Y + INNER_H - filled;
+  }
+
+  private easedFills(
+    target: Record<string, number> | undefined,
+    time: number,
+  ): Record<string, number> {
+    if (!target) return {};
+
+    if (!this.displayFills) {
+      this.displayFills = { ...target };
+      this.lastTime = time;
+      return this.displayFills;
+    }
+
+    const delta = Math.max(0, Math.min(0.1, time - this.lastTime));
+    this.lastTime = time;
+    const easing = motion.reduced ? 1 : 1 - Math.exp(-delta * 12);
+    const keys = new Set([
+      ...Object.keys(this.displayFills),
+      ...Object.keys(target),
+    ]);
+
+    for (const key of keys) {
+      const value = target[key] ?? 100;
+      const current = this.displayFills[key] ?? value;
+      this.displayFills[key] = current + (value - current) * easing;
+    }
+
+    return this.displayFills;
   }
 
   private drawHolder(visible: boolean, figure: boolean): void {
