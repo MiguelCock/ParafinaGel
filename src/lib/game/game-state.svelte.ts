@@ -200,11 +200,16 @@ export class GameState {
   get canFinish(): boolean {
     return (
       this.craft.wick.placed &&
+      this.craft.holderRemoved &&
       this.craft.wick.trimmed &&
       this.craft.label.placed &&
       this.craft.lidOn &&
       this.craft.wrapped
     );
+  }
+
+  get canGoFinish(): boolean {
+    return this.craft.cooled && this.craft.holderRemoved;
   }
 
   get designIssues(): DesignIssue[] {
@@ -581,8 +586,23 @@ export class GameState {
 
   placeWick(): void {
     this.craft.wick.placed = true;
+    this.craft.holder = true;
+    this.craft.holderRemoved = false;
     this.craft.wick.x = round(this.craft.wick.x);
     this.craft.wick.y = round(this.craft.wick.y);
+  }
+
+  removeHolder(): void {
+    if (
+      this.phase !== "cool" ||
+      !this.craft.cooled ||
+      !this.craft.holder ||
+      this.craft.holderRemoved
+    ) {
+      return;
+    }
+    this.craft.holder = false;
+    this.craft.holderRemoved = true;
   }
 
   goCool(): void {
@@ -617,7 +637,7 @@ export class GameState {
   }
 
   goFinish(): void {
-    if (!this.craft.cooled) return;
+    if (!this.canGoFinish) return;
     this.phase = "finish";
     this.view = "finish";
   }

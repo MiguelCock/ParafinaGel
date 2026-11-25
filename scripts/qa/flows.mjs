@@ -501,6 +501,22 @@ async function coolWithKeyboard(page, typeIndex) {
     await page.keyboard.press(" ");
     await wait(120);
   }
+
+  await page.waitForFunction(
+    () =>
+      (
+        document.querySelector('[data-testid="cool-panel"]')?.innerText ?? ""
+      ).includes("Vela lista"),
+    { timeout: 10000 },
+  );
+  await page.keyboard.press("h");
+  await page.waitForFunction(
+    () =>
+      (
+        document.querySelector('[data-testid="cool-holder"]')?.innerText ?? ""
+      ).includes("retirado"),
+    { timeout: 5000 },
+  );
 }
 
 async function coolWithPointer(page) {
@@ -509,6 +525,23 @@ async function coolWithPointer(page) {
     await page.mouse.click(fan.x, fan.y);
     await wait(160);
   }
+
+  await page.waitForFunction(
+    () =>
+      (
+        document.querySelector('[data-testid="cool-panel"]')?.innerText ?? ""
+      ).includes("Vela lista"),
+    { timeout: 10000 },
+  );
+  const holder = await stagePoint(page, "cool", 430, 200);
+  await page.mouse.click(holder.x, holder.y);
+  await page.waitForFunction(
+    () =>
+      (
+        document.querySelector('[data-testid="cool-holder"]')?.innerText ?? ""
+      ).includes("retirado"),
+    { timeout: 5000 },
+  );
 }
 
 async function finishWithKeyboard(page) {

@@ -240,8 +240,8 @@
           la boca del frasco y suelta para cerrar la capa.
         </li>
         <li>
-          <strong>Curado:</strong> retira el sostenedor, toca el ventilador y, en
-          gel, las burbujas.
+          <strong>Curado:</strong> toca el ventilador; cuando la vela esté firme,
+          retira el sostenedor con clic o H. En gel, toca las burbujas.
         </li>
         <li>
           <strong>Acabado:</strong> arrastra la etiqueta y su tirador, corta la mecha

@@ -39,6 +39,7 @@ export class CandleRig extends Container {
   private maskGraphics = new Graphics();
   private surfaceGraphics = new Graphics();
   private overlay = new Graphics();
+  private holderGraphics = new Graphics();
   private labelGroup = new Container();
   private labelGraphics = new Graphics();
   private labelText = new Text({
@@ -66,6 +67,7 @@ export class CandleRig extends Container {
       this.surfaceGraphics,
       this.inclusionsGraphics,
       this.overlay,
+      this.holderGraphics,
       this.bubblesGraphics,
       this.wick,
       this.flame,
@@ -103,6 +105,7 @@ export class CandleRig extends Container {
     this.jar.clear();
     this.overlay.clear();
     this.surfaceGraphics.clear();
+    this.holderGraphics.clear();
     this.wick.clear();
     this.flame.clear();
     this.bubblesGraphics.clear();
@@ -114,6 +117,8 @@ export class CandleRig extends Container {
     } else {
       this.drawJar(game, fills, options.liquid ?? null, time);
     }
+
+    this.drawHolder(game.craft.holder, figure);
 
     const waxTop = figure ? -112 : this.waxTop(game, fills);
     const lift = figure ? 1 : -1;
@@ -435,6 +440,24 @@ export class CandleRig extends Container {
       filled += band * clamp((fills[layer.id] ?? 100) / 100, 0, 1);
     }
     return INNER_Y + INNER_H - filled;
+  }
+
+  private drawHolder(visible: boolean, figure: boolean): void {
+    if (!visible) return;
+    const width = figure ? 170 : 246;
+    const y = figure ? -150 : -174;
+
+    this.holderGraphics
+      .roundRect(-width / 2, y, width, 12, 5)
+      .fill(stageColors.woodLight)
+      .stroke({ width: 2, color: stageColors.woodDark })
+      .roundRect(-width / 2 + 8, y + 10, 12, 22, 5)
+      .fill(stageColors.wood)
+      .roundRect(width / 2 - 20, y + 10, 12, 22, 5)
+      .fill(stageColors.wood)
+      .circle(0, y + 6, 4)
+      .fill(stageColors.creamDeep)
+      .stroke({ width: 1.5, color: stageColors.woodDark });
   }
 
   private drawWick(

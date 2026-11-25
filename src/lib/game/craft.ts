@@ -246,6 +246,8 @@ export function createCraft(design: CandleDesign): Craft {
       trimmed: false,
       trimMm: 9,
     },
+    holder: false,
+    holderRemoved: false,
     label: { x: 8, y: -5, rotation: 9, placed: false },
     lidOn: false,
     wrapped: false,

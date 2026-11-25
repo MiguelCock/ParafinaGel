@@ -13,7 +13,11 @@
 <div class="game-station-panel" data-testid="cool-panel">
   <p class="game-eyebrow">{gel ? "Curado del gel" : "Enfriado"}</p>
   <h3 class="game-title">
-    {game.craft.cooled ? "La vela está lista" : "Deja reposar la vela"}
+    {game.craft.cooled
+      ? game.craft.holder
+        ? "Retira el sostenedor"
+        : "La vela está lista"
+      : "Deja reposar la vela"}
   </h3>
   <p class="game-text">
     {gel
@@ -39,10 +43,22 @@
     </span>
   </div>
 
+  <div class="game-row">
+    <span class="game-text" data-testid="cool-holder">
+      Sostenedor: {game.craft.holderRemoved ? "retirado" : "puesto"}
+    </span>
+    <span class:game-success={game.craft.holderRemoved} class="game-badge">
+      {game.craft.holderRemoved ? "Libre" : "En la vela"}
+    </span>
+  </div>
+
   <div class="manual-note">
     <span class="manual-note__icon" aria-hidden="true">❄</span>
     <span>
       <strong>Ventilador:</strong> tócalo en el escenario o pulsa Espacio.
+      <br />
+      <strong>Sostenedor:</strong> cuando la vela esté firme, tócalo sobre el
+      frasco o pulsa H.
       {#if gel}
         <br />
         <strong>Burbujas:</strong> tócalas dentro del gel o pulsa B. Quedan {Math.max(
@@ -58,7 +74,7 @@
     class="game-action game-primary"
     type="button"
     onclick={() => game.goFinish()}
-    disabled={!game.craft.cooled}
+    disabled={!game.canGoFinish}
     data-testid="cool-continue"
   >
     Ir al acabado

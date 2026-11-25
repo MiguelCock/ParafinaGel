@@ -16,6 +16,7 @@ export class CoolScene implements StageScene {
   private board = new Graphics();
   private rack = new Graphics();
   private candle = new CandleRig();
+  private holderCue = new Graphics();
   private fan = new Container();
   private fanBase = new Graphics();
   private fanBlades = new Graphics();
@@ -80,6 +81,7 @@ export class CoolScene implements StageScene {
       this.board,
       this.rack,
       this.candle,
+      this.holderCue,
       this.steam,
       this.fan,
       this.timer,
@@ -119,10 +121,25 @@ export class CoolScene implements StageScene {
     this.timer.style.fill = game.craft.cooled
       ? stageColors.sage
       : stageColors.ink;
-    this.help.text =
-      game.design.mode === "gel"
+    this.help.text = game.craft.cooled
+      ? game.craft.holder
+        ? "Vela firme · retira el sostenedor con clic o H"
+        : "Vela lista · pasa al acabado"
+      : game.design.mode === "gel"
         ? "Toca el ventilador · pulsa B para quitar burbujas"
         : "Toca el ventilador para abanicar";
+
+    this.holderCue.clear();
+    if (game.craft.cooled && game.craft.holder) {
+      const pulse = motion.reduced
+        ? 0.5
+        : 0.38 + Math.sin(this.time * 3) * 0.12;
+      this.holderCue.roundRect(JAR_X - 138, JAR_Y - 225, 276, 92, 14).stroke({
+        width: 2,
+        color: stageColors.sage,
+        alpha: pulse,
+      });
+    }
 
     this.rack.clear();
     this.rack
@@ -153,6 +170,18 @@ export class CoolScene implements StageScene {
   }
 
   pointerDown(x: number, y: number, game: GameState): void {
+    if (
+      game.craft.cooled &&
+      game.craft.holder &&
+      x > JAR_X - 150 &&
+      x < JAR_X + 150 &&
+      y > JAR_Y - 235 &&
+      y < JAR_Y - 130
+    ) {
+      game.removeHolder();
+      return;
+    }
+
     if (Math.hypot(x - FAN_X, y - FAN_Y) < 95) {
       game.fan();
       return;
@@ -173,9 +202,13 @@ export class CoolScene implements StageScene {
   keyDown(key: string, game: GameState): void {
     if (key === " ") game.fan();
     if (key.toLowerCase() === "b") game.popBubble();
+    if (key.toLowerCase() === "h") game.removeHolder();
   }
 
-  ariaLabel(): string {
+  ariaLabel(game: GameState): string {
+    if (game.craft.cooled && game.craft.holder) {
+      return "Curado. La vela está firme. Retira el sostenedor tocándolo sobre el frasco o pulsando H.";
+    }
     return "Curado. Toca el ventilador para abanicar. En gel, toca las burbujas dentro de la vela o pulsa B.";
   }
 

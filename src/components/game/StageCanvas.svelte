@@ -46,7 +46,7 @@
       return "Estación de cera. Mantén la palanca para calentar y arrastra la cuchara en círculos para remover.";
     }
     if (game.phase === "cool") {
-      return "Curado. Retira el sostenedor, toca el ventilador para abanicar; en gel, toca las burbujas o pulsa B.";
+      return "Curado. Toca el ventilador para abanicar; cuando la vela esté firme, retira el sostenedor tocándolo o pulsando H. En gel, toca las burbujas o pulsa B.";
     }
     return `Vista previa del diseño. ${stationLabels[scene]}.`;
   });

@@ -79,6 +79,8 @@ function perfectCraft(design: CandleDesign): Craft {
   }));
   craft.mix = 1;
   craft.wick = { x: 0, y: 0, placed: true, trimmed: true, trimMm: 5 };
+  craft.holder = false;
+  craft.holderRemoved = true;
   craft.label = { x: 0, y: 0, rotation: 0, placed: true };
   craft.gelPopped = craft.gelBubbles;
   craft.lidOn = true;

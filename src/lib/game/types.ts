@@ -259,6 +259,8 @@ export interface Craft {
   gelPopPulse: number;
   gelPopIndex: number;
   wick: WickState;
+  holder: boolean;
+  holderRemoved: boolean;
   label: LabelState;
   lidOn: boolean;
   wrapped: boolean;

@@ -79,6 +79,7 @@
     <div class="checks">
       <span class:on={game.craft.label.placed}>Etiqueta</span>
       <span class:on={game.craft.wick.trimmed}>Mecha</span>
+      <span class:on={game.craft.holderRemoved}>Sostenedor</span>
       <span class:on={game.craft.lidOn}>Tapa</span>
       <span class:on={game.craft.wrapped}>Empaque</span>
     </div>
@@ -99,7 +100,7 @@
 
   {#if !game.canFinish}
     <p class="finish-hint finish-hint--center">
-      Faltan detalles: etiqueta, corte de mecha, tapa y empaque.
+      Faltan detalles: etiqueta, corte de mecha, sostenedor, tapa y empaque.
     </p>
   {/if}
 </div>

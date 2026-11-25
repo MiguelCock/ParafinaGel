@@ -56,7 +56,9 @@
         : "Calienta cada fogón y mezcla su color y aroma";
     }
     if (scene === "cool" && game.craft.cooled) {
-      return "La vela está lista · pasa al acabado";
+      return game.craft.holder
+        ? "Vela firme · retira el sostenedor con clic o H"
+        : "La vela está lista · pasa al acabado";
     }
     if (scene) return hints[scene];
     return "";
