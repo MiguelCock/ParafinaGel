@@ -1,5 +1,7 @@
 import type { Customer } from "./types";
 
+export type PortraitExpression = "neutral" | "happy" | "doubt";
+
 function hairLayers(customer: Customer): {
   back: string;
   front: string;
@@ -44,10 +46,41 @@ function hairLayers(customer: Customer): {
 export function portraitSvg(
   customer: Customer,
   uid: string = customer.id,
+  expression: PortraitExpression = "neutral",
 ): string {
   const bgId = `portrait-bg-${uid}`;
   const shirtId = `portrait-shirt-${uid}`;
   const hair = hairLayers(customer);
+  const face =
+    expression === "happy"
+      ? `
+  <path d="M78 94c4-4 10-4 14 0M108 94c4-4 10-4 14 0" fill="none" stroke="#3b2d25" stroke-width="2.4" stroke-linecap="round" />
+  <path d="M78 103c4 4 8 4 12 0M110 103c4 4 8 4 12 0" fill="none" stroke="#3b2d25" stroke-width="2.4" stroke-linecap="round" />
+  <path d="M99 107c0 5-2 8-5 9" fill="none" stroke="#8f5f40" stroke-width="2" stroke-linecap="round" opacity=".6" />
+  <path d="M84 120c8 9 24 9 32 0" fill="none" stroke="#7a3f2c" stroke-width="3" stroke-linecap="round" />
+  <circle cx="72" cy="117" r="6" fill="#b4552f" opacity=".18" />
+  <circle cx="128" cy="117" r="6" fill="#b4552f" opacity=".18" />`
+      : expression === "doubt"
+        ? `
+  <path d="M78 91c5-5 11-5 15-2M108 96c4-4 10-4 14 0" fill="none" stroke="#3b2d25" stroke-width="2.4" stroke-linecap="round" />
+  <ellipse cx="85" cy="104" rx="3.2" ry="4" fill="#3b2d25" />
+  <ellipse cx="115" cy="104" rx="3.2" ry="4" fill="#3b2d25" />
+  <circle cx="85" cy="103" r="1" fill="#fff9f2" />
+  <circle cx="115" cy="103" r="1" fill="#fff9f2" />
+  <path d="M99 107c0 5-2 8-5 9" fill="none" stroke="#8f5f40" stroke-width="2" stroke-linecap="round" opacity=".6" />
+  <path d="M88 124c7-3 17-3 24 0" fill="none" stroke="#7a3f2c" stroke-width="3" stroke-linecap="round" />
+  <circle cx="72" cy="117" r="6" fill="#b4552f" opacity=".1" />
+  <circle cx="128" cy="117" r="6" fill="#b4552f" opacity=".1" />`
+        : `
+  <path d="M78 96c4-4 10-4 14 0M108 96c4-4 10-4 14 0" fill="none" stroke="#3b2d25" stroke-width="2.4" stroke-linecap="round" />
+  <ellipse cx="85" cy="104" rx="3.2" ry="4" fill="#3b2d25" />
+  <ellipse cx="115" cy="104" rx="3.2" ry="4" fill="#3b2d25" />
+  <circle cx="85" cy="103" r="1" fill="#fff9f2" />
+  <circle cx="115" cy="103" r="1" fill="#fff9f2" />
+  <path d="M99 107c0 5-2 8-5 9" fill="none" stroke="#8f5f40" stroke-width="2" stroke-linecap="round" opacity=".6" />
+  <path d="M88 124c7 5 17 5 24 0" fill="none" stroke="#7a3f2c" stroke-width="3" stroke-linecap="round" />
+  <circle cx="72" cy="117" r="6" fill="#b4552f" opacity=".14" />
+  <circle cx="128" cy="117" r="6" fill="#b4552f" opacity=".14" />`;
 
   return `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-hidden="true">
@@ -79,24 +112,16 @@ export function portraitSvg(
 
   <g class="portrait__hair-front">${hair.front}</g>
   ${hair.extas}
-
-  <path d="M78 96c4-4 10-4 14 0M108 96c4-4 10-4 14 0" fill="none" stroke="#3b2d25" stroke-width="2.4" stroke-linecap="round" />
-  <ellipse cx="85" cy="104" rx="3.2" ry="4" fill="#3b2d25" />
-  <ellipse cx="115" cy="104" rx="3.2" ry="4" fill="#3b2d25" />
-  <circle cx="85" cy="103" r="1" fill="#fff9f2" />
-  <circle cx="115" cy="103" r="1" fill="#fff9f2" />
-  <path d="M99 107c0 5-2 8-5 9" fill="none" stroke="#8f5f40" stroke-width="2" stroke-linecap="round" opacity=".6" />
-  <path d="M88 124c7 5 17 5 24 0" fill="none" stroke="#7a3f2c" stroke-width="3" stroke-linecap="round" />
-  <circle cx="72" cy="117" r="6" fill="#b4552f" opacity=".14" />
-  <circle cx="128" cy="117" r="6" fill="#b4552f" opacity=".14" />
+  ${face}
 </svg>`;
 }
 
 export function portraitDataUrl(
   customer: Customer,
   uid: string = customer.id,
+  expression: PortraitExpression = "neutral",
 ): string {
   return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(
-    portraitSvg(customer, uid),
+    portraitSvg(customer, uid, expression),
   )}`;
 }

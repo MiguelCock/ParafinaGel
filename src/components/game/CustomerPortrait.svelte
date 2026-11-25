@@ -1,18 +1,24 @@
 <script lang="ts">
-  import { portraitSvg } from "@lib/game/portrait";
+  import { portraitSvg, type PortraitExpression } from "@lib/game/portrait";
   import type { Customer } from "@lib/game/types";
 
   interface Props {
     customer: Customer;
     size?: "sm" | "md" | "lg";
     shape?: "circle" | "arch";
+    expression?: PortraitExpression;
   }
 
-  let { customer, size = "md", shape = "circle" }: Props = $props();
+  let {
+    customer,
+    size = "md",
+    shape = "circle",
+    expression = "neutral",
+  }: Props = $props();
 
   let imageFailed = $state(false);
   const uid = $props.id();
-  const svg = $derived(portraitSvg(customer, uid));
+  const svg = $derived(portraitSvg(customer, uid, expression));
 </script>
 
 <div

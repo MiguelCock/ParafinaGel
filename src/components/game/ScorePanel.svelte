@@ -1,8 +1,10 @@
 <script lang="ts">
   import type { GameState } from "@lib/game/game-state.svelte";
+  import type { PortraitExpression } from "@lib/game/portrait";
   import type { OrderType } from "@lib/game/types";
   import { buildSuppliesMessage } from "@lib/game/supplies";
   import { whatsappLink } from "@lib/whatsapp";
+  import CustomerPortrait from "./CustomerPortrait.svelte";
   import ShoppingList from "./ShoppingList.svelte";
 
   interface Props {
@@ -25,6 +27,15 @@
   );
   const recipeOnly = $derived(!score);
   const gel = $derived(game.design.mode === "gel");
+  const expression = $derived(
+    (score
+      ? score.stars >= 4
+        ? "happy"
+        : score.stars <= 2
+          ? "doubt"
+          : "neutral"
+      : "neutral") as PortraitExpression,
+  );
 </script>
 
 <div class="game-station-panel receipt" data-testid="score-panel">
@@ -39,6 +50,21 @@
         ? "Tu receta"
         : "Pedido entregado"}
   </p>
+  {#if score && game.mode === "guided"}
+    <div class="score-customer">
+      <CustomerPortrait customer={game.brief.customer} size="sm" {expression} />
+      <div>
+        <p class="score-customer__eyebrow">Reacción del cliente</p>
+        <p class="score-customer__text">
+          {expression === "happy"
+            ? "Le encantó el resultado."
+            : expression === "doubt"
+              ? "Esperaba algo un poco distinto."
+              : "Recibió la vela con calma."}
+        </p>
+      </div>
+    </div>
+  {/if}
   <h3 class="game-title">
     {#if recipeOnly}
       Tu receta está lista
@@ -265,6 +291,31 @@
     text-transform: uppercase;
     opacity: 0.7;
     transform: rotate(-7deg);
+  }
+
+  .score-customer {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.45rem;
+    border: 1px solid var(--color-border);
+    border-radius: 0.65rem;
+    background: var(--color-surface);
+  }
+
+  .score-customer__eyebrow {
+    color: var(--color-text-muted);
+    font-size: 0.52rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .score-customer__text {
+    color: var(--color-heading);
+    font-size: 0.68rem;
+    font-weight: 700;
+    line-height: 1.35;
   }
 
   .score-hero {
