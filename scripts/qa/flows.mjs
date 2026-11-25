@@ -353,11 +353,12 @@ async function prepareBlockWithPointer(page) {
 async function heatWithKeyboard(page) {
   await prepareBlockWithKeyboard(page);
   await focusCanvas(page, "melt");
-  await page.keyboard.down(" ");
-  try {
-    await waitForMeltRange(page);
-  } finally {
-    await page.keyboard.up(" ");
+  for (let step = 0; step < 6; step += 1) {
+    await page.keyboard.press("=");
+  }
+  await waitForMeltRange(page);
+  for (let step = 0; step < 10; step += 1) {
+    await page.keyboard.press("-");
   }
 
   for (let step = 0; step < 32; step += 1) {
@@ -368,11 +369,13 @@ async function heatWithKeyboard(page) {
 
 async function heatWithPointer(page) {
   await prepareBlockWithPointer(page);
-  const lever = await stagePoint(page, "melt", 745, 500);
-  await page.mouse.move(lever.x, lever.y);
+  const knob = await stagePoint(page, "melt", 742, 510);
+  await page.mouse.move(knob.x, knob.y);
   await page.mouse.down();
   try {
+    await page.mouse.move(knob.x, knob.y - 100, { steps: 10 });
     await waitForMeltRange(page);
+    await page.mouse.move(knob.x, knob.y, { steps: 10 });
   } finally {
     await page.mouse.up();
   }

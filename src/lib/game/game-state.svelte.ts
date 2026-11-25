@@ -409,15 +409,23 @@ export class GameState {
 
   toggleHeat(): void {
     if (!this.craft.heating && !this.cutPrepared) return;
-    this.craft.heating = !this.craft.heating;
+    this.setHeatLevel(this.craft.heating ? 0 : 1);
+  }
+
+  setHeatLevel(value: number): void {
+    if (!this.cutPrepared) return;
+    this.craft.heatLevel = clamp(value, 0, 1);
+    this.craft.heating = this.craft.heatLevel > 0;
   }
 
   startHeating(): void {
     if (!this.cutPrepared) return;
+    this.craft.heatLevel = 1;
     this.craft.heating = true;
   }
 
   stopHeating(): void {
+    this.craft.heatLevel = 0;
     this.craft.heating = false;
   }
 
@@ -766,9 +774,11 @@ export class GameState {
       if (!wax) return;
 
       if (this.craft.heating) {
+        const heatLevel = Math.max(0.15, this.craft.heatLevel);
         this.craft.temperature = Math.min(
           110,
-          this.craft.temperature + wax.heatRate * this.meltSpeed * delta,
+          this.craft.temperature +
+            wax.heatRate * (0.35 + heatLevel * 0.65) * this.meltSpeed * delta,
         );
         if (this.craft.temperature > wax.meltMax + 12) {
           this.craft.overheated = true;

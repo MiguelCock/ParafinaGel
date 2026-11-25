@@ -43,7 +43,7 @@
       if (!game.stearicPrepared) {
         return "Estación de cera. Toca el frasco de ácido esteárico o pulsa E para agregarlo a la olla.";
       }
-      return "Estación de cera. Mantén la palanca para calentar y arrastra la cuchara en círculos para remover.";
+      return "Estación de cera. Gira la perilla del fogón con el puntero o las teclas más y menos para regular el calor, y arrastra la cuchara en círculos para remover.";
     }
     if (game.phase === "cool") {
       return "Curado. Toca el ventilador para abanicar; cuando la vela esté firme, retira el sostenedor tocándolo o pulsando H. En gel, toca las burbujas o pulsa B.";

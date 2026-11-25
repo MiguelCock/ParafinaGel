@@ -44,7 +44,7 @@ flowchart LR
 | **Mostrador**   | Escuchas al cliente y creas la nota del pedido.                                     |
 | **Diseño**      | Eliges cera, envase, pabilo, aroma, color y etiqueta como objetos en la estantería. |
 | **Preparación** | Colocas el porta pabilo, la mecha y el sostenedor en el envase.                     |
-| **Cera**        | Cortas el bloque, agregas estearina y calientas con la palanca.                     |
+| **Cera**        | Cortas el bloque, agregas estearina y giras la perilla del fogón.                   |
 | **Mezcla**      | Calientas cada fogón, dosificas color y aroma, y revuelves cada lote.               |
 | **Vertido**     | La mecha ya está lista; arrastras la jarra y cierras cada capa.                     |
 | **Curado**      | Retiras el sostenedor y abanicas; en gel, revientas burbujas.                       |
@@ -56,7 +56,7 @@ flowchart LR
 - **Preparación de mecha**: porta pabilo y sostenedor de madera antes del vertido.
 - **Fogones de mezcla**: un lote por capa o parte; palanca de calor, color por gotas y un aroma por fogón.
 - **Estantería física**: los materiales se eligen como objetos, no como listas; incluye un selector accesible para teclado y lectores de pantalla.
-- **Simulación de líquido viscoso**: superficie con menisco, chorro, salpicaduras, derrame, película entre capas, mezcla, gel con brillo y burbujas. Afecta el puntaje.
+- **Simulación de líquido**: motor celular lateral para cera/gel, superficie con menisco, chorro, salpicaduras, derrame, película entre capas, mezcla y burbujas. Afecta el puntaje.
 - **Retos manuales**: sin sliders ni botones para las estaciones; el teclado es la alternativa accesible.
 - **Modo libre**: diseño sin brief ni reloj, con receta o taller.
 - **Modo experto**: oculta las pistas numéricas.

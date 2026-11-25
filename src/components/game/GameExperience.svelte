@@ -228,8 +228,8 @@
           y usa el sostenedor de madera para centrarla.
         </li>
         <li>
-          <strong>Cera:</strong> mantén la palanca para calentar y gira la cuchara
-          dentro de la olla.
+          <strong>Cera:</strong> gira la perilla del fogón para regular el calor y
+          mueve la cuchara dentro de la olla.
         </li>
         <li>
           <strong>Mezcla:</strong> cada capa o parte tiene su fogón. Calienta, dosifica

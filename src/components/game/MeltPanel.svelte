@@ -38,6 +38,18 @@
 <div class="game-station-panel" data-testid="melt-panel">
   <p class="game-eyebrow">Estación de cera</p>
   <h3 class="game-title">{title}</h3>
+  <div class="stove-card">
+    <img
+      src="/art/fogon-lateral.svg"
+      alt="Fogón lateral del taller con perilla de calor"
+    />
+    <div>
+      <p class="stove-card__title">Fogón del taller</p>
+      <p class="stove-card__text">
+        Gira la perilla para regular la llama; no hay que mantener nada pulsado.
+      </p>
+    </div>
+  </div>
   <p class="game-text">
     {#if game.needsCutting && !game.cutPrepared}
       La parafina llega en bloque. Córtala antes de calentar: los trozos
@@ -46,9 +58,10 @@
       El bloque ya está cortado. Agrega el ácido esteárico y remueve para
       integrarlo antes de seguir.
     {:else}
-      La mecha ya está preparada en el envase. Mantén la palanca de la olla para
-      calentar y arrastra la cuchara en círculos para remover. La temperatura se
-      registra al entrar en el rango; después pasas a mezclar color y aroma.
+      La mecha ya está preparada en el envase. Gira la perilla del fogón para
+      regular el calor y arrastra la cuchara en círculos para remover. La
+      temperatura se registra al entrar en el rango; después pasas a mezclar
+      color y aroma.
     {/if}
   </p>
 
@@ -148,7 +161,7 @@
           <strong>Esteárico:</strong> toca el frasco junto a la olla o pulsa E.
           <br />
         {/if}
-        <strong>Palanca:</strong> mantén pulsado el control de la olla.
+        <strong>Perilla:</strong> arrástrala sobre el fogón o usa + y −.
         <br />
         <strong>Cuchara:</strong> gira sobre la cera con el puntero o con ← →.
       {/if}
@@ -174,6 +187,36 @@
 </div>
 
 <style>
+  .stove-card {
+    display: grid;
+    grid-template-columns: 4.2rem minmax(0, 1fr);
+    gap: 0.55rem;
+    align-items: center;
+    padding: 0.45rem 0.55rem;
+    border: 1px solid var(--color-border);
+    border-radius: 0.6rem;
+    background: var(--color-surface);
+  }
+
+  .stove-card img {
+    display: block;
+    width: 4.2rem;
+    height: 4.2rem;
+    object-fit: contain;
+  }
+
+  .stove-card__title {
+    color: var(--color-heading);
+    font-size: 0.68rem;
+    font-weight: 800;
+  }
+
+  .stove-card__text {
+    color: var(--color-text-muted);
+    font-size: 0.58rem;
+    line-height: 1.35;
+  }
+
   .prep-step {
     display: flex;
     align-items: center;

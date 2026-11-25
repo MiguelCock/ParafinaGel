@@ -222,6 +222,7 @@ export function createCraft(design: CandleDesign): Craft {
     meltTemperature: TEMP_START,
     overheated: false,
     heating: false,
+    heatLevel: 0,
     cutCuts: 0,
     stearicAdded: false,
     stirs: 0,

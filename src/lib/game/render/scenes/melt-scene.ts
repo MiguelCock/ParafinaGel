@@ -1,9 +1,16 @@
-import { Container, Graphics, Text } from "pixi.js";
+import { Assets, Container, Graphics, Sprite, Text } from "pixi.js";
 import { MAX_CUTS } from "../../craft";
 import { scentsById, waxesById } from "../../data";
+import {
+  FLUID_WAX,
+  createFluidState,
+  setFluidCell,
+  stepFluid,
+} from "../../fluid";
 import type { GameState } from "../../game-state.svelte";
-import { easings, motion, motionDurations, tweens } from "../motion";
-import { hexColor, stageColors } from "../palette";
+import { FluidRig } from "../fluid-rig";
+import { motion } from "../motion";
+import { clamp, hexColor, stageColors } from "../palette";
 import type { StageScene } from "../scene";
 
 const POT_X = 400;
@@ -20,7 +27,30 @@ export class MeltScene implements StageScene {
   private stearicJar = new Graphics();
   private spoon = new Graphics();
   private steam = new Graphics();
-  private lever = new Graphics();
+  private stove = new Graphics();
+  private stoveSprite: Sprite;
+  private knob = new Graphics();
+  private fluidMask = new Graphics();
+  private fluidState = createFluidState(48, 26, 17);
+  private fluidRig: FluidRig;
+  private knobLabel = new Text({
+    text: "Calor",
+    style: {
+      fontFamily: "Manrope Variable, sans-serif",
+      fontSize: 11,
+      fontWeight: "800",
+      fill: stageColors.muted,
+    },
+  });
+  private knobPercent = new Text({
+    text: "0 %",
+    style: {
+      fontFamily: "Manrope Variable, sans-serif",
+      fontSize: 12,
+      fontWeight: "800",
+      fill: stageColors.ink,
+    },
+  });
   private temperature = new Text({
     text: "",
     style: {
@@ -78,7 +108,9 @@ export class MeltScene implements StageScene {
   });
 
   private draggingSpoon = false;
-  private draggingLever = false;
+  private draggingKnob = false;
+  private knobStartY = 0;
+  private knobStartLevel = 0;
   private cutting = false;
   private cutStartX = 0;
   private cutStrokeDone = false;
@@ -86,9 +118,6 @@ export class MeltScene implements StageScene {
   private accumulated = 0;
   private spoonAngle = -0.8;
   private time = 0;
-  private leverProgress = 0;
-  private wasHeating = false;
-  private leverTween: (() => void) | null = null;
 
   constructor() {
     this.background
@@ -109,20 +138,49 @@ export class MeltScene implements StageScene {
     this.help.position.set(500, 596);
     this.help.visible = false;
 
+    this.stoveSprite = new Sprite();
+    this.stoveSprite.anchor.set(0.5, 1);
+    this.stoveSprite.position.set(390, 556);
+    this.stoveSprite.scale.set(0.9);
+    this.stoveSprite.alpha = 0.95;
+    this.stoveSprite.visible = false;
+    void this.loadStove();
+
+    for (let y = 18; y < 26; y += 1) {
+      for (let x = 3; x < 45; x += 1) {
+        setFluidCell(this.fluidState, x, y, FLUID_WAX);
+      }
+    }
+    this.fluidRig = new FluidRig(this.fluidState, { scale: 6.4 });
+    this.fluidRig.sprite.position.set(242, 322);
+    this.fluidMask.roundRect(240, 322, 324, 140, 28).fill(0xffffff);
+    this.fluidRig.sprite.mask = this.fluidMask;
+
+    this.knobLabel.anchor.set(0.5);
+    this.knobLabel.position.set(742, 548);
+    this.knobPercent.anchor.set(0.5);
+    this.knobPercent.position.set(742, 564);
+
     this.view.addChild(
       this.background,
       this.cuttingBoard,
+      this.stoveSprite,
+      this.stove,
       this.pot,
+      this.fluidRig.sprite,
+      this.fluidMask,
       this.bottles,
       this.stearicJar,
       this.steam,
       this.spoon,
-      this.lever,
+      this.knob,
       this.temperature,
       this.status,
       this.aroma,
       this.stearicLabel,
       this.stearicCheck,
+      this.knobLabel,
+      this.knobPercent,
       this.help,
     );
   }
@@ -133,23 +191,16 @@ export class MeltScene implements StageScene {
     const waxColor = wax ? wax.hex : "#e9c9a8";
     const format = wax?.format ?? "flakes";
     const heating = game.craft.heating;
-    if (heating !== this.wasHeating) {
-      this.wasHeating = heating;
-      this.leverTween?.();
-      const from = this.leverProgress;
-      const to = heating ? 1 : 0;
-      if (motion.reduced) {
-        this.leverProgress = to;
-      } else {
-        this.leverTween = tweens.animate({
-          duration: motionDurations.fast,
-          easing: easings.outCubic,
-          onUpdate: (progress) => {
-            this.leverProgress = from + (to - from) * progress;
-          },
-        });
+    const heatLevel = game.craft.heatLevel;
+    const packedColor = Number.parseInt(waxColor.replace("#", ""), 16);
+    for (let index = 0; index < this.fluidState.material.length; index += 1) {
+      if (this.fluidState.material[index] === FLUID_WAX) {
+        this.fluidState.color[index] = packedColor;
       }
     }
+    stepFluid(this.fluidState, { heat: heatLevel * 0.002 });
+    this.fluidRig.update(this.fluidState);
+
     const inRange =
       game.craft.temperature >= game.meltMin &&
       game.craft.temperature <= game.meltMax;
@@ -171,7 +222,7 @@ export class MeltScene implements StageScene {
             ? "En rango · puedes seguir"
             : heating
               ? "Calentando despacio…"
-              : "Toca la palanca y mantenla";
+              : "Gira la perilla para calentar";
 
     const scent = game.design.scentIds[0]
       ? scentsById[game.design.scentIds[0]]
@@ -185,12 +236,13 @@ export class MeltScene implements StageScene {
       .stroke({ width: 2, color: stageColors.border });
 
     this.drawCuttingBoard(game, waxColor);
+    this.drawStove(game.canHeat);
     this.drawPot(game, waxColor, heating, format);
     this.drawBottles(waxColor, scent?.nombre ?? "Sin aroma");
     this.drawStearicJar(game);
     this.drawSteam(game, waxColor);
     this.drawSpoon(waxColor);
-    this.drawLever(game.canHeat);
+    this.drawKnob(game.canHeat, heatLevel);
   }
 
   private drawCuttingBoard(game: GameState, waxColor: string): void {
@@ -392,29 +444,51 @@ export class MeltScene implements StageScene {
       .fill({ color: hexColor(waxColor), alpha: 0.8 });
   }
 
-  private drawLever(enabled: boolean): void {
-    const x = 745;
-    const y = 440;
-    const knobY = y + 4 + this.leverProgress * 70;
-    const active = this.leverProgress > 0.5;
-    this.lever.clear();
-    this.lever
-      .roundRect(x - 18, y, 36, 130, 18)
-      .fill({ color: stageColors.creamDeep, alpha: enabled ? 0.9 : 0.45 })
+  private async loadStove(): Promise<void> {
+    try {
+      const texture = await Assets.load("/art/fogon-lateral-off.svg");
+      this.stoveSprite.texture = texture;
+      this.stoveSprite.visible = true;
+    } catch (error) {
+      console.error("No se pudo cargar el fogón", error);
+    }
+  }
+
+  private drawStove(enabled: boolean): void {
+    this.stove.clear();
+    this.stove
+      .roundRect(640, 470, 220, 86, 20)
+      .fill({ color: stageColors.paper, alpha: enabled ? 0.94 : 0.6 })
       .stroke({ width: 2, color: stageColors.border })
-      .roundRect(x - 22, knobY, 44, 50, 18)
-      .fill(
-        active && enabled
-          ? stageColors.accent
-          : enabled
-            ? stageColors.woodLight
-            : stageColors.border,
-      )
+      .roundRect(610, 500, 28, 10, 5)
+      .fill({ color: stageColors.steel, alpha: 0.7 })
+      .roundRect(862, 500, 28, 10, 5)
+      .fill({ color: stageColors.steel, alpha: 0.7 });
+  }
+
+  private drawKnob(enabled: boolean, level: number): void {
+    const x = 742;
+    const y = 510;
+    const angle = -2.3 + clamp(level, 0, 1) * 4.6;
+    this.knob.clear();
+    this.knob
+      .circle(x, y, 31)
+      .fill({ color: stageColors.creamDeep, alpha: enabled ? 1 : 0.45 })
+      .stroke({
+        width: 3,
+        color: stageColors.woodDark,
+        alpha: enabled ? 1 : 0.4,
+      })
+      .circle(x, y, 22)
+      .fill({ color: enabled ? stageColors.woodLight : stageColors.border })
       .stroke({ width: 2, color: stageColors.woodDark })
-      .circle(x, knobY + 25, 7)
-      .fill({ color: stageColors.white, alpha: enabled ? 0.7 : 0.35 })
-      .roundRect(x - 70, y + 146, 140, 28, 14)
-      .fill({ color: stageColors.sageSoft, alpha: 0.9 });
+      .moveTo(x, y)
+      .lineTo(x + Math.cos(angle) * 15, y + Math.sin(angle) * 15)
+      .stroke({ width: 4, color: stageColors.ink, cap: "round" })
+      .circle(x, y, 5)
+      .fill({ color: stageColors.ink });
+    this.knobPercent.text = `${Math.round(level * 100)} %`;
+    this.knobPercent.style.fill = enabled ? stageColors.ink : stageColors.muted;
   }
 
   pointerDown(x: number, y: number, game: GameState): void {
@@ -437,9 +511,10 @@ export class MeltScene implements StageScene {
       return;
     }
 
-    if (game.canHeat && x > 700 && x < 790 && y > 420 && y < 590) {
-      this.draggingLever = true;
-      game.startHeating();
+    if (game.canHeat && Math.hypot(x - 742, y - 510) < 48) {
+      this.draggingKnob = true;
+      this.knobStartY = y;
+      this.knobStartLevel = game.craft.heatLevel;
       return;
     }
 
@@ -459,6 +534,16 @@ export class MeltScene implements StageScene {
       return;
     }
 
+    if (this.draggingKnob) {
+      const level = clamp(
+        this.knobStartLevel + (this.knobStartY - y) / 100,
+        0,
+        1,
+      );
+      game.setHeatLevel(level);
+      return;
+    }
+
     if (!this.draggingSpoon) return;
     const angle = Math.atan2(y - POT_Y, x - POT_X);
     let delta = angle - this.lastAngle;
@@ -473,14 +558,11 @@ export class MeltScene implements StageScene {
     }
   }
 
-  pointerUp(_x: number, _y: number, game: GameState): void {
+  pointerUp(_x: number, _y: number, _game: GameState): void {
     this.draggingSpoon = false;
+    this.draggingKnob = false;
     this.cutting = false;
     this.cutStrokeDone = false;
-    if (this.draggingLever) {
-      this.draggingLever = false;
-      game.stopHeating();
-    }
   }
 
   keyDown(key: string, game: GameState): void {
@@ -495,6 +577,10 @@ export class MeltScene implements StageScene {
     }
     if (key === " ") {
       game.startHeating();
+    } else if (key === "+" || key === "=") {
+      game.setHeatLevel(game.craft.heatLevel + 0.1);
+    } else if (key === "-" || key === "_") {
+      game.setHeatLevel(game.craft.heatLevel - 0.1);
     } else if (key === "ArrowLeft" || key === "ArrowRight") {
       if (!game.stearicPrepared) return;
       const direction = key === "ArrowLeft" ? -1 : 1;
@@ -518,10 +604,11 @@ export class MeltScene implements StageScene {
     if (!game.stearicPrepared) {
       return "Estación de cera. Toca el frasco de ácido esteárico o pulsa E para agregarlo a la olla.";
     }
-    return "Estación de cera. Mantén la palanca para calentar y arrastra la cuchara en círculos para remover.";
+    return "Estación de cera. Gira la perilla del fogón para regular el calor, o usa más y menos, y arrastra la cuchara en círculos para remover.";
   }
 
   destroy(): void {
+    this.fluidRig.destroy();
     this.view.destroy({ children: true });
   }
 }

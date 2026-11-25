@@ -43,14 +43,15 @@ Sitio de **ParafinaGel**, negocio familiar de velas que vende **insumos y materi
   - `data.ts`: clientes, briefs, ceras oficiales, colores, aromas, recipientes, moldes, pabilos, etiquetas, montajes y catálogo de insumos.
   - `design.ts`: `CandleDesign`, capas, validación y resumen.
   - `craft.ts`: unidades de vertido, precisión de mecha/etiqueta/corte y burbujas.
-  - `liquid.ts`: simulación de superficie, salpicaduras, mezcla y burbujas.
+  - `fluid.ts`: autómata celular lateral para cera, gel, color y aroma.
+  - `liquid.ts`: simulación de superficie, salpicaduras, mezcla y burbujas heredada.
   - `motion.ts`: tokens de duración/easing y `MotionController` para tweens.
   - `motion.svelte.ts`: estado de movimiento reducido, pausa y override por query.
   - `scoring.ts`: diseño (60) + taller (40), incluyendo mezcla y derrame.
   - `supplies.ts`: receta, cantidades y mensaje de WhatsApp.
   - `portrait.ts`: SVG por capas de los retratos.
   - `game-state.svelte.ts`: orquestación con runes.
-  - `render/`: `stage-renderer.ts`, `scene.ts`, `candle-rig.ts`, `liquid-rig.ts`, `palette.ts`, `motion.ts` y `scenes/` (design, melt, mix, pour, wick, cool, finish).
+  - `render/`: `stage-renderer.ts`, `scene.ts`, `candle-rig.ts`, `liquid-rig.ts`, `fluid-rig.ts`, `palette.ts`, `motion.ts` y `scenes/` (design, melt, mix, pour, wick, cool, finish).
   - `game.test.ts` y `motion.test.ts`: tests del motor, líquido y motion.
 - `src/styles/game.css`: estilos compartidos de la UI del juego.
 - `src/content.config.ts`: schema Zod de productos con loader `glob`.
@@ -73,7 +74,7 @@ Sitio de **ParafinaGel**, negocio familiar de velas que vende **insumos y materi
 - **Diseño**: cera, tamaño, recipiente o molde, capas/colores, aroma, pabilo y etiqueta. Los materiales se eligen como objetos en la estantería física; el selector accesible es la alternativa de teclado/lector. Las validaciones aparecen en el panel.
 - **Retos manuales**:
   - Preparación: colocar el porta pabilo, ajustar la mecha al centro y usar el sostenedor antes de verter.
-  - Cera: cortar la parafina en bloque (2–4 cortes) antes de calentar; agregar ácido esteárico solo a las parafinas en bloque; mantener la palanca para calentar y arrastrar la cuchara en círculos.
+  - Cera: cortar la parafina en bloque (2–4 cortes) antes de calentar; agregar ácido esteárico solo a las parafinas en bloque; girar la perilla del fogón para regular el calor, sin palanca mantenida, y arrastrar la cuchara en círculos.
   - Mezcla: un fogón por capa o parte; calentar cada fogón con su palanca, dosificar color gota a gota, aroma manual y un aroma por fogón; revolver cada lote.
   - Vertido: arrastrar la jarra sobre la boca del frasco y soltar para cerrar la capa.
   - Curado: retirar el sostenedor, tocar el ventilador; en gel, tocar las burbujas.

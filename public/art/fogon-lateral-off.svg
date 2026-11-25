@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" fill="none">
+  <g stroke-linecap="round" stroke-linejoin="round">
+    <!-- Ground shadow -->
+    <ellipse cx="262" cy="474" rx="198" ry="20" fill="#33261d" opacity=".10"/>
+    <ellipse cx="262" cy="474" rx="156" ry="12" fill="#33261d" opacity=".07"/>
+
+    <!-- Back feet -->
+    <path d="M212 434h24c4 0 6 3 6 6l-3 22c-.7 4-3.5 6-7 6h-12c-3.5 0-6.3-2-7-6l-3-22c0-3 2-6 6-6Z" fill="#6f4830" stroke="#33261d" stroke-width="4"/>
+    <path d="M278 434h24c4 0 6 3 6 6l-3 22c-.7 4-3.5 6-7 6h-12c-3.5 0-6.3-2-7-6l-3-22c0-3 2-6 6-6Z" fill="#6f4830" stroke="#33261d" stroke-width="4"/>
+
+    <!-- Front feet -->
+    <path d="M143 434h34c4 0 6 3 5 7l-5 23c-.7 5-4.1 8-8.9 8h-17.2c-4.8 0-8.2-3-8.9-8L137 441c-1-4 1-7 6-7Z" fill="#8f5f40" stroke="#33261d" stroke-width="4.5"/>
+    <path d="M139.7 456h39.6l-4.3 8c-.7 5-4.1 8-8.9 8h-17.2c-4.8 0-8.2-3-8.9-8Z" fill="#c99a4e" stroke="#33261d" stroke-width="3.5"/>
+    <path d="M147 462h9" stroke="#e2bd75" stroke-width="2.5" opacity=".9"/>
+
+    <path d="M351 434h34c4 0 7 3 6 7l-5 23c-.7 5-4.1 8-8.9 8h-17.2c-4.8 0-8.2-3-8.9-8l-5-23c-1-4 2-7 5-7Z" fill="#8f5f40" stroke="#33261d" stroke-width="4.5"/>
+    <path d="M348.7 456h39.6l-4.3 8c-.7 5-4.1 8-8.9 8h-17.2c-4.8 0-8.2-3-8.9-8Z" fill="#c99a4e" stroke="#33261d" stroke-width="3.5"/>
+    <path d="M356 462h9" stroke="#e2bd75" stroke-width="2.5" opacity=".9"/>
+
+    <!-- Wooden base -->
+    <rect x="110" y="424" width="304" height="20" rx="9" fill="#8f5f40" stroke="#33261d" stroke-width="5"/>
+    <path d="M130 434c24-4 46 4 70 0s48-5 72-1 50 4 74 0 30-4 44-1" stroke="#b98963" stroke-width="3" opacity=".75"/>
+    <path d="M156 440c30-3 56 2 84 0s52-3 78 0" stroke="#6f4830" stroke-width="2.5" opacity=".6"/>
+
+    <!-- Enamel body -->
+    <path d="M390 252l18 8c6 3 9 9 9 16l2 104c0 10-6 17-16 19l-16 3Z" fill="#e7d7c4" stroke="#33261d" stroke-width="4.5"/>
+    <path d="M116 250h270c7 0 12 5 13 12l3 118c.4 10-5.6 18-16 18H120c-10 0-16-8-16-18V266c0-10 4-16 12-16Z" fill="#faf5ee" stroke="#33261d" stroke-width="5"/>
+
+    <!-- Enamel lip, light and wear -->
+    <path d="M124 262h258c6 0 10 5 11 11l3 108c.4 8-4 14-12 14H124c-8 0-12-6-12-14V273c0-6 4-11 12-11Z" fill="none" stroke="#d8c3ad" stroke-width="2.5" opacity=".8"/>
+    <path d="M114 282c46 14 240 14 284 0" stroke="#8f3f20" stroke-width="9" opacity=".10"/>
+    <path d="M119 298c-4 24-4 48 0 70" stroke="#fffdf9" stroke-width="9" opacity=".6"/>
+    <path d="M132 286c10-4 22-6 34-6" stroke="#fffdf9" stroke-width="5" opacity=".5"/>
+    <path d="M133 362l8 2-5 6" stroke="#c9b39d" stroke-width="2.5" opacity=".8"/>
+    <circle cx="146" cy="371" r="1.8" fill="#c9b39d" opacity=".7"/>
+    <path d="M366 290c8 2 15 1 21-2" stroke="#d8c3ad" stroke-width="2.5" opacity=".8"/>
+
+    <!-- Sage vent -->
+    <rect x="146" y="304" width="78" height="58" rx="14" fill="#e4eadf" stroke="#33261d" stroke-width="4.5"/>
+    <path d="M156 314c3-3 8-5 13-5" stroke="#fffdf9" stroke-width="3" opacity=".7"/>
+    <rect x="165" y="318" width="8" height="30" rx="4" fill="#4f6247"/>
+    <rect x="181" y="318" width="8" height="30" rx="4" fill="#4f6247"/>
+    <rect x="197" y="318" width="8" height="30" rx="4" fill="#4f6247"/>
+
+    <!-- Brass rivets -->
+    <circle cx="126" cy="292" r="4.5" fill="#c99a4e" stroke="#33261d" stroke-width="2"/>
+    <circle cx="386" cy="292" r="4.5" fill="#c99a4e" stroke="#33261d" stroke-width="2"/>
+    <circle cx="126" cy="376" r="4.5" fill="#c99a4e" stroke="#33261d" stroke-width="2"/>
+
+    <!-- Control knob -->
+    <ellipse cx="352" cy="342" rx="44" ry="38" fill="#33261d" opacity=".15"/>
+    <circle cx="352" cy="336" r="44" fill="#c99a4e" stroke="#33261d" stroke-width="5"/>
+    <circle cx="352" cy="336" r="36" fill="none" stroke="#a87c37" stroke-width="3" opacity=".75"/>
+    <path d="M352 296v5M331 304l3 4M373 304l-3 4" stroke="#5b432b" stroke-width="2.5" opacity=".65"/>
+    <circle cx="352" cy="336" r="31" fill="#241d18" stroke="#33261d" stroke-width="4"/>
+    <path d="M332 330a24 24 0 0 1 17-14" stroke="#6f5b49" stroke-width="4" opacity=".9"/>
+    <path d="M352 336l17-19" stroke="#f3e7d8" stroke-width="6"/>
+    <circle cx="352" cy="336" r="5" fill="#c99a4e" stroke="#33261d" stroke-width="2"/>
+
+    <!-- Terracotta plinth -->
+    <rect x="98" y="388" width="324" height="44" rx="14" fill="#b4552f" stroke="#33261d" stroke-width="5"/>
+    <path d="M112 400h288" stroke="#8f3f20" stroke-width="6" opacity=".5"/>
+    <circle cx="138" cy="412" r="5.5" fill="#c99a4e" stroke="#33261d" stroke-width="2.5"/>
+    <circle cx="382" cy="412" r="5.5" fill="#c99a4e" stroke="#33261d" stroke-width="2.5"/>
+
+    <!-- Iron plate -->
+    <ellipse cx="256" cy="246" rx="172" ry="32" fill="#8f3f20" stroke="#33261d" stroke-width="5"/>
+    <ellipse cx="256" cy="235" rx="172" ry="32" fill="#b4552f" stroke="#33261d" stroke-width="5"/>
+    <ellipse cx="256" cy="233" rx="151" ry="25" fill="none" stroke="#8f3f20" stroke-width="3" opacity=".8"/>
+    <path d="M112 232c22-18 70-28 120-28" stroke="#f3ddd2" stroke-width="4" opacity=".4"/>
+    <path d="M128 232c14-7 28-10 42-12M158 241c9-3 18-5 27-6" stroke="#f3ddd2" stroke-width="3" opacity=".35"/>
+
+    <!-- Burner -->
+    <ellipse cx="258" cy="231" rx="96" ry="27" fill="#8f3f20" opacity=".45"/>
+    <ellipse cx="258" cy="230" rx="94" ry="25" fill="#a34b2a" stroke="#33261d" stroke-width="5"/>
+    <ellipse cx="258" cy="229" rx="80" ry="20" fill="#6d2f18" stroke="#33261d" stroke-width="4"/>
+    <ellipse cx="258" cy="228" rx="66" ry="15.5" fill="#3a2f27" stroke="#4a3a2e" stroke-width="2"/>
+    <ellipse cx="258" cy="228" rx="70" ry="17" fill="none" stroke="#c99a4e" stroke-width="4.5"/>
+    <ellipse cx="258" cy="227" rx="30" ry="8.5" fill="#1e1914" stroke="#6d2f18" stroke-width="2.5"/>
+    <circle cx="168" cy="229" r="4" fill="#c99a4e" stroke="#33261d" stroke-width="2"/>
+    <circle cx="348" cy="229" r="4" fill="#c99a4e" stroke="#33261d" stroke-width="2"/>
+
+  </g>
+</svg>

@@ -241,6 +241,7 @@ export interface Craft {
   meltTemperature: number;
   overheated: boolean;
   heating: boolean;
+  heatLevel: number;
   cutCuts: number;
   stearicAdded: boolean;
   stirs: number;
