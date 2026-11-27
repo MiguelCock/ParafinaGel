@@ -23,16 +23,19 @@ Sitio de **ParafinaGel**, negocio familiar de velas que vende **insumos y materi
 - `npm run preview` → sirve `dist/`
 - `npm run format` / `npm run format:check`
 - `PUBLIC_SHOW_DRAFTS=true npm run build` → incluye placeholders en el build.
+- `ENABLE_FLUID_LAB=true npm run build` → incluye el laboratorio interno `/lab/fluido` en `dist/` (en `npm run dev` ya está disponible).
 
 ## Arquitectura
 
 - `src/pages/`: rutas por archivo (`index`, `productos/index`, `productos/[slug]`, `nosotros`, `juego`, `contacto`, `404`). `/about` redirige a `/nosotros`.
+- `src/lab/FluidLabPage.astro`: laboratorio interno de fluido. Se inyecta como `/lab/fluido` en `astro dev` o con `ENABLE_FLUID_LAB=true`; queda fuera del build público por defecto.
 - `src/layouts/BaseLayout.astro`: SEO, fuentes Fontsource, Nav, Footer y skip link.
 - `src/components/`: UI en Astro.
 - `src/components/game/`:
   - `GameExperience.svelte`: shell, HUD, progreso, reloj, modo experto y ayuda.
   - `WorkshopStage.svelte`: escenario ilustrado, hotspots y cabecera de estación.
   - `StageCanvas.svelte`: monta PixiJS en cliente, importa el renderer dinámicamente y muestra el fallback sin WebGL.
+  - `FluidLab.svelte`: isla del laboratorio interno con perilla, gota, aroma e inclinación de jarra; no se enlaza desde el sitio.
   - `CounterScene`, `CustomerPortrait`, `BriefTicket`, `BriefSummary`: mostrador y pedido progresivo.
   - `DesignPanel`, `DesignStructure`: diseñador y estructura de capas.
   - `MaterialShelf`, `AccessibleMaterialPicker`: estantería física y selector accesible de materiales.
@@ -52,7 +55,7 @@ Sitio de **ParafinaGel**, negocio familiar de velas que vende **insumos y materi
   - `portrait.ts`: SVG por capas de los retratos.
   - `game-state.svelte.ts`: orquestación con runes.
   - `layout.ts`: geometría compartida del escenario 1000×640 y zonas de destino.
-  - `render/`: `stage-renderer.ts`, `scene.ts`, `candle-rig.ts`, `liquid-rig.ts`, `fluid-rig.ts`, `palette.ts`, `motion.ts` y `scenes/` (design, melt, mix, pour, wick, cool, finish).
+  - `render/`: `stage-renderer.ts`, `scene.ts`, `candle-rig.ts`, `liquid-rig.ts`, `fluid-rig.ts`, `lab-pixi.ts`, `palette.ts`, `motion.ts` y `scenes/` (design, melt, mix, pour, wick, cool, finish).
   - `game.test.ts` y `motion.test.ts`: tests del motor, líquido y motion.
 - `src/styles/game.css`: estilos compartidos de la UI del juego.
 - `src/content.config.ts`: schema Zod de productos con loader `glob`.
@@ -70,21 +73,22 @@ Sitio de **ParafinaGel**, negocio familiar de velas que vende **insumos y materi
 
 ## Juego WebGL
 
-- Flujo guiado: `brief → design → wick (preparación) → melt → mix → pour → cool → finish → score`, 4 pedidos y resumen del día.
+- Flujo guiado: `brief → design → wick (preparación con corte) → melt → mix → pour → cool → finish → score`, 4 pedidos y resumen del día.
 - **WebGL con PixiJS 8** para el escenario y los retos. No uses Three.js/Threlte: la decisión es 2D WebGL.
 - `StageCanvas` importa Pixi dinámicamente solo en cliente; el resto del sitio no carga el motor.
+- **Laboratorio interno**: `/lab/fluido` reutiliza `fluid.ts` y `FluidRig` para probar cera/gel, perilla, gotas, aroma e inclinación. Es `noindex`, no se enlaza desde el sitio y solo entra en `dist/` con `ENABLE_FLUID_LAB=true`.
 - **Escenario virtual 1000×640** escalado a la caja disponible, con coordenadas compartidas para evitar desalineaciones.
 - **Pedido progresivo**: el cliente revela líneas y “Crear nota” fija el brief.
 - **Cuatro tipos**: clásica, capas (2–4), figura (molde con partes) y gel (transparente con montajes).
 - **Diseño**: cera, tamaño, recipiente o molde, capas/colores, aroma, pabilo y etiqueta. Los materiales se eligen como objetos en la estantería física; el selector accesible es la alternativa de teclado/lector. Las validaciones aparecen en el panel.
 - **Retos manuales**:
-  - Preparación: colocar el porta pabilo, ajustar la mecha al centro y usar el sostenedor antes de verter.
+  - Preparación: vista lateral; arrastrar la mecha (puede quedar inclinada/de lado), soltarla para fijar el sostenedor y cortarla con la tijera antes de verter.
   - Cera: cortar la parafina en bloque (2–4 cortes) antes de calentar; agregar ácido esteárico solo a las parafinas en bloque; girar la perilla del fogón para regular el calor, sin palanca mantenida, y arrastrar la cuchara en círculos.
   - Mezcla: un fogón por capa o parte; calentar cada fogón con su palanca, dosificar color gota a gota, aroma manual y un aroma por fogón; revolver cada lote.
   - Vertido: arrastrar la jarra sobre la boca del frasco y soltar para cerrar la capa.
   - Curado: retirar el sostenedor, tocar el ventilador; en gel, tocar las burbujas.
-  - Acabado: arrastrar la etiqueta y su tirador, cortar la mecha sobre la vela, tocar tapa y empaque.
-- **Sin sliders ni botones para los retos**. El teclado es la alternativa accesible: flechas, Espacio, Enter, Mayús + flechas, 1–4 para fogones y 1–4 en acabado.
+  - Acabado: arrastrar la etiqueta y su tirador, tocar tapa y empaque. El corte de mecha ya no vive aquí.
+- **Sin sliders ni botones para los retos**. El teclado es la alternativa accesible: flechas, Espacio, Enter, Mayús + flechas, 1–4 para fogones y 1–3 en acabado.
 - **Simulación de líquido viscoso**: superficie con menisco y brillo, chorro, película entre capas, salpicaduras, derrame, mezcla de color al revolver y gel con refracción simulada y burbujas. `liquid.ts` es el solver puro; `render/liquid-rig.ts` dibuja la superficie y las gotas. Afecta el puntaje (`mix` y `spill`).
 - **Puntaje**: diseño 60 + taller 40 (temperatura, vertido, mezcla, derrame, mecha, etiqueta, corte y gel). Estrellas y puntos; sin precio ni propina.
 - **Cierre comercial**: receta con cantidades y CTA de WhatsApp. El catálogo público ya tiene precios oficiales de 16 insumos; faltan envases, aromas, colorantes, moldes y etiquetas.

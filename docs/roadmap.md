@@ -9,8 +9,8 @@ La ruta de 109 pasos de 2.2 quedó como **backlog de referencia**. La cola activ
 - [x] **#141** · North Star, referencias y wireframes
 - [x] **#142** · Skills y prácticas para agentes
 - [x] **#143** · Organización del código y layout compartido
-- [ ] **#144** · Laboratorio de fluido lateral
-- [ ] **#145** · Vertical slice clásica
+- [x] **#144** · Laboratorio de fluido lateral (dev y build con `ENABLE_FLUID_LAB=true`)
+- [ ] **#145** · Vertical slice clásica (en curso: preparación lateral y corte listos)
 
 ## Fase R · Construcción
 
@@ -26,7 +26,7 @@ La ruta de 109 pasos de 2.2 quedó como **backlog de referencia**. La cola activ
 - [ ] **#135** · R-10 Taller físico: estanterías y arrastre
 - [ ] **#136** · R-11 Acabado con moños y stickers
 - [ ] **#137** · R-12 Tapa desde vista aérea
-- [ ] **#138** · R-13 Corte de mecha en preparación
+- [x] **#138** · R-13 Corte de mecha en preparación
 - [ ] **#139** · R-14 Datos, receta, briefs y scoring
 - [ ] **#140** · R-15 QA, tutorial, baseline y migración
 

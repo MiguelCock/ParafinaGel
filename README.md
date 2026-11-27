@@ -43,17 +43,17 @@ flowchart LR
 | --------------- | ----------------------------------------------------------------------------------- |
 | **Mostrador**   | Escuchas al cliente y creas la nota del pedido.                                     |
 | **Diseño**      | Eliges cera, envase, pabilo, aroma, color y etiqueta como objetos en la estantería. |
-| **Preparación** | Colocas el porta pabilo, la mecha y el sostenedor en el envase.                     |
+| **Preparación** | Colocas la mecha de lado, fijas el sostenedor y la cortas con la tijera.            |
 | **Cera**        | Cortas el bloque, agregas estearina y giras la perilla del fogón.                   |
 | **Mezcla**      | Calientas cada fogón, dosificas color y aroma, y revuelves cada lote.               |
 | **Vertido**     | La mecha ya está lista; arrastras la jarra y cierras cada capa.                     |
 | **Curado**      | Retiras el sostenedor y abanicas; en gel, revientas burbujas.                       |
-| **Acabado**     | Etiqueta, corte de mecha, tapa y empaque.                                           |
+| **Acabado**     | Etiqueta, tapa y empaque.                                                           |
 | **Receta**      | Recibes puntos, estrellas y la lista de insumos para pedir.                         |
 
 - **Cuatro tipos de vela**: clásica, capas, figura con molde y gel con montajes.
 - **Envases**: vidrio, lata y cerámica, con pabilos recomendados según el diámetro.
-- **Preparación de mecha**: porta pabilo y sostenedor de madera antes del vertido.
+- **Preparación de mecha**: vista lateral, sostenedor de madera y corte de mecha antes del vertido.
 - **Fogones de mezcla**: un lote por capa o parte; palanca de calor, color por gotas y un aroma por fogón.
 - **Estantería física**: los materiales se eligen como objetos, no como listas; incluye un selector accesible para teclado y lectores de pantalla.
 - **Simulación de líquido**: motor celular lateral para cera/gel, superficie con menisco, chorro, salpicaduras, derrame, película entre capas, mezcla y burbujas. Afecta el puntaje.
@@ -90,7 +90,7 @@ npm install
 npm run dev
 ```
 
-Abre `http://localhost:4321` para el sitio y `http://localhost:4321/juego` para el taller.
+Abre `http://localhost:4321` para el sitio y `http://localhost:4321/juego` para el taller. El laboratorio interno de fluido vive en `http://localhost:4321/lab/fluido` y no se enlaza desde el sitio; para incluirlo en un build, usa `ENABLE_FLUID_LAB=true npm run build`.
 
 | Comando           | Qué hace                             |
 | ----------------- | ------------------------------------ |

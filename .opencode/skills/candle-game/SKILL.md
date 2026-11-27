@@ -21,6 +21,7 @@ El sitio vende **insumos y materias primas**, no velas terminadas. El juego perm
 ## Dónde vive
 
 - Página: `src/pages/juego.astro`.
+- Laboratorio interno de fluido: `/lab/fluido` (`src/lab/FluidLabPage.astro` + `src/components/game/FluidLab.svelte`), `noindex` y sin enlaces públicos. Se inyecta en `astro dev` o con `ENABLE_FLUID_LAB=true`; no entra en el build público por defecto.
 - Shell: `src/components/game/GameExperience.svelte` (HUD, progreso, reloj, experto, ayuda, `data-motion`).
 - Escenario: `WorkshopStage.svelte`, `WorkshopBackdrop.svelte`, `StageCanvas.svelte`.
 - Render WebGL: `src/lib/game/render/`:
@@ -47,12 +48,12 @@ El sitio vende **insumos y materias primas**, no velas terminadas. El juego perm
 
 1. **Mostrador**: el cliente revela el pedido por líneas. “Crear nota” fija el brief.
 2. **Diseño**: tipo, cera, tamaño, recipiente/molde, capas/partes/montajes, aroma, pabilo y etiqueta. Los materiales se eligen como objetos físicos en la estantería; el selector accesible es la alternativa de teclado/lector.
-3. **Preparación**: colocar el porta pabilo, ajustar la mecha al centro y usar el sostenedor.
+3. **Preparación**: vista lateral; colocar la mecha (puede quedar inclinada), fijar el sostenedor y cortar la mecha.
 4. **Cera**: cortar el bloque si hace falta, girar la perilla del fogón y arrastrar la cuchara en círculos.
 5. **Mezcla**: calentar cada fogón, dosificar color y aroma, y revolver cada lote.
 6. **Vertido**: arrastrar la jarra sobre la boca; el líquido cae, se ondula y llena. Soltar cierra la capa.
 7. **Curado**: retirar el sostenedor y tocar el ventilador; en gel, tocar las burbujas.
-8. **Acabado**: arrastrar etiqueta y tirador, cortar la mecha sobre la vela, tocar tapa y empaque.
+8. **Acabado**: arrastrar etiqueta y tirador, tocar tapa y empaque. El corte de mecha ya ocurrió en Preparación.
 9. **Score**: puntos, estrellas, receta e insumos; WhatsApp.
 
 ### Objetivo del rediseño (#125)
@@ -69,7 +70,7 @@ brief
 → score / receta
 ```
 
-El código todavía no implementa todo ese recorrido: el corte de mecha sigue en acabado, la etiqueta sigue en el diseño y la vista de la mecha no es lateral. Hay una decisión abierta: [#138](https://github.com/MiguelCock/ParafinaGel/issues/138) mueve el corte de mecha a preparación, mientras el GDD y los wireframes todavía lo muestran en acabado; confírmalo antes de implementar. No documentes lo objetivo como si ya existiera. Si el GDD y el código difieren, el GDD manda para diseño y el código para saber qué está implementado. Cambios asociados: [#136](https://github.com/MiguelCock/ParafinaGel/issues/136) (moños/stickers) y [#137](https://github.com/MiguelCock/ParafinaGel/issues/137) (tapa aérea).
+La **preparación lateral con corte de mecha** ya está implementada ([#138](https://github.com/MiguelCock/ParafinaGel/issues/138)); el **corte del bloque** sigue en Cera. Quedan pendientes la estantería integrada en el taller, la mezcla lateral, los moños/stickers ([#136](https://github.com/MiguelCock/ParafinaGel/issues/136)) y la tapa aérea ([#137](https://github.com/MiguelCock/ParafinaGel/issues/137)). No documentes lo objetivo como si ya existiera. Si el GDD y el código difieren, el GDD manda para diseño y el código para saber qué está implementado.
 
 ## WebGL y PixiJS
 
@@ -94,11 +95,11 @@ El código todavía no implementa todo ese recorrido: el corte de mecha sigue en
 
 ## Retos manuales
 
-- **Preparación**: arrastrar la mecha en la vista superior; `game.setWickPosition` y `placeWick`. El porta pabilo es la base metálica; el sostenedor de madera solo centra y se retira después del curado. Teclado: flechas + Enter.
+- **Preparación**: vista lateral; arrastrar la mecha, soltarla para `placeWick` y cortarla con la tijera o la regla (`setTrimMm` + `cutWick`). Si queda descentrada se ve inclinada; el sostenedor de madera se retira después del curado. Teclado: flechas + Enter para colocar; ↑/↓ y Enter para cortar.
 - **Cera**: arrastrar la perilla hacia arriba/abajo regula `game.setHeatLevel`; el corte del bloque se hace con un trazo horizontal o `C`; tocar el frasco agrega esteárico o `E`; arrastrar la cuchara acumula ángulo y llama `game.stir()` cada 1.6π. Teclado: `+`/`-` para calor, Espacio para encender/apagar y flechas para revolver.
 - **Vertido**: arrastrar la jarra; `game.setPourOffset` alinea. Si `|offset| <= 0.32`, el tick llena la unidad; si no, acumula `spill`. Al soltar, `game.releasePour()` cierra la capa si hay suficiente cera. Teclado: flechas + Espacio.
 - **Curado**: clic en el ventilador (`game.fan()`); burbujas de gel (`game.popBubble()`). Teclado: Espacio y B.
-- **Acabado**: etiqueta arrastrable con tirador de giro; corte de mecha con regla; tapa y empaque clicables. Teclado: 1 etiqueta, 2 mecha, 3 tapa, 4 empaque, flechas, Mayús + flechas, Enter.
+- **Acabado**: etiqueta arrastrable con tirador de giro; tapa y empaque clicables. Teclado: 1 etiqueta, 2 tapa, 3 empaque, flechas, Mayús + flechas, Enter. Moños/stickers y tapa aérea son el siguiente paso del rediseño.
 - No reintroduzcas sliders/botones para estos retos. Los botones de navegación, selección de materiales, estantería y CTA sí se quedan.
 
 ## Fluidos y puntaje
@@ -140,7 +141,7 @@ El código todavía no implementa todo ese recorrido: el corte de mecha sigue en
 
 ## Roadmap
 
-La ruta operativa es [#124](https://github.com/MiguelCock/ParafinaGel/issues/124), no una lista fija en este skill. Orden actual: [#141](https://github.com/MiguelCock/ParafinaGel/issues/141) diseño/referencias → [#144](https://github.com/MiguelCock/ParafinaGel/issues/144) laboratorio de fluido → [#143](https://github.com/MiguelCock/ParafinaGel/issues/143) layout/arquitectura → [#145](https://github.com/MiguelCock/ParafinaGel/issues/145) slice clásica → capas, figura y gel → [#140](https://github.com/MiguelCock/ParafinaGel/issues/140) QA, tutorial y baseline. No abras los cuatro tipos antes de que la clásica pase QA completo.
+La ruta operativa es [#124](https://github.com/MiguelCock/ParafinaGel/issues/124), no una lista fija en este skill. Hechos: [#141](https://github.com/MiguelCock/ParafinaGel/issues/141) diseño/referencias, [#143](https://github.com/MiguelCock/ParafinaGel/issues/143) layout/arquitectura, [#144](https://github.com/MiguelCock/ParafinaGel/issues/144) laboratorio de fluido y [#138](https://github.com/MiguelCock/ParafinaGel/issues/138) corte de mecha. En curso: [#145](https://github.com/MiguelCock/ParafinaGel/issues/145) slice clásica → capas, figura y gel → [#140](https://github.com/MiguelCock/ParafinaGel/issues/140) QA, tutorial y baseline. No abras los cuatro tipos antes de que la clásica pase QA completo.
 
 ## Checklist
 
