@@ -1,0 +1,501 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1120" viewBox="0 0 1600 1120" role="img" aria-labelledby="title desc">
+  <title id="title">ParafinaGel · wireframes de las siete estaciones</title>
+  <desc id="desc">Hoja de wireframes originales: taller y estantería, preparación lateral con frasco, mecha y corte de mecha, cera con corte de bloque y perilla, mezcla con gotas y chorrito, vertido lateral, curado en repisa y acabado con moños/stickers y tapa aérea. Sin fuentes externas ni imágenes embebidas.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#b4552f"/>
+    </marker>
+    <marker id="arrowMuted" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#7a6450"/>
+    </marker>
+    <marker id="arrowSage" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#4f6247"/>
+    </marker>
+  </defs>
+
+  <style>
+    .bg { fill: #f4ecdf; }
+    .panel { fill: #fffaf2; stroke: #d8c3ad; stroke-width: 1.5; }
+    .panelHead { fill: #f8ecdd; }
+    .ink { fill: #3b2d25; }
+    .muted { fill: #7a6450; }
+    .accent { fill: #b4552f; }
+    .sage { fill: #4f6247; }
+    .wood { fill: #d2a77e; }
+    .woodDark { fill: #8f5f40; }
+    .paper { fill: #fbf3e9; }
+    .soft { fill: #f3ddd2; }
+    .line { stroke: #8f5f40; stroke-width: 1.6; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+    .lineThin { stroke: #b98963; stroke-width: 1; fill: none; stroke-linecap: round; }
+    .lineMuted { stroke: #a78a70; stroke-width: 1.1; fill: none; stroke-linecap: round; stroke-dasharray: 4 5; }
+    .lineSage { stroke: #6f8165; stroke-width: 1.4; fill: none; stroke-linecap: round; }
+    .lineAccent { stroke: #b4552f; stroke-width: 1.6; fill: none; stroke-linecap: round; }
+    .text { font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif; }
+    .tTitle { font-size: 18px; font-weight: 800; fill: #3b2d25; }
+    .tPanel { font-size: 11px; font-weight: 500; fill: #7a6450; }
+    .tLabel { font-size: 10.5px; font-weight: 700; fill: #3b2d25; }
+    .tSmall { font-size: 9.5px; font-weight: 600; fill: #7a6450; }
+    .tChip { font-size: 11px; font-weight: 700; fill: #7a6450; }
+    .tNum { font-size: 11px; font-weight: 800; fill: #fffaf2; }
+    .tFlow { font-size: 12px; font-weight: 700; fill: #3b2d25; }
+  </style>
+
+  <rect class="bg" width="1600" height="1120"/>
+  <text x="40" y="56" class="text" style="font-size:32px;font-weight:800;fill:#3b2d25">ParafinaGel · wireframes de estaciones</text>
+  <text x="40" y="86" class="text" style="font-size:14px;fill:#7a6450">Hoja de alcance para #141 · 7 estaciones + receta · escenario Pixi 1000×640 · ilustración 2.5D con fluido de bordes suaves</text>
+
+  <g class="text">
+    <rect x="1090" y="38" width="130" height="26" rx="13" fill="#f3ddd2" stroke="#d8c3ad"/>
+    <text x="1155" y="55" text-anchor="middle" class="tChip">Pixi / WebGL</text>
+    <rect x="1230" y="38" width="120" height="26" rx="13" fill="#e4eadf" stroke="#d8c3ad"/>
+    <text x="1290" y="55" text-anchor="middle" class="tChip">DOM accesible</text>
+    <rect x="1360" y="38" width="120" height="26" rx="13" fill="#fffaf2" stroke="#d8c3ad"/>
+    <text x="1420" y="55" text-anchor="middle" class="tChip">cámara fija</text>
+  </g>
+
+  <!-- Flow strip -->
+  <g class="text">
+    <rect x="69" y="108" width="150" height="30" rx="15" fill="#fbf3e9" stroke="#d8c3ad"/>
+    <text x="144" y="128" text-anchor="middle" class="tFlow">Brief</text>
+    <rect x="233" y="108" width="150" height="30" rx="15" fill="#f3ddd2" stroke="#b4552f"/>
+    <text x="308" y="128" text-anchor="middle" class="tFlow">Taller</text>
+    <rect x="397" y="108" width="150" height="30" rx="15" fill="#fbf3e9" stroke="#d8c3ad"/>
+    <text x="472" y="128" text-anchor="middle" class="tFlow">Preparación</text>
+    <rect x="561" y="108" width="150" height="30" rx="15" fill="#fbf3e9" stroke="#d8c3ad"/>
+    <text x="636" y="128" text-anchor="middle" class="tFlow">Cera</text>
+    <rect x="725" y="108" width="150" height="30" rx="15" fill="#fbf3e9" stroke="#d8c3ad"/>
+    <text x="800" y="128" text-anchor="middle" class="tFlow">Mezcla</text>
+    <rect x="889" y="108" width="150" height="30" rx="15" fill="#fbf3e9" stroke="#d8c3ad"/>
+    <text x="964" y="128" text-anchor="middle" class="tFlow">Vertido</text>
+    <rect x="1053" y="108" width="150" height="30" rx="15" fill="#fbf3e9" stroke="#d8c3ad"/>
+    <text x="1128" y="128" text-anchor="middle" class="tFlow">Curado</text>
+    <rect x="1217" y="108" width="150" height="30" rx="15" fill="#fbf3e9" stroke="#d8c3ad"/>
+    <text x="1292" y="128" text-anchor="middle" class="tFlow">Acabado</text>
+    <rect x="1381" y="108" width="150" height="30" rx="15" fill="#e4eadf" stroke="#4f6247"/>
+    <text x="1456" y="128" text-anchor="middle" class="tFlow">Receta</text>
+  </g>
+  <g stroke="#b4552f" stroke-width="1.4" marker-end="url(#arrow)">
+    <line x1="219" y1="123" x2="229" y2="123"/>
+    <line x1="383" y1="123" x2="393" y2="123"/>
+    <line x1="547" y1="123" x2="557" y2="123"/>
+    <line x1="711" y1="123" x2="721" y2="123"/>
+    <line x1="875" y1="123" x2="885" y2="123"/>
+    <line x1="1039" y1="123" x2="1049" y2="123"/>
+    <line x1="1203" y1="123" x2="1213" y2="123"/>
+    <line x1="1367" y1="123" x2="1377" y2="123"/>
+  </g>
+
+  <!-- 01 Taller / estantería -->
+  <g id="panel-01-taller">
+    <rect class="panel" x="40" y="170" width="750" height="380" rx="18"/>
+    <rect class="panelHead" x="40" y="170" width="750" height="64" rx="18"/>
+    <rect class="panelHead" x="40" y="212" width="750" height="22" rx="0"/>
+    <text x="58" y="199" class="text tTitle">01 · Taller / estantería</text>
+    <text x="58" y="219" class="text tPanel">Plano general 2.5D · tomar materiales, armar la vela y elegir estación</text>
+    <text x="772" y="199" text-anchor="end" class="text" style="font-size:11px;font-weight:800;fill:#b4552f">CÁMARA FIJA</text>
+    <line x1="58" y1="234" x2="772" y2="234" class="lineThin"/>
+
+    <g transform="translate(0,55)">
+    <!-- room -->
+    <path d="M70 300 L760 300" class="lineThin"/>
+    <path d="M70 300 L70 255" class="lineThin"/>
+    <path d="M760 300 L760 255" class="lineThin"/>
+    <rect x="70" y="255" width="690" height="45" fill="#f8ecdd" opacity="0.7"/>
+
+    <!-- shelf -->
+    <rect x="80" y="250" width="135" height="10" rx="3" fill="#d2a77e" stroke="#8f5f40" stroke-width="1.2"/>
+    <rect x="80" y="286" width="135" height="10" rx="3" fill="#d2a77e" stroke="#8f5f40" stroke-width="1.2"/>
+    <rect x="80" y="322" width="135" height="10" rx="3" fill="#d2a77e" stroke="#8f5f40" stroke-width="1.2"/>
+    <rect x="90" y="228" width="16" height="22" rx="3" fill="#f3ddd2" stroke="#8f5f40" stroke-width="1"/>
+    <rect x="114" y="232" width="18" height="18" rx="3" fill="#e4eadf" stroke="#8f5f40" stroke-width="1"/>
+    <rect x="140" y="226" width="20" height="24" rx="3" fill="#f7e8cf" stroke="#8f5f40" stroke-width="1"/>
+    <rect x="168" y="230" width="16" height="20" rx="3" fill="#d99a92" stroke="#8f5f40" stroke-width="1"/>
+    <rect x="96" y="264" width="18" height="22" rx="4" fill="#efe2cf" stroke="#8f5f40" stroke-width="1"/>
+    <rect x="122" y="268" width="16" height="18" rx="4" fill="#c98a4b" stroke="#8f5f40" stroke-width="1"/>
+    <rect x="148" y="262" width="20" height="24" rx="4" fill="#7c8b72" stroke="#8f5f40" stroke-width="1"/>
+    <rect x="94" y="300" width="18" height="22" rx="4" fill="#9b8bb4" stroke="#8f5f40" stroke-width="1"/>
+    <rect x="120" y="304" width="18" height="18" rx="4" fill="#f3ddd2" stroke="#8f5f40" stroke-width="1"/>
+    <text x="147" y="342" text-anchor="middle" class="text tSmall">estantería</text>
+
+    <!-- prep table -->
+    <rect x="250" y="276" width="130" height="8" rx="3" fill="#b98963" stroke="#8f5f40" stroke-width="1.2"/>
+    <path d="M262 284 L262 322 M368 284 L368 322" class="lineThin"/>
+    <rect x="296" y="248" width="38" height="28" rx="6" fill="#f4ead9" stroke="#8f5f40" stroke-width="1.4"/>
+    <path d="M315 246 L315 226" class="line"/>
+    <path d="M292 238 L338 238" class="line"/>
+    <text x="315" y="340" text-anchor="middle" class="text tSmall">preparación</text>
+
+    <!-- stove -->
+    <rect x="410" y="284" width="110" height="38" rx="8" fill="#fbf3e9" stroke="#8f5f40" stroke-width="1.4"/>
+    <ellipse cx="465" cy="282" rx="42" ry="12" fill="#d2a77e" stroke="#8f5f40" stroke-width="1.4"/>
+    <path d="M430 284 C438 270 448 284 456 272 C464 284 474 270 482 284" fill="none" stroke="#b4552f" stroke-width="2"/>
+    <circle cx="502" cy="302" r="10" fill="#f3ddd2" stroke="#8f5f40" stroke-width="1.2"/>
+    <path d="M502 302 L507 297" stroke="#3b2d25" stroke-width="1.6" stroke-linecap="round"/>
+    <text x="465" y="340" text-anchor="middle" class="text tSmall">cera / fogón</text>
+
+    <!-- mix table -->
+    <rect x="540" y="278" width="120" height="8" rx="3" fill="#b98963" stroke="#8f5f40" stroke-width="1.2"/>
+    <path d="M550 286 L550 322 M650 286 L650 322" class="lineThin"/>
+    <ellipse cx="575" cy="270" rx="24" ry="8" fill="#f3ddd2" stroke="#8f5f40" stroke-width="1.2"/>
+    <ellipse cx="625" cy="270" rx="24" ry="8" fill="#e4eadf" stroke="#8f5f40" stroke-width="1.2"/>
+    <path d="M566 262 C570 252 576 262 580 254" fill="none" stroke="#b4552f" stroke-width="1.5"/>
+    <path d="M616 262 C620 252 626 262 630 254" fill="none" stroke="#b4552f" stroke-width="1.5"/>
+    <text x="600" y="340" text-anchor="middle" class="text tSmall">mezcla</text>
+
+    <!-- rack -->
+    <rect x="682" y="250" width="66" height="8" rx="3" fill="#d2a77e" stroke="#8f5f40" stroke-width="1.2"/>
+    <rect x="682" y="292" width="66" height="8" rx="3" fill="#d2a77e" stroke="#8f5f40" stroke-width="1.2"/>
+    <path d="M690 258 L690 322 M740 258 L740 322" class="lineThin"/>
+    <rect x="696" y="266" width="18" height="24" rx="4" fill="#f4ead9" stroke="#8f5f40" stroke-width="1"/>
+    <rect x="720" y="266" width="18" height="24" rx="4" fill="#efe2cf" stroke="#8f5f40" stroke-width="1"/>
+    <text x="714" y="340" text-anchor="middle" class="text tSmall">curado</text>
+
+    <!-- counter / finish -->
+    <rect x="540" y="246" width="120" height="8" rx="3" fill="#b98963" stroke="#8f5f40" stroke-width="1.2"/>
+    <rect x="566" y="222" width="48" height="24" rx="4" fill="#f7e8cf" stroke="#8f5f40" stroke-width="1.2"/>
+    <path d="M578 222 C578 212 590 212 590 222" fill="none" stroke="#b4552f" stroke-width="2"/>
+    <text x="600" y="216" text-anchor="middle" class="text tSmall">acabado</text>
+
+    <!-- hotspots -->
+    <g>
+      <circle cx="147" cy="190" r="11" fill="#b4552f"/>
+      <text x="147" y="194" text-anchor="middle" class="text tNum">1</text>
+      <circle cx="315" cy="206" r="11" fill="#b4552f"/>
+      <text x="315" y="210" text-anchor="middle" class="text tNum">2</text>
+      <circle cx="465" cy="246" r="11" fill="#b4552f"/>
+      <text x="465" y="250" text-anchor="middle" class="text tNum">3</text>
+      <circle cx="600" cy="300" r="11" fill="#b4552f"/>
+      <text x="600" y="304" text-anchor="middle" class="text tNum">4</text>
+      <circle cx="675" cy="270" r="11" fill="#b4552f"/>
+      <text x="675" y="274" text-anchor="middle" class="text tNum">5</text>
+      <circle cx="714" cy="222" r="11" fill="#b4552f"/>
+      <text x="714" y="226" text-anchor="middle" class="text tNum">6</text>
+      <circle cx="600" cy="194" r="11" fill="#b4552f"/>
+      <text x="600" y="198" text-anchor="middle" class="text tNum">7</text>
+    </g>
+    <path d="M147 202 C190 220 250 220 304 214" class="lineMuted" marker-end="url(#arrowMuted)"/>
+    </g>
+    <text x="58" y="500" class="text tSmall">Hotspots DOM sobre el plano. El jugador puede recorrer el taller; la estantería se opera con arrastre o selector accesible.</text>
+    <text x="58" y="520" class="text tSmall">1 estantería · 2 preparación · 3 cera · 4 mezcla · 5 vertido · 6 curado · 7 acabado</text>
+  </g>
+
+  <!-- 02 Preparación -->
+  <g id="panel-02-preparacion">
+    <rect class="panel" x="810" y="170" width="365" height="380" rx="18"/>
+    <rect class="panelHead" x="810" y="170" width="365" height="64" rx="18"/>
+    <rect class="panelHead" x="810" y="212" width="365" height="22" rx="0"/>
+    <text x="828" y="199" class="text tTitle">02 · Preparación</text>
+    <text x="828" y="219" class="text tPanel">Lateral · frasco, mecha y corte de mecha</text>
+    <text x="1157" y="199" text-anchor="end" class="text" style="font-size:11px;font-weight:800;fill:#b4552f">LATERAL</text>
+    <line x1="828" y1="234" x2="1157" y2="234" class="lineThin"/>
+
+    <g transform="translate(0,55)">
+    <!-- bench -->
+    <path d="M832 326 L1152 326" class="line"/>
+    <path d="M852 326 L852 350 M1132 326 L1132 350" class="lineThin"/>
+
+    <!-- frasco lateral -->
+    <rect x="972" y="242" width="78" height="78" rx="8" fill="#f4ead9" stroke="#8f5f40" stroke-width="1.8"/>
+    <path d="M976 252 L976 312 M1046 252 L1046 312" class="lineThin"/>
+    <ellipse cx="1011" cy="244" rx="39" ry="7" fill="#fbf3e9" stroke="#8f5f40" stroke-width="1.4"/>
+    <path d="M1011 214 L1011 270" class="line"/>
+    <path d="M978 222 L1044 222" class="line"/>
+    <circle cx="1011" cy="304" r="6" fill="#8a8d8a" stroke="#64675f" stroke-width="1.2"/>
+    <circle cx="1011" cy="266" r="20" fill="none" stroke="#b4552f" stroke-width="1.2" stroke-dasharray="3 4"/>
+    <path d="M1011 244 L1011 256" class="lineAccent" marker-end="url(#arrow)"/>
+    <text x="1011" y="338" text-anchor="middle" class="text tLabel">frasco + mecha</text>
+
+    <!-- holder -->
+    <rect x="965" y="204" width="92" height="9" rx="4" fill="#d2a77e" stroke="#8f5f40" stroke-width="1.2"/>
+    <text x="1070" y="209" class="text tSmall">sostenedor</text>
+
+    <!-- wick cut -->
+    <path d="M986 232 L1036 232" class="lineAccent" stroke-dasharray="4 4"/>
+    <text x="1060" y="228" class="text tSmall">corte</text>
+    <path d="M852 296 L878 320 M852 320 L878 296" class="line"/>
+    <circle cx="846" cy="292" r="7" fill="none" stroke="#64675f" stroke-width="1.6"/>
+    <circle cx="846" cy="324" r="7" fill="none" stroke="#64675f" stroke-width="1.6"/>
+    <text x="892" y="338" text-anchor="middle" class="text tLabel">corte de mecha</text>
+
+    <!-- hand arrows -->
+    <path d="M948 198 C944 188 954 180 964 184" class="lineAccent" marker-end="url(#arrow)"/>
+    <path d="M1074 250 C1090 254 1092 270 1082 280" class="lineMuted" marker-end="url(#arrowMuted)"/>
+    <text x="1100" y="256" class="text tSmall">centrar</text>
+    </g>
+
+    <text x="828" y="440" class="text tSmall">La mecha puede quedar inclinada o de lado.</text>
+    <text x="828" y="458" class="text tSmall">El sostenedor la centra; la tijera la corta aquí.</text>
+    <text x="828" y="476" class="text tSmall">El corte del bloque sigue en Cera, no en este banco.</text>
+  </g>
+
+  <!-- 03 Cera -->
+  <g id="panel-03-cera">
+    <rect class="panel" x="1195" y="170" width="365" height="380" rx="18"/>
+    <rect class="panelHead" x="1195" y="170" width="365" height="64" rx="18"/>
+    <rect class="panelHead" x="1195" y="212" width="365" height="22" rx="0"/>
+    <text x="1213" y="199" class="text tTitle">03 · Cera</text>
+    <text x="1213" y="219" class="text tPanel">Lateral · corte de bloque, perilla y olla</text>
+    <text x="1542" y="199" text-anchor="end" class="text" style="font-size:11px;font-weight:800;fill:#b4552f">LATERAL</text>
+    <line x1="1213" y1="234" x2="1542" y2="234" class="lineThin"/>
+
+    <g transform="translate(0,55)">
+    <!-- stove base -->
+    <rect x="1225" y="296" width="190" height="34" rx="9" fill="#fbf3e9" stroke="#8f5f40" stroke-width="1.5"/>
+    <rect x="1245" y="330" width="18" height="18" rx="4" fill="#8a8d8a" stroke="#64675f" stroke-width="1.2"/>
+    <rect x="1378" y="330" width="18" height="18" rx="4" fill="#8a8d8a" stroke="#64675f" stroke-width="1.2"/>
+
+    <!-- pot -->
+    <rect x="1250" y="238" width="120" height="56" rx="14" fill="#d2a77e" stroke="#8f5f40" stroke-width="1.8"/>
+    <ellipse cx="1310" cy="238" rx="60" ry="12" fill="#f3ddd2" stroke="#8f5f40" stroke-width="1.6"/>
+    <ellipse cx="1310" cy="238" rx="48" ry="7" fill="#f7e8cf" stroke="#8f5f40" stroke-width="1"/>
+    <path d="M1278 296 C1288 280 1298 296 1308 282 C1318 296 1328 280 1338 296" fill="none" stroke="#b4552f" stroke-width="2"/>
+    <path d="M1258 294 L1258 312 M1362 294 L1362 312" class="line"/>
+
+    <!-- knob -->
+    <circle cx="1452" cy="318" r="18" fill="#f3ddd2" stroke="#8f5f40" stroke-width="1.6"/>
+    <circle cx="1452" cy="318" r="9" fill="#d2a77e" stroke="#8f5f40" stroke-width="1.2"/>
+    <path d="M1452 318 L1459 311" stroke="#3b2d25" stroke-width="2" stroke-linecap="round"/>
+    <path d="M1428 300 C1422 286 1438 274 1452 278" class="lineAccent" marker-end="url(#arrow)"/>
+    <text x="1452" y="350" text-anchor="middle" class="text tLabel">perilla</text>
+
+    <!-- thermometer -->
+    <rect x="1480" y="220" width="10" height="76" rx="5" fill="#fbf3e9" stroke="#8f5f40" stroke-width="1.2"/>
+    <circle cx="1485" cy="300" r="10" fill="#b4552f" stroke="#8f5f40" stroke-width="1.2"/>
+    <path d="M1485 230 L1485 286" stroke="#b4552f" stroke-width="5" stroke-linecap="round"/>
+    <line x1="1470" y1="250" x2="1495" y2="250" class="lineThin"/>
+    <line x1="1470" y1="266" x2="1495" y2="266" class="lineThin"/>
+    <text x="1514" y="258" text-anchor="middle" class="text tSmall">rango</text>
+
+    <!-- spoon -->
+    <path d="M1360 206 L1318 242" class="line"/>
+    <ellipse cx="1310" cy="244" rx="22" ry="9" fill="#d2a77e" stroke="#8f5f40" stroke-width="1.3"/>
+    <path d="M1370 196 L1370 210" class="lineThin"/>
+    <text x="1372" y="192" class="text tSmall">cuchara</text>
+
+    <!-- steam -->
+    <path d="M1290 216 C1286 204 1294 198 1290 188" class="lineMuted"/>
+    <path d="M1310 212 C1306 198 1314 194 1310 182" class="lineMuted"/>
+    <path d="M1330 216 C1326 204 1334 198 1330 188" class="lineMuted"/>
+    </g>
+
+    <text x="1213" y="440" class="text tSmall">Cortar el bloque y girar la perilla; no hay que mantener.</text>
+    <text x="1213" y="458" class="text tSmall">La temperatura se registra al entrar en el rango.</text>
+  </g>
+
+  <!-- 04 Mezcla -->
+  <g id="panel-04-mezcla">
+    <rect class="panel" x="40" y="570" width="365" height="380" rx="18"/>
+    <rect class="panelHead" x="40" y="570" width="365" height="64" rx="18"/>
+    <rect class="panelHead" x="40" y="612" width="365" height="22" rx="0"/>
+    <text x="58" y="599" class="text tTitle">04 · Mezcla</text>
+    <text x="58" y="619" class="text tPanel">Lateral · 1–4 fogones, gota y chorrito</text>
+    <text x="387" y="599" text-anchor="end" class="text" style="font-size:11px;font-weight:800;fill:#b4552f">LATERAL</text>
+    <line x1="58" y1="634" x2="387" y2="634" class="lineThin"/>
+
+    <!-- burner cards -->
+    <g>
+      <rect x="58" y="650" width="125" height="105" rx="10" fill="#fbf3e9" stroke="#b4552f" stroke-width="1.6"/>
+      <ellipse cx="120" cy="720" rx="36" ry="10" fill="#d2a77e" stroke="#8f5f40" stroke-width="1.2"/>
+      <path d="M96 722 C104 710 112 722 120 710 C128 722 136 710 144 722" fill="none" stroke="#b4552f" stroke-width="1.8"/>
+      <rect x="133" y="686" width="16" height="34" rx="8" fill="#f3ddd2" stroke="#8f5f40" stroke-width="1"/>
+      <circle cx="141" cy="694" r="5" fill="#d2a77e" stroke="#8f5f40" stroke-width="1"/>
+      <text x="120" y="744" text-anchor="middle" class="text tSmall">fogón 1</text>
+    </g>
+    <g>
+      <rect x="196" y="650" width="125" height="105" rx="10" fill="#fbf3e9" stroke="#d8c3ad" stroke-width="1.2"/>
+      <ellipse cx="258" cy="720" rx="36" ry="10" fill="#d2a77e" stroke="#8f5f40" stroke-width="1.2"/>
+      <path d="M234 722 C242 710 250 722 258 710 C266 722 274 710 282 722" fill="none" stroke="#b4552f" stroke-width="1.8"/>
+      <text x="258" y="744" text-anchor="middle" class="text tSmall">fogón 2</text>
+    </g>
+    <g>
+      <rect x="58" y="770" width="125" height="105" rx="10" fill="#fbf3e9" stroke="#d8c3ad" stroke-width="1.2"/>
+      <ellipse cx="120" cy="840" rx="36" ry="10" fill="#d2a77e" stroke="#8f5f40" stroke-width="1.2"/>
+      <text x="120" y="864" text-anchor="middle" class="text tSmall">fogón 3</text>
+    </g>
+    <g>
+      <rect x="196" y="770" width="125" height="105" rx="10" fill="none" stroke="#a78a70" stroke-width="1.2" stroke-dasharray="5 5"/>
+      <text x="258" y="822" text-anchor="middle" class="text" style="font-size:22px;font-weight:800;fill:#a78a70">4</text>
+      <text x="258" y="846" text-anchor="middle" class="text tSmall">hasta 4</text>
+    </g>
+
+    <!-- bottles -->
+    <rect x="340" y="650" width="28" height="56" rx="6" fill="#f3ddd2" stroke="#8f5f40" stroke-width="1.3"/>
+    <rect x="348" y="642" width="12" height="12" rx="3" fill="#8f5f40"/>
+    <path d="M354 662 L354 690" class="lineThin"/>
+    <circle cx="354" cy="704" r="3" fill="#b4552f"/>
+    <path d="M354 712 C352 730 350 750 120 750" class="lineMuted" marker-end="url(#arrowMuted)"/>
+    <text x="354" y="740" text-anchor="middle" class="text tSmall">gota</text>
+
+    <rect x="340" y="770" width="28" height="62" rx="6" fill="#e4eadf" stroke="#8f5f40" stroke-width="1.3"/>
+    <rect x="348" y="762" width="12" height="12" rx="3" fill="#8f5f40"/>
+    <path d="M354 784 L354 814" class="lineThin"/>
+    <path d="M354 820 C354 840 300 840 258 840" class="lineSage" marker-end="url(#arrowSage)"/>
+    <text x="354" y="858" text-anchor="middle" class="text tSmall">chorrito</text>
+
+    <!-- spoon -->
+    <path d="M300 676 L266 704" class="line"/>
+    <ellipse cx="258" cy="708" rx="20" ry="8" fill="#d2a77e" stroke="#8f5f40" stroke-width="1.2"/>
+
+    <text x="58" y="916" class="text tSmall">Un color y un aroma por lote. La gota se cuenta;</text>
+    <text x="58" y="934" class="text tSmall">el aroma cae en hilo y se corta al soltar.</text>
+  </g>
+
+  <!-- 05 Vertido -->
+  <g id="panel-05-vertido">
+    <rect class="panel" x="425" y="570" width="365" height="380" rx="18"/>
+    <rect class="panelHead" x="425" y="570" width="365" height="64" rx="18"/>
+    <rect class="panelHead" x="425" y="612" width="365" height="22" rx="0"/>
+    <text x="443" y="599" class="text tTitle">05 · Vertido</text>
+    <text x="443" y="619" class="text tPanel">Lateral · jarra, meta y derrame</text>
+    <text x="772" y="599" text-anchor="end" class="text" style="font-size:11px;font-weight:800;fill:#b4552f">LATERAL</text>
+    <line x1="443" y1="634" x2="772" y2="634" class="lineThin"/>
+
+    <!-- bench -->
+    <path d="M445 860 L770 860" class="line"/>
+    <path d="M465 860 L465 884 M750 860 L750 884" class="lineThin"/>
+
+    <!-- vessel -->
+    <rect x="548" y="760" width="88" height="96" rx="8" fill="#f4ead9" stroke="#8f5f40" stroke-width="1.8"/>
+    <ellipse cx="592" cy="760" rx="44" ry="8" fill="#fbf3e9" stroke="#8f5f40" stroke-width="1.4"/>
+    <path d="M552 790 L630 790 M552 812 L630 812" class="lineThin"/>
+    <path d="M552 774 L630 774" class="lineMuted"/>
+    <text x="648" y="778" class="text tSmall">meta</text>
+
+    <!-- jar -->
+    <g transform="rotate(-14 515 686)">
+      <rect x="482" y="660" width="66" height="70" rx="14" fill="#fbf3e9" stroke="#8f5f40" stroke-width="1.8"/>
+      <rect x="496" y="650" width="38" height="14" rx="6" fill="#f3ddd2" stroke="#8f5f40" stroke-width="1.2"/>
+      <path d="M488 690 L542 690" class="lineThin"/>
+      <path d="M488 706 L542 706" class="lineThin"/>
+    </g>
+    <path d="M546 714 C548 742 558 752 580 760" stroke="#b4552f" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M548 716 C552 742 562 752 582 758" stroke="#f7e8cf" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    <circle cx="580" cy="760" r="4" fill="#b4552f"/>
+    <path d="M470 700 L494 700 M470 710 L494 710" class="lineThin"/>
+    <path d="M462 720 L470 700 M462 720 L478 722" class="lineMuted" marker-end="url(#arrowMuted)"/>
+    <text x="478" y="806" class="text tSmall">inclinar / soltar</text>
+
+    <!-- spill -->
+    <ellipse cx="690" cy="858" rx="48" ry="10" fill="#f3ddd2" stroke="#b4552f" stroke-width="1.2"/>
+    <ellipse cx="674" cy="856" rx="16" ry="5" fill="#f7e8cf" stroke="#b4552f" stroke-width="1"/>
+    <path d="M666 842 L662 850 M700 842 L704 850" class="lineAccent"/>
+    <text x="690" y="880" text-anchor="middle" class="text tSmall">derrame</text>
+
+    <text x="443" y="916" class="text tSmall">Alinear la jarra con la boca, inclinar y soltar</text>
+    <text x="443" y="934" class="text tSmall">para cerrar la capa. El derrame resta, no bloquea.</text>
+  </g>
+
+  <!-- 06 Curado -->
+  <g id="panel-06-curado">
+    <rect class="panel" x="810" y="570" width="365" height="380" rx="18"/>
+    <rect class="panelHead" x="810" y="570" width="365" height="64" rx="18"/>
+    <rect class="panelHead" x="810" y="612" width="365" height="22" rx="0"/>
+    <text x="828" y="599" class="text tTitle">06 · Curado</text>
+    <text x="828" y="619" class="text tPanel">Repisa · ventilador, sostenedor y burbujas</text>
+    <text x="1157" y="599" text-anchor="end" class="text" style="font-size:11px;font-weight:800;fill:#b4552f">LATERAL</text>
+    <line x1="828" y1="634" x2="1157" y2="634" class="lineThin"/>
+
+    <!-- rack -->
+    <path d="M840 842 L1136 842" class="line"/>
+    <path d="M862 842 L862 874 M1114 842 L1114 874" class="lineThin"/>
+    <path d="M850 820 L1128 820" class="lineThin"/>
+
+    <!-- vessel -->
+    <rect x="900" y="748" width="88" height="94" rx="8" fill="#f4ead9" stroke="#8f5f40" stroke-width="1.8"/>
+    <ellipse cx="944" cy="748" rx="44" ry="8" fill="#fbf3e9" stroke="#8f5f40" stroke-width="1.4"/>
+    <rect x="892" y="726" width="104" height="9" rx="4" fill="#d2a77e" stroke="#8f5f40" stroke-width="1.2"/>
+    <circle cx="944" cy="800" r="12" fill="none" stroke="#b4552f" stroke-width="1.2" stroke-dasharray="3 4"/>
+    <circle cx="918" cy="786" r="4" fill="none" stroke="#b4552f" stroke-width="1.2"/>
+    <circle cx="960" cy="806" r="5" fill="none" stroke="#b4552f" stroke-width="1.2"/>
+    <circle cx="938" cy="818" r="3" fill="none" stroke="#b4552f" stroke-width="1.2"/>
+
+    <!-- timer ring -->
+    <circle cx="944" cy="800" r="62" fill="none" stroke="#6f8165" stroke-width="1.4" stroke-dasharray="4 6"/>
+    <path d="M944 738 A62 62 0 0 1 1004 782" fill="none" stroke="#4f6247" stroke-width="3" stroke-linecap="round"/>
+    <text x="944" y="716" text-anchor="middle" class="text tSmall">timer</text>
+
+    <!-- fan -->
+    <circle cx="1082" cy="770" r="38" fill="#fbf3e9" stroke="#64675f" stroke-width="2"/>
+    <circle cx="1082" cy="770" r="8" fill="#8f5f40"/>
+    <ellipse cx="1082" cy="748" rx="9" ry="18" fill="#b4552f" opacity="0.85"/>
+    <ellipse cx="1098" cy="782" rx="9" ry="18" fill="#b4552f" opacity="0.85" transform="rotate(120 1098 782)"/>
+    <ellipse cx="1066" cy="782" rx="9" ry="18" fill="#b4552f" opacity="0.85" transform="rotate(240 1066 782)"/>
+    <path d="M1082 808 L1082 840" class="line"/>
+    <path d="M1058 840 L1106 840" class="line"/>
+    <text x="1082" y="868" text-anchor="middle" class="text tSmall">ventilador</text>
+
+    <!-- breeze -->
+    <path d="M1040 752 C1020 744 1000 756 984 748" class="lineMuted" marker-end="url(#arrowMuted)"/>
+    <path d="M1040 786 C1020 778 1000 790 984 782" class="lineMuted" marker-end="url(#arrowMuted)"/>
+
+    <text x="828" y="916" class="text tSmall">El sostenedor se retira cuando la vela está firme.</text>
+    <text x="828" y="934" class="text tSmall">En gel, tocar las burbujas también cuenta.</text>
+  </g>
+
+  <!-- 07 Acabado -->
+  <g id="panel-07-acabado">
+    <rect class="panel" x="1195" y="570" width="365" height="380" rx="18"/>
+    <rect class="panelHead" x="1195" y="570" width="365" height="64" rx="18"/>
+    <rect class="panelHead" x="1195" y="612" width="365" height="22" rx="0"/>
+    <text x="1213" y="599" class="text tTitle">07 · Acabado</text>
+    <text x="1213" y="619" class="text tPanel">Detalle + tapa aérea · moño/sticker y cierre</text>
+    <text x="1542" y="599" text-anchor="end" class="text" style="font-size:11px;font-weight:800;fill:#b4552f">AÉREA / DETALLE</text>
+    <line x1="1213" y1="634" x2="1542" y2="634" class="lineThin"/>
+
+    <!-- bench -->
+    <path d="M1213 832 L1538 832" class="line"/>
+    <path d="M1233 832 L1233 858 M1518 832 L1518 858" class="lineThin"/>
+
+    <!-- vessel -->
+    <rect x="1235" y="720" width="98" height="112" rx="8" fill="#f4ead9" stroke="#8f5f40" stroke-width="1.8"/>
+    <ellipse cx="1284" cy="720" rx="49" ry="8" fill="#fbf3e9" stroke="#8f5f40" stroke-width="1.4"/>
+    <rect x="1254" y="760" width="60" height="34" rx="4" fill="#fbf3e9" stroke="#b4552f" stroke-width="1.2"/>
+    <path d="M1264 774 L1304 774" class="lineThin"/>
+    <path d="M1264 782 L1292 782" class="lineThin"/>
+
+    <!-- bow -->
+    <path d="M1284 720 C1264 700 1248 706 1252 720 C1256 732 1274 730 1284 720" fill="#f3ddd2" stroke="#b4552f" stroke-width="1.4"/>
+    <path d="M1284 720 C1304 700 1320 706 1316 720 C1312 732 1294 730 1284 720" fill="#f3ddd2" stroke="#b4552f" stroke-width="1.4"/>
+    <circle cx="1284" cy="720" r="5" fill="#b4552f"/>
+    <text x="1284" y="852" text-anchor="middle" class="text tSmall">etiqueta + moño/sticker</text>
+
+    <!-- stickers -->
+    <rect x="1352" y="690" width="56" height="46" rx="5" fill="#fbf3e9" stroke="#b4552f" stroke-width="1.2" transform="rotate(-5 1380 713)"/>
+    <circle cx="1368" cy="704" r="7" fill="#f3ddd2" stroke="#b4552f" stroke-width="1.1"/>
+    <path d="M1382 704 L1400 704 M1391 695 L1391 713" class="lineThin"/>
+    <path d="M1358 720 L1402 720" class="lineMuted"/>
+    <text x="1380" y="758" text-anchor="middle" class="text tSmall">stickers</text>
+
+    <!-- lid inset -->
+    <circle cx="1470" cy="700" r="40" fill="#fbf3e9" stroke="#8f5f40" stroke-width="1.6"/>
+    <circle cx="1470" cy="700" r="31" fill="none" stroke="#d8c3ad" stroke-width="1.2"/>
+    <circle cx="1470" cy="668" r="34" fill="#f3ddd2" stroke="#b4552f" stroke-width="1.4"/>
+    <path d="M1470 684 L1470 700" class="lineAccent" marker-end="url(#arrow)"/>
+    <text x="1470" y="758" text-anchor="middle" class="text tSmall">tapa aérea</text>
+
+    <!-- box -->
+    <rect x="1378" y="778" width="104" height="58" rx="6" fill="#f7e8cf" stroke="#8f5f40" stroke-width="1.4"/>
+    <path d="M1378 796 L1482 796" class="lineThin"/>
+    <path d="M1412 778 L1412 836 M1448 778 L1448 836" class="lineThin"/>
+    <path d="M1424 778 L1424 796 M1436 778 L1436 796" class="lineAccent"/>
+    <text x="1430" y="852" text-anchor="middle" class="text tSmall">empaque</text>
+
+    <text x="1213" y="916" class="text tSmall">La tapa se resuelve desde arriba; etiqueta y moño</text>
+    <text x="1213" y="934" class="text tSmall">se colocan en detalle lateral. El resultado se ve completo.</text>
+  </g>
+
+  <!-- footer -->
+  <line x1="40" y1="972" x2="1560" y2="972" class="lineThin"/>
+  <text x="40" y="1002" class="text" style="font-size:12px;font-weight:700;fill:#3b2d25">Lectura: una cámara fija por estación; el gesto principal vive en el material, no en el panel.</text>
+  <text x="40" y="1024" class="text" style="font-size:11.5px;fill:#7a6450">Escenario Pixi 1000×640 · estantería y paneles DOM accesibles · 390 px · teclado y reduced en todas las estaciones.</text>
+  <text x="40" y="1046" class="text" style="font-size:11.5px;fill:#7a6450">No es arte final: sustituir por arte ilustrado manteniendo anclas, capas y data-testid. Wireframes originales, sin fuentes externas ni imágenes embebidas.</text>
+  <g class="text">
+    <rect x="1180" y="990" width="112" height="24" rx="12" fill="#f3ddd2" stroke="#b4552f"/>
+    <text x="1236" y="1006" text-anchor="middle" class="tChip">gesto manual</text>
+    <rect x="1304" y="990" width="112" height="24" rx="12" fill="#e4eadf" stroke="#4f6247"/>
+    <text x="1360" y="1006" text-anchor="middle" class="tChip">feedback</text>
+    <rect x="1428" y="990" width="112" height="24" rx="12" fill="#fbf3e9" stroke="#d8c3ad"/>
+    <text x="1484" y="1006" text-anchor="middle" class="tChip">DOM</text>
+  </g>
+</svg>

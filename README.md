@@ -154,6 +154,8 @@ Notas del proceso real y datos pendientes: [`docs/proceso-de-fabricacion.md`](do
 
 Inventario de datos validados y placeholder: [`docs/datos-validacion.md`](docs/datos-validacion.md).
 
+Diseño del juego: [`docs/game-design.md`](docs/game-design.md) · [referencias](docs/references.md) · [arquitectura](docs/architecture.md).
+
 Ruta de construcción: [`docs/roadmap.md`](docs/roadmap.md) · [tablero](https://github.com/users/MiguelCock/projects/6) · [issue #124](https://github.com/MiguelCock/ParafinaGel/issues/124).
 
 ## Estado

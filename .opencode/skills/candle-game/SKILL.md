@@ -1,13 +1,22 @@
 ---
 name: Candle game
-description: Diseñar, implementar o modificar el juego 2D WebGL de ParafinaGel con PixiJS 8: pedido progresivo, diseñador de capas/figuras/gel, simulación de líquido viscoso, retos manuales, receta de insumos, sandbox, responsive y accesibilidad.
+description: Diseñar, implementar o modificar el juego 2D WebGL de ParafinaGel con PixiJS 8: pedido progresivo, diseñador de capas/figuras/gel, fluido celular lateral, retos manuales, receta de insumos, sandbox, responsive y accesibilidad.
 ---
 
 # Juego 2D WebGL de velas
 
+## Antes de tocar código
+
+1. [`AGENTS.md`](../../../AGENTS.md): reglas, arquitectura, comandos y datos pendientes.
+2. [`docs/game-design.md`](../../../docs/game-design.md): GDD canónico, north star, pilares y flujo objetivo. El flujo acordado nace en la [épica #125](https://github.com/MiguelCock/ParafinaGel/issues/125).
+3. [`docs/references.md`](../../../docs/references.md): Noita, Sandspiel, Dressmaker y qué tomar de cada una.
+4. [`docs/architecture.md`](../../../docs/architecture.md) y [`docs/adr/`](../../../docs/adr/): límites entre simulación, layout, render, estado y UI.
+5. `docs/sketches/estaciones.svg`, `docs/sketches/storyboards.svg` y `docs/sketches/notas.md`: wireframes y storyboards por estación.
+6. Skills de apoyo: [`game-design`](../game-design/SKILL.md), [`pixi-fluid`](../pixi-fluid/SKILL.md), [`game-playtest`](../game-playtest/SKILL.md) y [`game-production`](../game-production/SKILL.md).
+
 ## Norte del producto
 
-El sitio vende **insumos y materias primas**, no velas terminadas. El juego permite descubrir qué vela se puede hacer y qué materiales se necesitan. El cierre es **receta + lista de insumos + WhatsApp**, sin precio ni propina de vela terminada.
+El sitio vende **insumos y materias primas**, no velas terminadas. El juego permite descubrir qué vela se puede hacer y qué materiales se necesitan. El cierre es **receta + lista de insumos + WhatsApp**, sin precio ni propina de vela terminada. El criterio completo vive en [`docs/game-design.md`](../../../docs/game-design.md).
 
 ## Dónde vive
 
@@ -18,28 +27,49 @@ El sitio vende **insumos y materias primas**, no velas terminadas. El juego perm
   - `stage-renderer.ts`: `Application` de PixiJS, escenario virtual 1000×640, input, cambio de escena y ticker de tweens.
   - `scene.ts`: interfaz `StageScene`.
   - `candle-rig.ts`: frasco/moldes, capas, gel, mecha, etiqueta, llama.
+  - `fluid-rig.ts`: puente de `fluid.ts` a textura Pixi (canvas + `ImageData` + `Sprite`).
   - `motion.ts`: re-export de `motion` y `tweens` compartidos.
   - `palette.ts`: colores para WebGL (no lee CSS vars).
-  - `scenes/design-scene.ts`, `melt-scene.ts`, `pour-scene.ts`, `wick-scene.ts`, `cool-scene.ts`, `finish-scene.ts`.
+  - `scenes/design-scene.ts`, `melt-scene.ts`, `mix-scene.ts`, `pour-scene.ts`, `wick-scene.ts`, `cool-scene.ts`, `finish-scene.ts`.
 - Pedido: `BriefTicket`, `BriefSummary`, `CounterScene`.
 - Diseño: `DesignPanel`, `DesignStructure`, `MaterialShelf`, `AccessibleMaterialPicker`.
-- Paneles: `MeltPanel`, `PourPanel`, `WickPanel`, `CoolPanel`, `FinishPanel`, `ScorePanel`, `ShoppingList`.
+- Paneles: `MeltPanel`, `MixPanel`, `PourPanel`, `WickPanel`, `CoolPanel`, `FinishPanel`, `ScorePanel`, `ShoppingList`.
 - Fallback: `CandlePreview` y `MoldPreview` (SVG) si no hay WebGL.
-- Motor: `src/lib/game/` (`types`, `data`, `design`, `craft`, `liquid`, `motion`, `scoring`, `supplies`, `portrait`, `game-state.svelte.ts`, tests).
+- Layout: `src/lib/game/layout.ts` (geometría compartida 1000×640; migración de escenas pendiente).
+- Motor: `src/lib/game/` (`types`, `data`, `design`, `craft`, `fluid`, `liquid`, `motion`, `scoring`, `supplies`, `portrait`, `game-state.svelte.ts`, tests).
 - Estilos: `src/styles/game.css`.
 
 ## Flujo
 
-`brief → design → wick (preparación) → melt → pour → cool → finish → score`
+### Implementado (2.2)
+
+`brief → design → wick (preparación) → melt → mix → pour → cool → finish → score`
 
 1. **Mostrador**: el cliente revela el pedido por líneas. “Crear nota” fija el brief.
 2. **Diseño**: tipo, cera, tamaño, recipiente/molde, capas/partes/montajes, aroma, pabilo y etiqueta. Los materiales se eligen como objetos físicos en la estantería; el selector accesible es la alternativa de teclado/lector.
 3. **Preparación**: colocar el porta pabilo, ajustar la mecha al centro y usar el sostenedor.
-4. **Cera**: mantener la palanca para calentar; arrastrar la cuchara en círculos.
-5. **Vertido**: arrastrar la jarra sobre la boca; el líquido cae, se ondula y llena. Soltar cierra la capa.
-6. **Curado**: retirar el sostenedor y tocar el ventilador; en gel, tocar las burbujas.
-7. **Acabado**: arrastrar etiqueta y tirador, cortar la mecha sobre la vela, tocar tapa y empaque.
-8. **Score**: puntos, estrellas, receta e insumos; WhatsApp.
+4. **Cera**: cortar el bloque si hace falta, girar la perilla del fogón y arrastrar la cuchara en círculos.
+5. **Mezcla**: calentar cada fogón, dosificar color y aroma, y revolver cada lote.
+6. **Vertido**: arrastrar la jarra sobre la boca; el líquido cae, se ondula y llena. Soltar cierra la capa.
+7. **Curado**: retirar el sostenedor y tocar el ventilador; en gel, tocar las burbujas.
+8. **Acabado**: arrastrar etiqueta y tirador, cortar la mecha sobre la vela, tocar tapa y empaque.
+9. **Score**: puntos, estrellas, receta e insumos; WhatsApp.
+
+### Objetivo del rediseño (#125)
+
+```text
+brief
+→ taller / estantería física
+→ preparación: mecha lateral + corte
+→ cera: olla lateral + fogón con perilla
+→ mezcla: varios fogones + color/aroma visibles
+→ vertido: jarra lateral inclinada por cercanía al centro
+→ curado: repisa larga
+→ acabado: moños/stickers + tapa desde vista aérea
+→ score / receta
+```
+
+El código todavía no implementa todo ese recorrido: el corte de mecha sigue en acabado, la etiqueta sigue en el diseño y la vista de la mecha no es lateral. Hay una decisión abierta: [#138](https://github.com/MiguelCock/ParafinaGel/issues/138) mueve el corte de mecha a preparación, mientras el GDD y los wireframes todavía lo muestran en acabado; confírmalo antes de implementar. No documentes lo objetivo como si ya existiera. Si el GDD y el código difieren, el GDD manda para diseño y el código para saber qué está implementado. Cambios asociados: [#136](https://github.com/MiguelCock/ParafinaGel/issues/136) (moños/stickers) y [#137](https://github.com/MiguelCock/ParafinaGel/issues/137) (tapa aérea).
 
 ## WebGL y PixiJS
 
@@ -65,15 +95,16 @@ El sitio vende **insumos y materias primas**, no velas terminadas. El juego perm
 ## Retos manuales
 
 - **Preparación**: arrastrar la mecha en la vista superior; `game.setWickPosition` y `placeWick`. El porta pabilo es la base metálica; el sostenedor de madera solo centra y se retira después del curado. Teclado: flechas + Enter.
-- **Cera**: `pointerDown` en la palanca inicia calor; `pointerUp` lo detiene. Arrastrar sobre la olla acumula ángulo y llama `game.stir()` cada 1.6π. Teclado: Espacio y flechas.
+- **Cera**: arrastrar la perilla hacia arriba/abajo regula `game.setHeatLevel`; el corte del bloque se hace con un trazo horizontal o `C`; tocar el frasco agrega esteárico o `E`; arrastrar la cuchara acumula ángulo y llama `game.stir()` cada 1.6π. Teclado: `+`/`-` para calor, Espacio para encender/apagar y flechas para revolver.
 - **Vertido**: arrastrar la jarra; `game.setPourOffset` alinea. Si `|offset| <= 0.32`, el tick llena la unidad; si no, acumula `spill`. Al soltar, `game.releasePour()` cierra la capa si hay suficiente cera. Teclado: flechas + Espacio.
 - **Curado**: clic en el ventilador (`game.fan()`); burbujas de gel (`game.popBubble()`). Teclado: Espacio y B.
 - **Acabado**: etiqueta arrastrable con tirador de giro; corte de mecha con regla; tapa y empaque clicables. Teclado: 1 etiqueta, 2 mecha, 3 tapa, 4 empaque, flechas, Mayús + flechas, Enter.
 - No reintroduzcas sliders/botones para estos retos. Los botones de navegación, selección de materiales, estantería y CTA sí se quedan.
 
-## Líquido y puntaje
+## Fluidos y puntaje
 
-- `liquid.ts` es puro y determinista: superficie de 28 puntos con onda amortiguada, partículas de salpicadura y burbujas.
+- `fluid.ts` es el autómata celular lateral puro y determinista para cera, gel, color y aroma. `render/fluid-rig.ts` lo convierte en textura Pixi; `MeltScene` usa un grid 48×26. Detalles y errores comunes en [`pixi-fluid`](../pixi-fluid/SKILL.md).
+- `liquid.ts` sigue siendo la simulación de superficie heredada (28 puntos, onda amortiguada, salpicaduras y burbujas) para vertido y curado. No agregues mecánicas nuevas allí; migra a `fluid.ts` cuando la escena lo pida.
 - El estado del juego acumula `mix` (temperatura alta) y `spill` (jarra fuera de la boca) en `Craft`.
 - `scoring.ts` reparte 40 puntos de taller: temperatura 8, vertido 10, mezcla 4, derrame 3, mecha 6, etiqueta 3, corte 2, gel 4.
 - `CandleRig` muestra una banda mezclada en la interfaz de capas cuando `mix > 0`.
@@ -97,22 +128,19 @@ El sitio vende **insumos y materias primas**, no velas terminadas. El juego perm
 
 ## Verificación
 
-- `npm test` cubre briefs, validación, capas, scoring, receta, líquido y motion.
+- `npm test` cubre briefs, validación, capas, scoring, receta, fluido, líquido y motion. Para el solver: `npm test -- -t "side-view fluid"`.
 - `npm run check`, `npm run build`.
 - `npm run qa:game` cubre los 4 tipos, puntero y teclado, sandbox, fallback, 390/1280, claro/oscuro, axe, overflow, consola, bundle y FPS.
+- `QA_QUICK=1 npm run qa:game` para humo (~3 min); `QA_SKIP_BUILD=1` para reutilizar `dist/`; el QA completo (~10 min) antes de integrar una slice.
 - Capturas y reportes en `qa/` (`report.md`, `report.json`, `screens/`); usa `BROWSER_PATH` si el navegador no está en una ruta conocida.
-- `QA_QUICK=1` para humo; `QA_SKIP_BUILD=1` para reutilizar `dist/`.
 - Probar `?motion=off` y `?motion=full`; verificar que la ayuda/pestaña oculta pausa las animaciones.
 - El FPS de Chromium headless con SwiftShader es una referencia, no una medición de GPU real.
-- La comparación visual contra línea base queda pendiente; las capturas tienen nombres estables para agregarla después.
+- La comparación visual contra línea base queda pendiente (#108); las capturas tienen nombres estables para agregarla después.
+- Antes de ampliar el flujo, corre un playtest de 10 minutos con [`game-playtest`](../game-playtest/SKILL.md).
 
-## Fase 3
+## Roadmap
 
-- Mezclador de colores y laboratorio de aromas.
-- Reto de presupuesto con precios reales.
-- Prueba de quemado según mecha.
-- Sets de regalo, retos de temporada y recetario persistente.
-- Enlace real del catálogo de insumos.
+La ruta operativa es [#124](https://github.com/MiguelCock/ParafinaGel/issues/124), no una lista fija en este skill. Orden actual: [#141](https://github.com/MiguelCock/ParafinaGel/issues/141) diseño/referencias → [#144](https://github.com/MiguelCock/ParafinaGel/issues/144) laboratorio de fluido → [#143](https://github.com/MiguelCock/ParafinaGel/issues/143) layout/arquitectura → [#145](https://github.com/MiguelCock/ParafinaGel/issues/145) slice clásica → capas, figura y gel → [#140](https://github.com/MiguelCock/ParafinaGel/issues/140) QA, tutorial y baseline. No abras los cuatro tipos antes de que la clásica pase QA completo.
 
 ## Checklist
 
@@ -126,5 +154,6 @@ El sitio vende **insumos y materias primas**, no velas terminadas. El juego perm
 - [ ] 360 px sin scroll horizontal.
 - [ ] axe 0 violaciones en claro/oscuro/móvil.
 - [ ] Fallback sin WebGL.
+- [ ] GDD, referencias y skills relacionadas revisadas antes de cambiar el flujo.
 
-Diseño de referencia: `references/game-design.md`.
+Diseño canónico: [`docs/game-design.md`](../../../docs/game-design.md). Referencias: [`docs/references.md`](../../../docs/references.md). El resumen [`references/game-design.md`](references/game-design.md) describe la versión 2.1 y queda como histórico; si contradice al GDD, gana el GDD.

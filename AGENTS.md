@@ -51,6 +51,7 @@ Sitio de **ParafinaGel**, negocio familiar de velas que vende **insumos y materi
   - `supplies.ts`: receta, cantidades y mensaje de WhatsApp.
   - `portrait.ts`: SVG por capas de los retratos.
   - `game-state.svelte.ts`: orquestación con runes.
+  - `layout.ts`: geometría compartida del escenario 1000×640 y zonas de destino.
   - `render/`: `stage-renderer.ts`, `scene.ts`, `candle-rig.ts`, `liquid-rig.ts`, `fluid-rig.ts`, `palette.ts`, `motion.ts` y `scenes/` (design, melt, mix, pour, wick, cool, finish).
   - `game.test.ts` y `motion.test.ts`: tests del motor, líquido y motion.
 - `src/styles/game.css`: estilos compartidos de la UI del juego.
@@ -61,7 +62,11 @@ Sitio de **ParafinaGel**, negocio familiar de velas que vende **insumos y materi
 - `qa/`: reportes, JSON y capturas del QA; ignorada por git.
 - `docs/proceso-de-fabricacion.md`: notas del proceso real, correspondencia con estaciones y datos pendientes.
 - `docs/datos-validacion.md`: inventario de datos oficiales, notas y placeholders, con códigos para aprobar en #87.
-- `docs/roadmap.md`: ruta directa de construcción; la fuente operativa son los hitos `Fase 0`–`Fase 6`, el issue #124 y el [tablero](https://github.com/users/MiguelCock/projects/6).
+- `docs/game-design.md`: norte de experiencia, pilares, loop, estaciones y criterios de “se siente bien”.
+- `docs/references.md`: referencias de ritmo y manipulación; qué tomar y qué evitar.
+- `docs/architecture.md` y `docs/adr/`: capas, límite DOM/Pixi y decisiones del rediseño.
+- `docs/sketches/`: wireframes y storyboards por estación.
+- `docs/roadmap.md`: ruta directa del rediseño; la fuente operativa son #124, #125 y el [tablero](https://github.com/users/MiguelCock/projects/6).
 
 ## Juego WebGL
 
@@ -152,6 +157,10 @@ Sitio de **ParafinaGel**, negocio familiar de velas que vende **insumos y materi
 
 En `.opencode/skills/` (cárgalos con la herramienta `skill`):
 
+- `game-design`: norte, pilares, loop, referencias y wireframes antes de prototipar.
+- `game-production`: vertical slices, WIP, agentes y Definition of Done.
+- `game-playtest`: sesiones de 10 minutos, fricción y conversión a issues.
+- `pixi-fluid`: autómata celular, textura, máscaras y rendimiento.
+- `candle-game`: arquitectura del juego, escenas, retos manuales y fluidos.
 - `frontend-visual`: diseño, pulido visual y checklist antes de entregar una página.
 - `product-catalog`: schema, precios, placeholders y copy del catálogo.
-- `candle-game`: diseño, arquitectura WebGL/PixiJS, retos manuales y líquidos.

@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1520" viewBox="0 0 1600 1520" role="img" aria-labelledby="title desc">
+  <title id="title">ParafinaGel · storyboards de gestos</title>
+  <desc id="desc">Storyboards originales de perilla, gota, chorrito, inclinación, corte de mecha y tapa. Cada gesto muestra inicio, acción, umbral, resultado y recuperación. Sin fuentes externas ni imágenes embebidas.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#b4552f"/>
+    </marker>
+    <marker id="arrowMuted" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#7a6450"/>
+    </marker>
+    <marker id="arrowSage" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#4f6247"/>
+    </marker>
+  </defs>
+
+  <style>
+    .bg { fill: #f4ecdf; }
+    .panel { fill: #fffaf2; stroke: #d8c3ad; stroke-width: 1.5; }
+    .panelHead { fill: #f8ecdd; }
+    .frame { fill: #fbf3e9; stroke: #d8c3ad; stroke-width: 1.2; }
+    .ink { fill: #3b2d25; }
+    .muted { fill: #7a6450; }
+    .accent { fill: #b4552f; }
+    .sage { fill: #4f6247; }
+    .wood { fill: #d2a77e; }
+    .woodDark { fill: #8f5f40; }
+    .paper { fill: #fbf3e9; }
+    .soft { fill: #f3ddd2; }
+    .line { stroke: #8f5f40; stroke-width: 1.6; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+    .lineThin { stroke: #b98963; stroke-width: 1; fill: none; stroke-linecap: round; }
+    .lineMuted { stroke: #a78a70; stroke-width: 1.1; fill: none; stroke-linecap: round; stroke-dasharray: 4 5; }
+    .lineSage { stroke: #6f8165; stroke-width: 1.4; fill: none; stroke-linecap: round; }
+    .lineAccent { stroke: #b4552f; stroke-width: 1.7; fill: none; stroke-linecap: round; }
+    .text { font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif; }
+    .tTitle { font-size: 18px; font-weight: 800; fill: #3b2d25; }
+    .tPanel { font-size: 11px; font-weight: 500; fill: #7a6450; }
+    .tLabel { font-size: 10.5px; font-weight: 700; fill: #3b2d25; }
+    .tSmall { font-size: 9.5px; font-weight: 600; fill: #7a6450; }
+    .tMeta { font-size: 10.5px; font-weight: 500; fill: #7a6450; }
+    .tMetaStrong { font-size: 10.5px; font-weight: 800; fill: #3b2d25; }
+    .tNum { font-size: 10px; font-weight: 800; fill: #fffaf2; }
+  </style>
+
+  <rect class="bg" width="1600" height="1520"/>
+  <text x="40" y="56" class="text" style="font-size:32px;font-weight:800;fill:#3b2d25">ParafinaGel · storyboards de gestos</text>
+  <text x="40" y="86" class="text" style="font-size:14px;fill:#7a6450">Inicio, acción, umbral, resultado y recuperación · perilla, gota, chorrito, inclinación, corte de mecha y tapa</text>
+  <text x="40" y="110" class="text" style="font-size:11.5px;fill:#7a6450">Los valores numéricos son de ejemplo. La fuente de verdad es docs/datos-validacion.md.</text>
+
+  <!-- 01 Perilla -->
+  <g id="story-perilla">
+    <rect class="panel" x="40" y="140" width="750" height="400" rx="18"/>
+    <rect class="panelHead" x="40" y="140" width="750" height="58" rx="18"/>
+    <rect class="panelHead" x="40" y="184" width="750" height="14" rx="0"/>
+    <text x="58" y="170" class="text tTitle">01 · Perilla de calor</text>
+    <text x="58" y="188" class="text tPanel">Entrada: arrastrar vertical sobre la perilla o + / − · sin mantener pulsado</text>
+    <text x="772" y="170" text-anchor="end" class="text" style="font-size:11px;font-weight:800;fill:#b4552f">CERA</text>
+
+    <g transform="translate(60,225)">
+      <rect class="frame" width="220" height="185" rx="10"/>
+      <rect x="32" y="120" width="122" height="28" rx="7" fill="#fbf3e9" stroke="#8f5f40" stroke-width="1.4"/>
+      <ellipse cx="92" cy="118" rx="44" ry="13" fill="#d2a77e" stroke="#8f5f40" stroke-width="1.5"/>
+      <ellipse cx="92" cy="116" rx="36" ry="8" fill="#f3ddd2" stroke="#8f5f40" stroke-width="1"/>
+      <path d="M64 120 C72 110 80 120 88 108 C96 120 104 110 112 120" fill="none" stroke="#b4552f" stroke-width="2"/>
+      <circle cx="178" cy="132" r="20" fill="#f3ddd2" stroke="#8f5f40" stroke-width="1.5"/>
+      <circle cx="178" cy="132" r="10" fill="#d2a77e" stroke="#8f5f40" stroke-width="1"/>
+      <path d="M178 132 L168 140" stroke="#3b2d25" stroke-width="2" stroke-linecap="round"/>
+      <text x="110" y="170" text-anchor="middle" class="text tSmall">0 % · llama baja</text>
+    </g>
+
+    <g transform="translate(310,225)">
+      <rect class="frame" width="220" height="185" rx="10"/>
+      <rect x="32" y="120" width="122" height="28" rx="7" fill="#fbf3e9" stroke="#8f5f40" stroke-width="1.4"/>
+      <ellipse cx="92" cy="118" rx="44" ry="13" fill="#d2a77e" stroke="#8f5f40" stroke-width="1.5"/>
+      <ellipse cx="92" cy="116" rx="36" ry="8" fill="#f7e8cf" stroke="#8f5f40" stroke-width="1"/>
+      <path d="M60 120 C70 102 80 120 92 96 C104 120 112 102 122 120" fill="none" stroke="#b4552f" stroke-width="2.4"/>
+      <circle cx="178" cy="132" r="20" fill="#f3ddd2" stroke="#8f5f40" stroke-width="1.5"/>
+      <circle cx="178" cy="132" r="10" fill="#d2a77e" stroke="#8f5f40" stroke-width="1"/>
+      <path d="M178 132 L188 120" stroke="#3b2d25" stroke-width="2" stroke-linecap="round"/>
+      <path d="M178 88 L178 62" class="lineAccent" marker-end="url(#arrow)"/>
+      <path d="M152 82 C162 74 168 76 174 82" class="lineThin"/>
+      <text x="110" y="170" text-anchor="middle" class="text tSmall">arrastre · sube el calor</text>
+    </g>
+
+    <g transform="translate(560,225)">
+      <rect class="frame" width="220" height="185" rx="10"/>
+      <rect x="32" y="120" width="122" height="28" rx="7" fill="#fbf3e9" stroke="#8f5f40" stroke-width="1.4"/>
+      <ellipse cx="92" cy="118" rx="44" ry="13" fill="#d2a77e" stroke="#8f5f40" stroke-width="1.5"/>
+      <ellipse cx="92" cy="116" rx="36" ry="8" fill="#f7e8cf" stroke="#8f5f40" stroke-width="1"/>
+      <path d="M54 120 C68 94 80 120 92 82 C104 120 116 94 130 120" fill="none" stroke="#b4552f" stroke-width="2.8"/>
+      <circle cx="178" cy="132" r="20" fill="#f3ddd2" stroke="#8f5f40" stroke-width="1.5"/>
+      <circle cx="178" cy="132" r="10" fill="#d2a77e" stroke="#8f5f40" stroke-width="1"/>
+      <path d="M178 132 L188 144" stroke="#3b2d25" stroke-width="2" stroke-linecap="round"/>
+      <rect x="150" y="74" width="56" height="22" rx="11" fill="#e4eadf" stroke="#4f6247" stroke-width="1.2"/>
+      <text x="178" y="89" text-anchor="middle" class="text" style="font-size:10px;font-weight:800;fill:#4f6247">rango</text>
+      <text x="110" y="170" text-anchor="middle" class="text tSmall">suelta · la perilla queda</text>
+    </g>
+
+    <text x="58" y="440" class="text tMeta"><tspan class="tMetaStrong">Secuencia:</tspan> 0 % → arrastre → rango. La perilla no vuelve sola.</text>
+    <text x="58" y="458" class="text tMeta"><tspan class="tMetaStrong">Feedback:</tspan> llama, vapor, aguja y badge de rango.</text>
+    <text x="58" y="476" class="text tMeta"><tspan class="tMetaStrong">Error:</tspan> sobrecalentamiento: retirar la olla y reintentar (hoy no se recupera).</text>
+    <text x="58" y="494" class="text tMeta"><tspan class="tMetaStrong">Reduced:</tspan> flechas + / −; llama estática; misma aguja y mismo estado.</text>
+  </g>
+
+  <!-- 02 Gota -->
+  <g id="story-gota">
+    <rect class="panel" x="810" y="140" width="750" height="400" rx="18"/>
+    <rect class="panelHead" x="810" y="140" width="750" height="58" rx="18"/>
+    <rect class="panelHead" x="810" y="184" width="750" height="14" rx="0"/>
+    <text x="828" y="170" class="text tTitle">02 · Gota de color</text>
+    <text x="828" y="188" class="text tPanel">Entrada: tocar el frasco o pulsar C · una gota por gesto</text>
+    <text x="1542" y="170" text-anchor="end" class="text" style="font-size:11px;font-weight:800;fill:#b4552f">MEZCLA</text>
+
+    <g transform="translate(830,225)">
+      <rect class="frame" width="220" height="185" rx="10"/>
+      <ellipse cx="110" cy="132" rx="62" ry="28" fill="#f3ddd2" stroke="#8f5f40" stroke-width="1.6"/>
+      <ellipse cx="110" cy="129" rx="54" ry="21" fill="#f7e8cf" stroke="#8f5f40" stroke-width="1"/>
+      <rect x="96" y="42" width="28" height="48" rx="6" fill="#f3ddd2" stroke="#8f5f40" stroke-width="1.2"/>
+      <rect x="104" y="34" width="12" height="12" rx="3" fill="#8f5f40"/>
+      <circle cx="110" cy="102" r="5" fill="#b4552f"/>
+      <path d="M110 96 L110 84" class="lineAccent" marker-end="url(#arrow)"/>
+      <text x="110" y="172" text-anchor="middle" class="text tSmall">1 gota · cae</text>
+    </g>
+
+    <g transform="translate(1080,225)">
+      <rect class="frame" width="220" height="185" rx="10"/>
+      <ellipse cx="110" cy="132" rx="62" ry="28" fill="#f3ddd2" stroke="#8f5f40" stroke-width="1.6"/>
+      <ellipse cx="110" cy="129" rx="54" ry="21" fill="#f3ddd2" stroke="#8f5f40" stroke-width="1"/>
+      <circle cx="110" cy="129" r="18" fill="none" stroke="#b4552f" stroke-width="1.4" stroke-dasharray="3 4"/>
+      <circle cx="110" cy="129" r="30" fill="none" stroke="#b4552f" stroke-width="1" opacity="0.6"/>
+      <circle cx="110" cy="128" r="5" fill="#b4552f"/>
+      <text x="110" y="172" text-anchor="middle" class="text tSmall">onda · el color abre</text>
+    </g>
+
+    <g transform="translate(1330,225)">
+      <rect class="frame" width="220" height="185" rx="10"/>
+      <ellipse cx="110" cy="132" rx="62" ry="28" fill="#b4552f" stroke="#8f5f40" stroke-width="1.6" opacity="0.72"/>
+      <ellipse cx="110" cy="129" rx="54" ry="21" fill="#c98a4b" stroke="#8f5f40" stroke-width="1" opacity="0.8"/>
+      <g fill="#b4552f" stroke="#8f5f40" stroke-width="0.8">
+        <circle cx="76" cy="152" r="3"/>
+        <circle cx="88" cy="152" r="3"/>
+        <circle cx="100" cy="152" r="3"/>
+        <circle cx="112" cy="152" r="3"/>
+      </g>
+      <text x="110" y="172" text-anchor="middle" class="text tSmall">dosis · pips</text>
+    </g>
+
+    <text x="828" y="440" class="text tMeta"><tspan class="tMetaStrong">Secuencia:</tspan> frasco → 1 gota → onda. Repetir hasta la dosis.</text>
+    <text x="828" y="458" class="text tMeta"><tspan class="tMetaStrong">Feedback:</tspan> gota, onda, color y pips del panel.</text>
+    <text x="828" y="476" class="text tMeta"><tspan class="tMetaStrong">Error:</tspan> exceso: el color se satura; se corrige y no bloquea.</text>
+    <text x="828" y="494" class="text tMeta"><tspan class="tMetaStrong">Reduced:</tspan> una gota por pulsación; sin onda ni salpicadura.</text>
+  </g>
+
+  <!-- 03 Chorrito -->
+  <g id="story-chorrito">
+    <rect class="panel" x="40" y="580" width="750" height="400" rx="18"/>
+    <rect class="panelHead" x="40" y="580" width="750" height="58" rx="18"/>
+    <rect class="panelHead" x="40" y="624" width="750" height="14" rx="0"/>
+    <text x="58" y="610" class="text tTitle">03 · Chorrito de aroma</text>
+    <text x="58" y="628" class="text tPanel">Entrada: inclinar el gotero o mantener A · se corta al soltar</text>
+    <text x="772" y="610" text-anchor="end" class="text" style="font-size:11px;font-weight:800;fill:#b4552f">MEZCLA</text>
+
+    <g transform="translate(60,665)">
+      <rect class="frame" width="220" height="185" rx="10"/>
+      <ellipse cx="110" cy="140" rx="62" ry="24" fill="#f3ddd2" stroke="#8f5f40" stroke-width="1.6"/>
+      <ellipse cx="110" cy="137" rx="54" ry="17" fill="#f7e8cf" stroke="#8f5f40" stroke-width="1"/>
+      <rect x="96" y="52" width="28" height="54" rx="6" fill="#e4eadf" stroke="#8f5f40" stroke-width="1.2"/>
+      <rect x="104" y="44" width="12" height="12" rx="3" fill="#8f5f40"/>
+      <path d="M110 76 L110 104" class="lineThin"/>
+      <text x="110" y="172" text-anchor="middle" class="text tSmall">listo · vertical</text>
+    </g>
+
+    <g transform="translate(310,665)">
+      <rect class="frame" width="220" height="185" rx="10"/>
+      <ellipse cx="110" cy="140" rx="62" ry="24" fill="#f3ddd2" stroke="#8f5f40" stroke-width="1.6"/>
+      <ellipse cx="110" cy="137" rx="54" ry="17" fill="#e4eadf" stroke="#8f5f40" stroke-width="1"/>
+      <g transform="rotate(34 110 106)">
+        <rect x="96" y="52" width="28" height="54" rx="6" fill="#e4eadf" stroke="#8f5f40" stroke-width="1.2"/>
+        <rect x="104" y="44" width="12" height="12" rx="3" fill="#8f5f40"/>
+        <path d="M110 76 L110 104" class="lineThin"/>
+      </g>
+      <path d="M148 78 C158 92 142 112 134 132" stroke="#6f8165" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+      <path d="M148 78 C158 92 142 112 134 132" stroke="#e4eadf" stroke-width="1" fill="none" stroke-linecap="round"/>
+      <text x="110" y="172" text-anchor="middle" class="text tSmall">inclina · hilo</text>
+    </g>
+
+    <g transform="translate(560,665)">
+      <rect class="frame" width="220" height="185" rx="10"/>
+      <ellipse cx="110" cy="140" rx="62" ry="24" fill="#e4eadf" stroke="#8f5f40" stroke-width="1.6"/>
+      <ellipse cx="110" cy="137" rx="54" ry="17" fill="#6f8165" stroke="#8f5f40" stroke-width="1" opacity="0.45"/>
+      <path d="M110 124 L110 132" stroke="#6f8165" stroke-width="2" stroke-linecap="round"/>
+      <path d="M132 124 L132 132" stroke="#6f8165" stroke-width="2" stroke-linecap="round"/>
+      <path d="M154 124 L154 132" stroke="#6f8165" stroke-width="2" stroke-linecap="round"/>
+      <rect x="150" y="62" width="52" height="22" rx="11" fill="#e4eadf" stroke="#4f6247" stroke-width="1.2"/>
+      <text x="176" y="77" text-anchor="middle" class="text" style="font-size:10px;font-weight:800;fill:#4f6247">nivel</text>
+      <text x="110" y="172" text-anchor="middle" class="text tSmall">suelta · corta</text>
+    </g>
+
+    <text x="58" y="880" class="text tMeta"><tspan class="tMetaStrong">Secuencia:</tspan> inclinar → hilo → soltar. El nivel sube mientras cae.</text>
+    <text x="58" y="898" class="text tMeta"><tspan class="tMetaStrong">Feedback:</tspan> hilo, menisco, nivel de aroma y badge de rango.</text>
+    <text x="58" y="916" class="text tMeta"><tspan class="tMetaStrong">Error:</tspan> fuera de rango: el chorro se corta; la dosis queda corta.</text>
+    <text x="58" y="934" class="text tMeta"><tspan class="tMetaStrong">Reduced:</tspan> dosificación por pasos; sin hilo animado; mismo nivel.</text>
+  </g>
+
+  <!-- 04 Inclinación -->
+  <g id="story-inclinacion">
+    <rect class="panel" x="810" y="580" width="750" height="400" rx="18"/>
+    <rect class="panelHead" x="810" y="580" width="750" height="58" rx="18"/>
+    <rect class="panelHead" x="810" y="624" width="750" height="14" rx="0"/>
+    <text x="828" y="610" class="text tTitle">04 · Inclinación de la jarra</text>
+    <text x="828" y="628" class="text tPanel">Entrada: arrastrar la jarra sobre la boca · soltar para cerrar la capa</text>
+    <text x="1542" y="610" text-anchor="end" class="text" style="font-size:11px;font-weight:800;fill:#b4552f">VERTIDO</text>
+
+    <g transform="translate(830,665)">
+      <rect class="frame" width="220" height="185" rx="10"/>
+      <rect x="92" y="112" width="60" height="58" rx="7" fill="#f4ead9" stroke="#8f5f40" stroke-width="1.5"/>
+      <ellipse cx="122" cy="112" rx="30" ry="6" fill="#fbf3e9" stroke="#8f5f40" stroke-width="1.2"/>
+      <path d="M98 132 L146 132" class="lineMuted"/>
+      <g transform="rotate(-8 160 64)">
+        <rect x="132" y="46" width="48" height="52" rx="10" fill="#fbf3e9" stroke="#8f5f40" stroke-width="1.5"/>
+        <rect x="144" y="38" width="24" height="10" rx="4" fill="#f3ddd2" stroke="#8f5f40" stroke-width="1"/>
+      </g>
+      <path d="M180 98 L180 108" class="lineAccent" marker-end="url(#arrow)"/>
+      <text x="110" y="172" text-anchor="middle" class="text tSmall">alinear</text>
+    </g>
+
+    <g transform="translate(1080,665)">
+      <rect class="frame" width="220" height="185" rx="10"/>
+      <rect x="100" y="112" width="60" height="58" rx="7" fill="#f4ead9" stroke="#8f5f40" stroke-width="1.5"/>
+      <ellipse cx="130" cy="112" rx="30" ry="6" fill="#fbf3e9" stroke="#8f5f40" stroke-width="1.2"/>
+      <g transform="rotate(-24 120 80)">
+        <rect x="92" y="46" width="48" height="52" rx="10" fill="#fbf3e9" stroke="#8f5f40" stroke-width="1.5"/>
+        <rect x="104" y="38" width="24" height="10" rx="4" fill="#f3ddd2" stroke="#8f5f40" stroke-width="1"/>
+      </g>
+      <path d="M126 82 C132 100 128 116 128 128" stroke="#b4552f" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <path d="M130 84 C136 100 132 116 132 128" stroke="#f7e8cf" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+      <text x="110" y="172" text-anchor="middle" class="text tSmall">inclina · chorro</text>
+    </g>
+
+    <g transform="translate(1330,665)">
+      <rect class="frame" width="220" height="185" rx="10"/>
+      <rect x="100" y="112" width="60" height="58" rx="7" fill="#f4ead9" stroke="#8f5f40" stroke-width="1.5"/>
+      <ellipse cx="130" cy="112" rx="30" ry="6" fill="#fbf3e9" stroke="#8f5f40" stroke-width="1.2"/>
+      <rect x="104" y="124" width="52" height="40" rx="4" fill="#f3ddd2" stroke="#8f5f40" stroke-width="1" opacity="0.85"/>
+      <path d="M104 132 L156 132" class="lineMuted"/>
+      <rect x="150" y="118" width="52" height="22" rx="11" fill="#e4eadf" stroke="#4f6247" stroke-width="1.2"/>
+      <text x="176" y="133" text-anchor="middle" class="text" style="font-size:10px;font-weight:800;fill:#4f6247">meta</text>
+      <text x="110" y="172" text-anchor="middle" class="text tSmall">suelta · capa</text>
+    </g>
+
+    <text x="828" y="880" class="text tMeta"><tspan class="tMetaStrong">Secuencia:</tspan> alinear → inclinar → soltar. La cercanía al centro decide si cae o no.</text>
+    <text x="828" y="898" class="text tMeta"><tspan class="tMetaStrong">Feedback:</tspan> chorro, llenado, banda meta, salpicadura y película.</text>
+    <text x="828" y="916" class="text tMeta"><tspan class="tMetaStrong">Error:</tspan> fuera de la boca: cae al derrame; resta puntos y no bloquea.</text>
+    <text x="828" y="934" class="text tMeta"><tspan class="tMetaStrong">Reduced:</tspan> flechas para mover; Espacio para verter o soltar; sin salpicaduras.</text>
+  </g>
+
+  <!-- 06 Tapa -->
+  <g id="story-tapa" transform="translate(770,0)">
+    <rect class="panel" x="40" y="1020" width="750" height="400" rx="18"/>
+    <rect class="panelHead" x="40" y="1020" width="750" height="58" rx="18"/>
+    <rect class="panelHead" x="40" y="1064" width="750" height="14" rx="0"/>
+    <text x="58" y="1050" class="text tTitle">06 · Tapa aérea</text>
+    <text x="58" y="1068" class="text tPanel">Entrada: arrastrar la tapa desde arriba · tocar la tapa o pulsar 3</text>
+    <text x="772" y="1050" text-anchor="end" class="text" style="font-size:11px;font-weight:800;fill:#b4552f">ACABADO</text>
+
+    <g transform="translate(60,1105)">
+      <rect class="frame" width="220" height="185" rx="10"/>
+      <circle cx="110" cy="112" r="50" fill="#f4ead9" stroke="#8f5f40" stroke-width="1.6"/>
+      <circle cx="110" cy="112" r="40" fill="none" stroke="#d8c3ad" stroke-width="1.2"/>
+      <circle cx="72" cy="80" r="44" fill="#f3ddd2" stroke="#b4552f" stroke-width="1.5" opacity="0.92"/>
+      <circle cx="72" cy="80" r="34" fill="none" stroke="#b4552f" stroke-width="1" stroke-dasharray="3 4"/>
+      <path d="M72 124 L100 100" class="lineAccent" marker-end="url(#arrow)"/>
+      <text x="110" y="172" text-anchor="middle" class="text tSmall">centrar</text>
+    </g>
+
+    <g transform="translate(310,1105)">
+      <rect class="frame" width="220" height="185" rx="10"/>
+      <circle cx="110" cy="112" r="50" fill="#f4ead9" stroke="#8f5f40" stroke-width="1.6"/>
+      <circle cx="110" cy="112" r="40" fill="none" stroke="#d8c3ad" stroke-width="1.2"/>
+      <ellipse cx="110" cy="94" rx="44" ry="10" fill="#2a241e" opacity="0.12"/>
+      <circle cx="110" cy="90" r="44" fill="#f3ddd2" stroke="#b4552f" stroke-width="1.5"/>
+      <circle cx="110" cy="90" r="34" fill="none" stroke="#b4552f" stroke-width="1" stroke-dasharray="3 4"/>
+      <path d="M110 54 L110 30" class="lineAccent" marker-end="url(#arrow)"/>
+      <text x="110" y="172" text-anchor="middle" class="text tSmall">bajar · encaje</text>
+    </g>
+
+    <g transform="translate(560,1105)">
+      <rect class="frame" width="220" height="185" rx="10"/>
+      <circle cx="110" cy="112" r="50" fill="#f4ead9" stroke="#8f5f40" stroke-width="1.6"/>
+      <circle cx="110" cy="112" r="44" fill="#e4eadf" stroke="#4f6247" stroke-width="1.8"/>
+      <circle cx="110" cy="112" r="34" fill="none" stroke="#4f6247" stroke-width="1.2"/>
+      <path d="M84 112 L102 130 L138 94" fill="none" stroke="#4f6247" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="110" y="172" text-anchor="middle" class="text tSmall">sellada · lista</text>
+    </g>
+
+    <text x="58" y="1320" class="text tMeta"><tspan class="tMetaStrong">Secuencia:</tspan> centrar → bajar → sellar. Vista aérea solo para la tapa.</text>
+    <text x="58" y="1338" class="text tMeta"><tspan class="tMetaStrong">Feedback:</tspan> sombra, anillo, encaje y badge de cierre.</text>
+    <text x="58" y="1356" class="text tMeta"><tspan class="tMetaStrong">Error:</tspan> tapa torcida o fuera de centro: se puede volver a tomar.</text>
+    <text x="58" y="1374" class="text tMeta"><tspan class="tMetaStrong">Reduced:</tspan> colocación instantánea; anillo estático; teclas 1–4.</text>
+  </g>
+
+  <!-- 05 Corte -->
+  <g id="story-corte" transform="translate(-770,0)">
+    <rect class="panel" x="810" y="1020" width="750" height="400" rx="18"/>
+    <rect class="panelHead" x="810" y="1020" width="750" height="58" rx="18"/>
+    <rect class="panelHead" x="810" y="1064" width="750" height="14" rx="0"/>
+    <text x="828" y="1050" class="text tTitle">05 · Corte de mecha</text>
+    <text x="828" y="1068" class="text tPanel">Entrada: mecha en el frasco (puede estar inclinada), sostenedor y tijera · flechas + Enter</text>
+    <text x="1542" y="1050" text-anchor="end" class="text" style="font-size:11px;font-weight:800;fill:#b4552f">PREPARACIÓN</text>
+
+    <g transform="translate(830,1105)">
+      <rect class="frame" width="220" height="185" rx="10"/>
+      <path d="M110 140 L104 52" class="line"/>
+      <path d="M98 52 L110 52" class="lineAccent"/>
+      <circle cx="110" cy="140" r="18" fill="#f4ead9" stroke="#8f5f40" stroke-width="1.2"/>
+      <path d="M170 70 L150 90 M170 110 L150 90" class="line"/>
+      <circle cx="174" cy="66" r="7" fill="none" stroke="#64675f" stroke-width="2"/>
+      <circle cx="174" cy="114" r="7" fill="none" stroke="#64675f" stroke-width="2"/>
+      <text x="110" y="172" text-anchor="middle" class="text tSmall">mecha larga / de lado</text>
+    </g>
+
+    <g transform="translate(1080,1105)">
+      <rect class="frame" width="220" height="185" rx="10"/>
+      <path d="M110 140 L110 88" class="line"/>
+      <path d="M104 88 L116 88" class="lineAccent"/>
+      <circle cx="110" cy="140" r="18" fill="#f4ead9" stroke="#8f5f40" stroke-width="1.2"/>
+      <path d="M150 82 L124 88 M150 106 L124 88" class="line"/>
+      <circle cx="154" cy="78" r="7" fill="none" stroke="#64675f" stroke-width="2"/>
+      <circle cx="154" cy="110" r="7" fill="none" stroke="#64675f" stroke-width="2"/>
+      <path d="M84 88 L136 88" class="lineAccent" stroke-dasharray="3 4"/>
+      <text x="110" y="172" text-anchor="middle" class="text tSmall">corte en objetivo</text>
+    </g>
+
+    <g transform="translate(1330,1105)">
+      <rect class="frame" width="220" height="185" rx="10"/>
+      <path d="M110 140 L110 96" class="line"/>
+      <path d="M103 96 L117 96" class="lineAccent"/>
+      <path d="M108 96 L112 92" class="lineThin"/>
+      <circle cx="110" cy="140" r="18" fill="#f4ead9" stroke="#8f5f40" stroke-width="1.2"/>
+      <rect x="150" y="78" width="52" height="22" rx="11" fill="#e4eadf" stroke="#4f6247" stroke-width="1.2"/>
+      <text x="176" y="93" text-anchor="middle" class="text" style="font-size:10px;font-weight:800;fill:#4f6247">parejo</text>
+      <text x="110" y="172" text-anchor="middle" class="text tSmall">confirmado</text>
+    </g>
+
+    <text x="828" y="1320" class="text tMeta"><tspan class="tMetaStrong">Secuencia:</tspan> medir → cortar → confirmar. La mecha puede quedar inclinada o de lado.</text>
+    <text x="828" y="1338" class="text tMeta"><tspan class="tMetaStrong">Feedback:</tspan> guía, longitud en mm, sostenedor, tijera y badge de corte.</text>
+    <text x="828" y="1356" class="text tMeta"><tspan class="tMetaStrong">Error:</tspan> corte largo o corto: se puede repetir; el objetivo es de ejemplo.</text>
+    <text x="828" y="1374" class="text tMeta"><tspan class="tMetaStrong">Reduced:</tspan> flechas para ajustar; Enter para cortar; guía estática.</text>
+  </g>
+
+  <line x1="40" y1="1450" x2="1560" y2="1450" class="lineThin"/>
+  <text x="40" y="1476" class="text" style="font-size:11.5px;font-weight:700;fill:#3b2d25">Cada gesto tiene inicio, umbral, resultado y recuperación. El fallo se corrige dentro de la estación.</text>
+  <text x="40" y="1496" class="text" style="font-size:11px;fill:#7a6450">Storyboards originales · sin fuentes externas ni imágenes embebidas · valores numéricos de ejemplo, pendientes de validación.</text>
+</svg>
