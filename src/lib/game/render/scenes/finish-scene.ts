@@ -11,7 +11,7 @@ const LABEL_BASE_Y = 66;
 const LABEL_W = 100;
 const LABEL_H = 48;
 
-type Tool = "label" | "trim" | "lid" | "wrap";
+type Tool = "label" | "lid" | "wrap";
 
 export class FinishScene implements StageScene {
   view = new Container();
@@ -62,9 +62,6 @@ export class FinishScene implements StageScene {
   private activeTool: Tool = "label";
   private movingLabel = false;
   private rotatingLabel = false;
-  private trimming = false;
-  private trimKeyboard = false;
-  private trimPreview = 9;
   private time = 0;
 
   constructor() {
@@ -103,30 +100,22 @@ export class FinishScene implements StageScene {
   update(game: GameState, delta: number): void {
     if (!motion.paused) this.time += delta;
     const finished = game.phase === "score";
-    if (!this.trimming && !this.trimKeyboard) {
-      this.trimPreview = game.craft.wick.trimMm;
-    }
 
     this.candle.update(game, {
       showWick: true,
       showLabel: Boolean(game.design.labelId),
       showFlame: finished,
-      trimMm: this.trimming
-        ? this.trimPreview
-        : game.craft.wick.trimmed
-          ? game.craft.wick.trimMm
-          : undefined,
       time: this.time,
     });
 
     this.help.text = finished
       ? "La vela quedó terminada. Revisa la receta y pide tus insumos."
-      : "Arrastra la etiqueta y usa el tirador para girarla · arrastra el corte de la mecha · toca la tapa y el empaque";
+      : "Arrastra la etiqueta y usa el tirador para girarla · toca la tapa y el empaque";
     this.status.text = finished
       ? "Vela terminada"
       : game.canFinish
         ? "Lista para entregar"
-        : "Completa etiqueta, mecha, tapa y empaque";
+        : "Completa etiqueta, tapa y empaque";
 
     this.drawGuide(game, finished);
     this.drawTools(game, finished);
@@ -146,25 +135,6 @@ export class FinishScene implements StageScene {
         LABEL_W,
         LABEL_H,
       );
-    }
-
-    if (this.activeTool === "trim") {
-      this.guides
-        .roundRect(405, 132, 72, 106, 12)
-        .fill({ color: stageColors.paper, alpha: 0.9 })
-        .stroke({ width: 2, color: stageColors.border });
-      for (let mm = 2; mm <= 12; mm += 2) {
-        const y = this.yForTrim(mm);
-        this.guides
-          .moveTo(412, y)
-          .lineTo(mm % 4 === 0 ? 432 : 424, y)
-          .stroke({ width: 1.5, color: stageColors.muted, alpha: 0.6 });
-      }
-      const y = this.yForTrim(this.trimPreview);
-      this.guides
-        .moveTo(398, y)
-        .lineTo(470, y)
-        .stroke({ width: 2.5, color: stageColors.accent });
     }
   }
 
@@ -233,21 +203,6 @@ export class FinishScene implements StageScene {
       .fill(stageColors.accent)
       .rect(676, 396, 148, 14)
       .fill(stageColors.accent);
-
-    if (!finished) {
-      if (this.activeTool === "trim") {
-        this.tools
-          .moveTo(356, 210)
-          .lineTo(340, 194)
-          .moveTo(364, 210)
-          .lineTo(380, 194)
-          .stroke({ width: 4, color: stageColors.steel, cap: "round" })
-          .circle(342, 192, 8)
-          .stroke({ width: 3, color: stageColors.steel })
-          .circle(378, 192, 8)
-          .stroke({ width: 3, color: stageColors.steel });
-      }
-    }
   }
   private drawLabelHandle(game: GameState): void {
     this.labelHandle.clear();
@@ -275,14 +230,6 @@ export class FinishScene implements StageScene {
     return game.design.mode === "figura" ? 118 : LABEL_BASE_Y;
   }
 
-  private yForTrim(mm: number): number {
-    return 210 - ((clamp(mm, 2, 12) - 2) / 10) * 60;
-  }
-
-  private trimForY(y: number): number {
-    return clamp(2 + ((210 - y) / 60) * 10, 2, 12);
-  }
-
   private handlePosition(game: GameState): { x: number; y: number } {
     const center = this.labelCenter(game);
     const angle = (game.craft.label.rotation * Math.PI) / 180;
@@ -308,14 +255,6 @@ export class FinishScene implements StageScene {
       return;
     }
 
-    if (x > 300 && x < 420 && y > 120 && y < 240) {
-      this.activeTool = "trim";
-      this.trimKeyboard = false;
-      this.trimming = true;
-      this.trimPreview = this.trimForY(y);
-      return;
-    }
-
     if (x > 630 && x < 870 && y > 130 && y < 300) {
       game.addLid();
     } else if (x > 630 && x < 870 && y > 315 && y < 490) {
@@ -332,8 +271,6 @@ export class FinishScene implements StageScene {
       const angle = Math.atan2(y - center.y, x - center.x);
       const rotation = (angle * 180) / Math.PI + 24.6;
       game.setLabelRotation(clamp(rotation, -20, 20));
-    } else if (this.trimming) {
-      this.trimPreview = this.trimForY(y);
     }
   }
 
@@ -341,13 +278,8 @@ export class FinishScene implements StageScene {
     if (this.movingLabel || this.rotatingLabel) {
       game.placeLabel();
     }
-    if (this.trimming) {
-      game.setTrimMm(Math.round(this.trimPreview * 2) / 2);
-      game.cutWick();
-    }
     this.movingLabel = false;
     this.rotatingLabel = false;
-    this.trimming = false;
   }
 
   private insideLabel(x: number, y: number, game: GameState): boolean {
@@ -365,47 +297,35 @@ export class FinishScene implements StageScene {
 
     if (key === "1") {
       this.activeTool = "label";
-      this.trimKeyboard = false;
+      return;
     }
     if (key === "2") {
-      this.activeTool = "trim";
-      this.trimKeyboard = true;
-      this.trimPreview = game.craft.wick.trimMm;
+      this.activeTool = "lid";
+      game.addLid();
+      return;
     }
-    if (key === "3") game.addLid();
-    if (key === "4") game.wrap();
-
-    if (this.activeTool === "label") {
-      if (key === "ArrowLeft") {
-        if (shift) game.setLabelRotation(game.craft.label.rotation - 1);
-        else game.setLabelX(game.craft.label.x - 1);
-      }
-      if (key === "ArrowRight") {
-        if (shift) game.setLabelRotation(game.craft.label.rotation + 1);
-        else game.setLabelX(game.craft.label.x + 1);
-      }
-      if (key === "ArrowUp") game.setLabelY(game.craft.label.y - 1);
-      if (key === "ArrowDown") game.setLabelY(game.craft.label.y + 1);
-      if (key === "Enter" || key === " ") game.placeLabel();
+    if (key === "3") {
+      this.activeTool = "wrap";
+      game.wrap();
+      return;
     }
 
-    if (this.activeTool === "trim") {
-      if (key === "ArrowUp" || key === "ArrowRight") {
-        this.trimPreview = clamp(this.trimPreview - 0.5, 2, 12);
-      }
-      if (key === "ArrowDown" || key === "ArrowLeft") {
-        this.trimPreview = clamp(this.trimPreview + 0.5, 2, 12);
-      }
-      if (key === "Enter" || key === " ") {
-        game.setTrimMm(this.trimPreview);
-        game.cutWick();
-        this.trimKeyboard = false;
-      }
+    if (this.activeTool !== "label") return;
+    if (key === "ArrowLeft") {
+      if (shift) game.setLabelRotation(game.craft.label.rotation - 1);
+      else game.setLabelX(game.craft.label.x - 1);
     }
+    if (key === "ArrowRight") {
+      if (shift) game.setLabelRotation(game.craft.label.rotation + 1);
+      else game.setLabelX(game.craft.label.x + 1);
+    }
+    if (key === "ArrowUp") game.setLabelY(game.craft.label.y - 1);
+    if (key === "ArrowDown") game.setLabelY(game.craft.label.y + 1);
+    if (key === "Enter" || key === " ") game.placeLabel();
   }
 
   ariaLabel(): string {
-    return "Acabado. Arrastra la etiqueta para moverla y usa el tirador para girarla. Arrastra sobre la mecha para cortarla. Toca la tapa y el empaque. Con teclado: 1 etiqueta, 2 mecha, 3 tapa, 4 empaque.";
+    return "Acabado. Arrastra la etiqueta para moverla y usa el tirador para girarla. Toca la tapa y el empaque. Con teclado: 1 etiqueta, 2 tapa, 3 empaque.";
   }
 
   destroy(): void {

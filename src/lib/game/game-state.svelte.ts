@@ -13,6 +13,8 @@ import {
   POUR_MIN_TO_FINISH,
   POUR_SPEED,
   TEMP_START,
+  TRIM_MAX_MM,
+  TRIM_MIN_MM,
   completeFilm,
   createCraft,
   currentUnit,
@@ -201,7 +203,6 @@ export class GameState {
     return (
       this.craft.wick.placed &&
       this.craft.holderRemoved &&
-      this.craft.wick.trimmed &&
       this.craft.label.placed &&
       this.craft.lidOn &&
       this.craft.wrapped
@@ -401,7 +402,13 @@ export class GameState {
   }
 
   goMelt(): void {
-    if (!this.craft.wick.placed) return;
+    if (
+      this.phase !== "wick" ||
+      !this.craft.wick.placed ||
+      !this.craft.wick.trimmed
+    ) {
+      return;
+    }
     this.score = null;
     this.phase = "melt";
     this.view = "melt";
@@ -494,7 +501,9 @@ export class GameState {
     if (this.phase !== "mix") return;
     const unit = this.craft.units[index];
     if (!unit || !this.mixTemperatureReady(unit)) return;
-    this.selectMixBatch(index);
+    // Keep the burner warm while the aroma pours. Selecting the batch here
+    // would clear `heating` and could drop the dose at the range boundary.
+    this.mixIndex = clamp(index, 0, Math.max(0, this.craft.units.length - 1));
     this.stopAroma();
     unit.aromaPouring = true;
   }
@@ -578,26 +587,31 @@ export class GameState {
   }
 
   moveWick(dx: number, dy: number): void {
+    if (this.craft.wick.trimmed) return;
     this.craft.wick.x = clamp(this.craft.wick.x + dx, -30, 30);
     this.craft.wick.y = clamp(this.craft.wick.y + dy, -30, 30);
   }
 
   setWickPosition(x: number, y: number): void {
+    if (this.craft.wick.trimmed) return;
     this.craft.wick.x = clamp(x, -30, 30);
     this.craft.wick.y = clamp(y, -30, 30);
   }
 
   centerWick(): void {
+    if (this.craft.wick.trimmed) return;
     this.craft.wick.x = 0;
     this.craft.wick.y = 0;
   }
 
   placeWick(): void {
+    if (this.craft.wick.trimmed) return;
     this.craft.wick.placed = true;
     this.craft.holder = true;
     this.craft.holderRemoved = false;
     this.craft.wick.x = round(this.craft.wick.x);
     this.craft.wick.y = round(this.craft.wick.y);
+    this.craft.wick.trimmed = false;
   }
 
   removeHolder(): void {
@@ -667,11 +681,13 @@ export class GameState {
   }
 
   setTrimMm(value: number): void {
-    this.craft.wick.trimMm = value;
+    if (this.phase !== "wick" || !this.craft.wick.placed) return;
+    this.craft.wick.trimMm = clamp(value, TRIM_MIN_MM, TRIM_MAX_MM);
     this.craft.wick.trimmed = false;
   }
 
   cutWick(): void {
+    if (this.phase !== "wick" || !this.craft.wick.placed) return;
     this.craft.wick.trimmed = true;
   }
 

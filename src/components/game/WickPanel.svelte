@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { TRIM_TARGET_MM } from "@lib/game/craft";
   import {
     recommendedWickTypes,
     vesselMaterialLabels,
@@ -28,15 +29,27 @@
   const recommended = $derived(
     vessel ? recommendedWickTypes(vessel.diameterMm) : [],
   );
+  const status = $derived(
+    !game.craft.wick.placed
+      ? "Sin colocar"
+      : game.craft.wick.trimmed
+        ? `Cortada · ${quality}`
+        : `Colocada · ${quality}`,
+  );
+  const trim = $derived(
+    game.craft.wick.placed
+      ? `${game.craft.wick.trimMm.toFixed(1)} mm · objetivo de ejemplo ${TRIM_TARGET_MM} mm`
+      : `Objetivo de ejemplo ${TRIM_TARGET_MM} mm`,
+  );
 </script>
 
 <div class="game-station-panel" data-testid="wick-panel">
   <p class="game-eyebrow">Preparación</p>
-  <h3 class="game-title">Prepara el envase y la mecha</h3>
+  <h3 class="game-title">Coloca y corta la mecha</h3>
   <p class="game-text">
-    Coloca el porta pabilo en el centro del envase, engancha la mecha y usa el
-    sostenedor de madera para mantenerla recta. Ajusta la posición con el
-    puntero o las flechas y suelta para confirmar.
+    Vista lateral del envase o molde. Arrastra la mecha al centro y suéltala
+    para fijarla con el sostenedor. Si queda desviada, se verá inclinada.
+    Después ajusta el corte con la tijera o con las flechas y pulsa Enter.
   </p>
 
   {#if game.wickInfo}
@@ -59,24 +72,30 @@
 
   <div class="game-note">
     El sostenedor de madera no es la mecha: solo la mantiene centrada y se
-    retira después del curado.
+    retira después del curado. El corte de mecha se hace aquí; el acabado queda
+    para etiqueta, tapa y empaque.
   </div>
 
   <div class="manual-note">
-    <span class="manual-note__icon" aria-hidden="true">✛</span>
+    <span class="manual-note__icon" aria-hidden="true">✂</span>
     <span>
-      <strong>Puntero:</strong> arrastra y suelta sobre el centro.
+      <strong>Puntero:</strong> arrastra la mecha y suelta para colocarla;
+      después arrastra la tijera o la regla para elegir el corte.
       <br />
-      <strong>Teclado:</strong> flechas para mover y Enter para colocar.
+      <strong>Teclado:</strong> flechas y Enter para colocar; ↑/↓ para ajustar la
+      longitud y Enter para cortar.
     </span>
   </div>
 
   <div class="game-row">
-    <span class="game-badge" data-testid="wick-quality">
-      {game.craft.wick.placed ? `Colocada · ${quality}` : "Sin colocar"}
-    </span>
+    <span class="game-badge" data-testid="wick-quality">{status}</span>
+    <span class="game-badge" data-testid="wick-trim">{trim}</span>
     <span class="game-badge">
-      {game.craft.wick.placed ? "Puedes ajustarla" : "Suelta para fijar"}
+      {game.craft.wick.trimmed
+        ? "Corte listo"
+        : game.craft.wick.placed
+          ? "Ajusta el corte"
+          : "Suelta para fijar"}
     </span>
   </div>
 
@@ -84,7 +103,7 @@
     class="game-action game-primary"
     type="button"
     onclick={() => game.goMelt()}
-    disabled={!game.craft.wick.placed}
+    disabled={!game.craft.wick.placed || !game.craft.wick.trimmed}
     data-testid="wick-continue"
   >
     Ir a la cera

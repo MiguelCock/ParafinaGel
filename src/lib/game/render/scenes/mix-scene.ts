@@ -399,8 +399,12 @@ export class MixScene implements StageScene {
     this.stirring = false;
   }
 
-  keyDown(key: string, game: GameState): void {
+  keyDown(key: string, game: GameState, _shift = false, repeat = false): void {
     const normalized = key.toLowerCase();
+    // Holding Space or A already keeps the action alive in the ticker. Ignoring
+    // key repeat avoids `startMixHeat`/`selectMixBatch` cancelling the aroma
+    // stream while the other key is still held.
+    if (repeat && (key === " " || normalized === "a")) return;
     if (/^[1-4]$/.test(key)) {
       game.selectMixBatch(Number(key) - 1);
       return;

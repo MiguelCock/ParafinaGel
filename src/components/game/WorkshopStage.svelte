@@ -31,9 +31,9 @@
     melt: "Corta el bloque si hace falta, gira la perilla y remueve tres veces.",
     mix: "Calienta cada fogón, dosifica color y aroma, y revuelve.",
     pour: "Llena cada capa o parte hasta la zona verde.",
-    wick: "Prepara el envase, el porta pabilo y la mecha.",
+    wick: "Coloca la mecha al centro, fíjala y córtala con la tijera.",
     cool: "Retira el sostenedor y espera el curado; en gel, quita las burbujas.",
-    finish: "Alinea la etiqueta, corta la mecha y empaca.",
+    finish: "Alinea la etiqueta, pon la tapa y empaca.",
   };
 
   const scene = $derived(

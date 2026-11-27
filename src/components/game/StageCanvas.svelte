@@ -25,10 +25,10 @@
       return "Resultado de la vela. Revisa la receta y pide los insumos en el panel.";
     }
     if (game.phase === "wick") {
-      return "Preparación. Coloca el porta pabilo y la mecha en el centro con el puntero o las flechas, usa el sostenedor y pulsa Enter para fijar.";
+      return "Preparación. Vista lateral del frasco. Arrastra la mecha al centro y suelta; después arrastra la tijera sobre la mecha para cortarla. Teclado: flechas para mover, Enter para colocar; luego flechas para ajustar el corte y Enter para cortar.";
     }
     if (game.phase === "finish") {
-      return "Acabado. Arrastra la etiqueta y su tirador, corta la mecha, y toca la tapa y el empaque.";
+      return "Acabado. Arrastra la etiqueta y su tirador; toca la tapa y el empaque. Teclado: 1 etiqueta, 2 tapa, 3 empaque.";
     }
     if (game.phase === "mix") {
       return "Mezcla. Hay varios fogones. Selecciona uno con 1–4, mantén su palanca para calentar, añade gotas de color con C, mantén A para el aroma y revuelve con las flechas o la cuchara.";

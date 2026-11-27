@@ -160,13 +160,18 @@ async function mixBurnerCount(page) {
   );
 }
 
-async function waitForMixRange(page) {
+async function waitForMixRange(page, index) {
   await page.waitForFunction(
-    () => {
+    (burner) => {
+      const tab = document.querySelector(
+        `[data-testid="mix-burner-${burner}"]`,
+      );
+      if (!tab || tab.getAttribute("aria-pressed") !== "true") return false;
       const panel = document.querySelector('[data-testid="mix-panel"]');
-      return panel && !panel.innerText.includes("Calienta el fogón");
+      return Boolean(panel) && !panel.innerText.includes("Calienta el fogón");
     },
     { timeout: 15000 },
+    index,
   );
 }
 
@@ -207,7 +212,7 @@ async function mixWithKeyboard(page) {
     await click(page, `mix-burner-${index}`);
     await focusCanvas(page, "mix");
     await page.keyboard.down(" ");
-    await waitForMixRange(page);
+    await waitForMixRange(page, index);
 
     const color = await readMixDose(page, "mix-color");
     for (let drop = 0; drop < color.target; drop += 1) {
@@ -215,7 +220,21 @@ async function mixWithKeyboard(page) {
     }
 
     const aroma = await readMixDose(page, "mix-aroma");
+    if (process.env.QA_VERBOSE === "1") {
+      console.log(
+        `mix keyboard burner ${index}/${count} · color ${color.target} · aroma ${aroma.min}-${aroma.max}`,
+      );
+    }
     await page.keyboard.down("a");
+    if (process.env.QA_VERBOSE === "1") {
+      await wait(200);
+      console.log(
+        "  after A:",
+        await text(page, "mix-temperature"),
+        await text(page, "mix-aroma"),
+      );
+      console.log("  logs:", page.__qa.logs.slice(-10));
+    }
     await waitForAroma(page, aroma.min);
     await page.keyboard.up("a");
 
@@ -227,12 +246,15 @@ async function mixWithKeyboard(page) {
   }
 }
 
-async function heatMixWithPointer(page, position) {
+async function heatMixWithPointer(page, index, position) {
   const lever = await stagePoint(page, "mix", position.x + 112, position.y);
   await page.mouse.move(lever.x, lever.y);
   await page.mouse.down();
   try {
-    await waitForMixRange(page);
+    await waitForMixRange(page, index);
+    // Keep heating a little past the lower bound so the dose does not sit on
+    // the range edge while the pointer is released.
+    await wait(500);
   } finally {
     await page.mouse.up();
   }
@@ -247,7 +269,7 @@ async function mixWithPointer(page) {
     if (!position) continue;
 
     await click(page, `mix-burner-${index}`);
-    await heatMixWithPointer(page, position);
+    await heatMixWithPointer(page, index, position);
 
     const color = await readMixDose(page, "mix-color");
     const colorBottle = await stagePoint(
@@ -465,6 +487,17 @@ async function pourWithPointer(page, hooks = {}) {
   });
 }
 
+async function waitForWickCut(page) {
+  await page.waitForFunction(
+    () =>
+      (
+        document.querySelector('[data-testid="wick-quality"]')?.textContent ??
+        ""
+      ).includes("Cortada"),
+    { timeout: 5000 },
+  );
+}
+
 async function placeWickWithKeyboard(page) {
   await focusCanvas(page, "wick");
   for (let step = 0; step < 4; step += 1) {
@@ -475,11 +508,17 @@ async function placeWickWithKeyboard(page) {
   }
   await page.keyboard.press("Enter");
   await wait(300);
+
+  for (let step = 0; step < 8; step += 1) {
+    await page.keyboard.press("ArrowUp");
+  }
+  await page.keyboard.press("Enter");
+  await waitForWickCut(page);
 }
 
 async function placeWickWithPointer(page) {
-  const start = await stagePoint(page, "wick", 574.7, 284);
-  const end = await stagePoint(page, "wick", 500, 340);
+  const start = await stagePoint(page, "wick", 483, 105);
+  const end = await stagePoint(page, "wick", 468, 204);
 
   await page.mouse.move(start.x, start.y);
   await page.mouse.down();
@@ -489,6 +528,21 @@ async function placeWickWithPointer(page) {
     await page.mouse.up();
   }
   await wait(400);
+}
+
+async function cutWickWithPointer(page) {
+  const start = await stagePoint(page, "wick", 674, 120);
+  const end = await stagePoint(page, "wick", 674, 147);
+
+  await page.mouse.move(start.x, start.y);
+  await page.mouse.down();
+  try {
+    await page.mouse.move(end.x, end.y, { steps: 10 });
+  } finally {
+    await page.mouse.up();
+  }
+  await waitForWickCut(page);
+  await wait(300);
 }
 
 async function coolWithKeyboard(page, typeIndex) {
@@ -568,14 +622,7 @@ async function finishWithKeyboard(page) {
   await wait(300);
 
   await page.keyboard.press("2");
-  for (let step = 0; step < 8; step += 1) {
-    await page.keyboard.press("ArrowUp");
-  }
-  await page.keyboard.press("Enter");
-  await wait(300);
-
   await page.keyboard.press("3");
-  await page.keyboard.press("4");
   await wait(500);
 }
 
@@ -678,7 +725,15 @@ export async function flowPointerClassic({ browser, baseUrl, outDir, report }) {
     await placeWickWithPointer(page);
     const wickQuality = await text(page, "wick-quality");
     assertIncludes(wickQuality, "Colocada", "La mecha no quedó colocada");
+    assert(
+      await isDisabled(page, "wick-continue"),
+      "Se puede pasar a la cera sin cortar la mecha.",
+    );
     await capture(page, outDir, "1280-light-clasico-wick-placed", report);
+    await cutWickWithPointer(page);
+    const wickTrim = await text(page, "wick-trim");
+    assertIncludes(wickTrim, "5", "El corte de mecha no quedó en 5 mm");
+    await capture(page, outDir, "1280-light-clasico-wick-cut", report);
     await clickEnabled(page, "wick-continue");
 
     await waitForStage(page, "melt");

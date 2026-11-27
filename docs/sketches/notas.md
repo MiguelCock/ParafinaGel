@@ -57,13 +57,13 @@ Regla: **el texto esencial no se hornea solo en el canvas**. El canvas puede mos
 
 **Objetivo:** preparar el frasco, colocar la mecha y cortarla antes de verter.
 
-- **Cámara:** vista lateral del frasco, a la altura del banco. Hoy `wick-scene.ts` es cenital; el wireframe fija la dirección lateral.
+- **Cámara:** vista lateral del frasco, a la altura del banco. `wick-scene.ts` ya usa esta dirección.
 - **Capas:** banco, frasco, porta pabilo, mecha, sostenedor y tijeras.
 - **Verbo:** colocar la mecha (puede quedar inclinada o de lado), centrarla con el sostenedor y cortar la mecha.
 - **Feedback:** guía circular, sombra, encaje, mecha inclinada/de lado, sostenedor y guía de corte; la mecha queda pareja.
 - **Error:** mecha fuera de centro, sin sostenedor o corte de mecha irregular. Se corrige antes de avanzar; el badge dice “Muy centrada”, “Algo desviada”, etc.
 - **Reduced:** sin temblor ni rebote; guía estática; flechas + Enter.
-- **Código actual:** `WickPanel.svelte` y `wick-scene.ts` ya validan centrado; el corte de mecha está en `finish-scene.ts` y debe moverse aquí en el rediseño. El corte del bloque sigue en `melt-scene.ts` (Cera).
+- **Código actual:** `WickPanel.svelte` y `wick-scene.ts` ya validan centrado y corte de mecha; `finish-scene.ts` ya no lo incluye. El corte del bloque sigue en `melt-scene.ts` (Cera).
 
 ### 03 · Cera
 
@@ -123,7 +123,7 @@ Regla: **el texto esencial no se hornea solo en el canvas**. El canvas puede mos
 - **Feedback:** guía punteada, snap, inclinación, sello de tapa y lazo.
 - **Error:** etiqueta torcida o tapa/empaque faltante. Se puede corregir antes de entregar.
 - **Reduced:** sin rebote ni confeti; guías y valores estáticos; colocación instantánea.
-- **Código actual:** `finish-scene.ts` tiene etiqueta, corte de mecha, tapa y empaque; `FinishPanel.svelte` ya muestra los checks. Moños/stickers y tapa aérea son objetivo de rediseño; el corte de mecha se mueve a Preparación.
+- **Código actual:** `finish-scene.ts` tiene etiqueta, tapa y empaque; `FinishPanel.svelte` ya muestra los checks y el corte de mecha se movió a Preparación. Moños/stickers y tapa aérea son objetivo de rediseño.
 
 ## Notas por storyboard
 
@@ -167,13 +167,13 @@ Cada gesto se lee en tres frames: **inicio → acción/umbral → resultado**. L
 
 ### Corte de mecha
 
-- **Estación:** Preparación (hoy vive en Acabado).
+- **Estación:** Preparación.
 - **Input:** colocar la mecha (puede quedar inclinada o de lado), fijarla con el sostenedor y arrastrar la tijera; flechas + Enter para cortar.
 - **Umbral:** la guía muestra la longitud antes de soltar. El objetivo de 5 mm es de ejemplo.
 - **Feedback:** guía, longitud, sostenedor, tijera y badge.
 - **Error:** corte largo o corto; se puede repetir.
 - **Reduced:** guía estática y ajuste por teclado.
-- **Código actual:** `finish-scene.ts` (`trimPreview`, `setTrimMm`, `cutWick`), `craft.ts` (`trimAccuracy`). El rediseño mueve el gesto a Preparación; el corte del bloque no se toca.
+- **Código actual:** `wick-scene.ts` (`trimPreview`), `game-state.svelte.ts` (`setTrimMm`, `cutWick`) y `craft.ts` (`trimAccuracy`). El corte del bloque no se toca.
 
 ### Tapa
 
@@ -198,7 +198,7 @@ Cada gesto se lee en tres frames: **inicio → acción/umbral → resultado**. L
 ## Pendientes que este material deja abiertos
 
 - Integrar la estantería en el taller físico sin duplicar `MaterialShelf` y `DesignPanel`.
-- Mover el corte de mecha de Acabado a Preparación; el corte de bloque se queda en Cera.
+- Validar la medida de corte de mecha; el gesto ya vive en Preparación y el corte de bloque se queda en Cera.
 - Añadir estado de moño/sticker (hoy no existe en `types.ts`) y la cámara aérea de tapa.
 - Resolver la recuperación del sobrecalentamiento.
 - Definir el chorrito de aroma visible y su relación con `AROMA_POUR_RATE`.

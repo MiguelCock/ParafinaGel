@@ -1,6 +1,6 @@
 <script lang="ts">
   import { labelsById } from "@lib/game/data";
-  import { labelAccuracy, trimAccuracy } from "@lib/game/craft";
+  import { labelAccuracy } from "@lib/game/craft";
   import type { GameState } from "@lib/game/game-state.svelte";
 
   interface Props {
@@ -21,24 +21,14 @@
           ? "Bien alineada"
           : "Se puede mejorar",
   );
-  const trimQuality = $derived(
-    !game.craft.wick.trimmed
-      ? "Sin cortar"
-      : trimAccuracy(game.craft) > 0.8
-        ? "Corte parejo"
-        : trimAccuracy(game.craft) > 0.5
-          ? "Corte aceptable"
-          : "Corte irregular",
-  );
 </script>
 
 <div class="game-station-panel" data-testid="finish-panel">
   <p class="game-eyebrow">Acabado manual</p>
   <h3 class="game-title">Los últimos detalles</h3>
   <p class="game-text">
-    La mecha ya está centrada. Arrastra la etiqueta sobre la vela y gira el
-    tirador. Corta la mecha arrastrando sobre ella. Toca la tapa y el empaque
-    para cerrar la pieza.
+    La mecha ya está preparada. Arrastra la etiqueta sobre la vela y gira el
+    tirador. Toca la tapa y el empaque para cerrar la pieza.
   </p>
 
   <div class="finish-block">
@@ -60,17 +50,6 @@
 
   <div class="finish-block">
     <div class="finish-block__head">
-      <p class="finish-block__title">Mecha</p>
-      <span class="game-badge">{trimQuality}</span>
-    </div>
-    <p class="finish-hint">
-      Objetivo de ejemplo: 5 mm. Arrastra el corte sobre la mecha o usa 2 y las
-      flechas; Enter para cortar.
-    </p>
-  </div>
-
-  <div class="finish-block">
-    <div class="finish-block__head">
       <p class="finish-block__title">Cierre</p>
       <span class="game-badge">
         {game.canFinish ? "Completo" : "Pendiente"}
@@ -78,13 +57,12 @@
     </div>
     <div class="checks">
       <span class:on={game.craft.label.placed}>Etiqueta</span>
-      <span class:on={game.craft.wick.trimmed}>Mecha</span>
       <span class:on={game.craft.holderRemoved}>Sostenedor</span>
       <span class:on={game.craft.lidOn}>Tapa</span>
       <span class:on={game.craft.wrapped}>Empaque</span>
     </div>
     <p class="finish-hint">
-      Toca la tapa y la caja de empaque en el escenario, o pulsa 3 y 4.
+      Toca la tapa y la caja de empaque en el escenario, o pulsa 2 y 3.
     </p>
   </div>
 
@@ -100,7 +78,7 @@
 
   {#if !game.canFinish}
     <p class="finish-hint finish-hint--center">
-      Faltan detalles: etiqueta, corte de mecha, sostenedor, tapa y empaque.
+      Faltan detalles: etiqueta, sostenedor, tapa y empaque.
     </p>
   {/if}
 </div>

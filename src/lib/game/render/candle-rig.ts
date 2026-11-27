@@ -1,4 +1,5 @@
 import { Container, Graphics, Text } from "pixi.js";
+import { WICK_MAX_OFFSET, wickLean } from "../craft";
 import {
   inclusionsById,
   labelsById,
@@ -125,15 +126,21 @@ export class CandleRig extends Container {
 
     const waxTop = figure ? -112 : this.waxTop(game, fills);
     const lift = figure ? 1 : -1;
-    const wickX = figure ? 0 : (game.craft.wick.x / 30) * 55;
-    this.drawWick(showWick, waxTop, lift, options.trimMm, design.wickId, wickX);
-    this.drawFlame(
-      showWick && Boolean(options.showFlame),
+    const wickX = figure ? 0 : (game.craft.wick.x / WICK_MAX_OFFSET) * 55;
+    const lean = figure ? 0 : wickLean(game.craft);
+    const trimMm =
+      options.trimMm ??
+      (game.craft.wick.trimmed ? game.craft.wick.trimMm : undefined);
+    const tip = this.drawWick(
+      showWick,
       waxTop,
       lift,
-      time,
+      trimMm,
+      design.wickId,
       wickX,
+      lean,
     );
+    this.drawFlame(showWick && Boolean(options.showFlame), tip, time);
     this.drawLabel(game, showLabel, figure);
     this.drawBubbles(game, options, figure);
   }
@@ -499,35 +506,39 @@ export class CandleRig extends Container {
     trimMm: number | undefined,
     wickId: string | null,
     offsetX: number,
-  ): void {
-    if (!visible) return;
+    lean: number,
+  ): { x: number; y: number } {
+    const baseY = waxTop + (lift === -1 ? 2 : -2);
+    if (!visible) return { x: offsetX, y: baseY };
+
     const length =
       trimMm === undefined ? 32 : Math.max(10, Math.min(38, trimMm * 2.4));
-    const y = waxTop + (lift === -1 ? 2 : -2);
     const width = wickId ? 3.4 : 3;
+    const tipX = offsetX + Math.sin(lean) * length;
+    const tipY = baseY - Math.cos(lean) * length;
+    const emberX = tipX + Math.sin(lean) * 5;
+    const emberY = tipY - Math.cos(lean) * 5;
 
     this.wick
-      .moveTo(offsetX, y)
-      .lineTo(offsetX, y - length)
+      .moveTo(offsetX, baseY)
+      .lineTo(tipX, tipY)
       .stroke({ width, color: stageColors.ink, cap: "round" });
     this.wick
-      .moveTo(offsetX, y - length)
-      .lineTo(offsetX, y - length - 5)
-      .stroke({ width: 3, color: stageColors.accent });
+      .moveTo(tipX, tipY)
+      .lineTo(emberX, emberY)
+      .stroke({ width: 3, color: stageColors.accent, cap: "round" });
+
+    return { x: emberX, y: emberY };
   }
 
   private drawFlame(
     visible: boolean,
-    waxTop: number,
-    lift: number,
+    tip: { x: number; y: number },
     time: number,
-    offsetX: number,
   ): void {
     if (!visible) return;
-    const length = 24;
-    const y = waxTop + (lift === -1 ? 2 : -2) - length - 7;
     const pulse = motion.reduced ? 1 : 1 + Math.sin(time * 4.2) * 0.04;
-    this.flame.position.set(offsetX, y);
+    this.flame.position.set(tip.x, tip.y - 7);
     this.flame.scale.set(pulse, 1 / pulse);
     this.flame
       .moveTo(0, 0)

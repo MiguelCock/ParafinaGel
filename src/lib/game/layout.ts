@@ -128,7 +128,7 @@ export const VESSEL_SLOTS = {
   finish: { x: 360, y: 360, scale: 1 },
 } as const satisfies Record<VesselScene, StagePlacement>;
 
-/** Top-down view used to place the wick. */
+/** Top-down wick view from the previous design. Preparation uses `PREP_VIEW`. */
 export const WICK_VIEW = {
   board: { x: 180, y: 54, width: 640, height: 520, radius: 30 },
   center: { x: 500, y: 340 },
@@ -137,6 +137,39 @@ export const WICK_VIEW = {
   // Radius minus the +/-30 gameplay offset used to map the wick position.
   travelRadius: 140,
 } as const;
+
+/**
+ * Side view used by preparation. The wick is clamped at `guide`, trimmed
+ * against `ruler` and cut with the scissors. Tolerances and timings stay in
+ * `craft.ts`; this is geometry only.
+ */
+export const PREP_VIEW = {
+  board: { x: 140, y: 54, width: 720, height: 520, radius: 30 },
+  vessel: { x: 468, y: 372, scale: 1 },
+  guide: { x: 468, y: 204, radius: 24, travel: 180 },
+  /** Figure molds clamp the holder a little lower than a jar. */
+  figureGuideY: 228,
+  /** Interior bottom of the vessel, where the wick tab rests. */
+  wickBaseY: 522,
+  figureWickBaseY: 456,
+  ruler: { x: 574, y: 72, width: 46, height: 106, radius: 10 },
+  scissors: { x: 674, y: 96, radius: 26, hitRadius: 46 },
+  cutZone: { x: 560, y: 64, width: 194, height: 150 },
+  titleY: 586,
+  detailY: 610,
+} as const satisfies {
+  readonly board: StageRect & { readonly radius: number };
+  readonly vessel: StagePlacement;
+  readonly guide: StageCircle & { readonly travel: number };
+  readonly figureGuideY: number;
+  readonly wickBaseY: number;
+  readonly figureWickBaseY: number;
+  readonly ruler: StageRect & { readonly radius: number };
+  readonly scissors: StageCircle & { readonly hitRadius: number };
+  readonly cutZone: StageRect;
+  readonly titleY: number;
+  readonly detailY: number;
+};
 
 /** Melt pot. The body is drawn from `center`; the rim sits at `rimOffsetY`. */
 export const MELT_POT = {
@@ -261,22 +294,17 @@ export const FINISH_LABEL = {
 } as const;
 
 export const FINISH_TOOLS = {
-  trimZone: { x: 300, y: 120, width: 120, height: 120 },
-  trimGuide: { x: 405, y: 132, width: 72, height: 106 },
   lidPanel: { x: 640, y: 140, width: 220, height: 150 },
   wrapPanel: { x: 640, y: 324, width: 220, height: 150 },
-} as const satisfies Record<
-  "trimZone" | "trimGuide" | "lidPanel" | "wrapPanel",
-  StageRect
->;
+} as const satisfies Record<"lidPanel" | "wrapPanel", StageRect>;
 
 /** Drop and alignment targets shared by pointer and keyboard flows. */
 export const DROP_ZONES = {
   pour: POUR_ZONE,
   wick: {
-    x: WICK_VIEW.center.x,
-    y: WICK_VIEW.center.y,
-    radius: WICK_VIEW.guideRadius,
+    x: PREP_VIEW.guide.x,
+    y: PREP_VIEW.guide.y,
+    radius: PREP_VIEW.guide.radius,
   },
   label: {
     x: VESSEL_SLOTS.finish.x - FINISH_LABEL.width / 2,

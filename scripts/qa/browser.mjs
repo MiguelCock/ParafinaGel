@@ -97,9 +97,13 @@ async function setupPage(
   await setMedia(page, theme, reducedMotion);
 
   const errors = [];
+  const logs = [];
   page.on("console", (message) => {
     if (message.type() === "error") {
       errors.push({ type: "console", text: message.text() });
+    }
+    if (process.env.QA_VERBOSE === "1") {
+      logs.push({ type: message.type(), text: message.text() });
     }
   });
   page.on("pageerror", (error) => {
@@ -121,6 +125,7 @@ async function setupPage(
 
   page.__qa = {
     errors,
+    logs,
     theme,
     width,
     height,

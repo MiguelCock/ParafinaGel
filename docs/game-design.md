@@ -110,15 +110,15 @@ brief
 | Paso                | Dirección de diseño                                                                                        | Hoy en código                                                                                                                                                                 |
 | ------------------- | ---------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Taller / estantería | El diseño y la estantería viven dentro del taller físico; se toman objetos y se arma la vela en la mesa.   | `DesignPanel.svelte` y `MaterialShelf.svelte` están en el panel DOM; `design-scene.ts` muestra una vista previa. `WorkshopStage.svelte` ya tiene el plano general y hotspots. |
-| Preparación         | Cámara lateral del frasco: colocar la mecha (puede quedar inclinada/de lado), sostenedor y corte de mecha. | `wick-scene.ts` es cenital; el corte de mecha está en `finish-scene.ts`. El corte del bloque sigue en `melt-scene.ts` (Cera).                                                 |
+| Preparación         | Cámara lateral del frasco: colocar la mecha (puede quedar inclinada/de lado), sostenedor y corte de mecha. | `wick-scene.ts` ya usa vista lateral con colocación, inclinación y corte; `finish-scene.ts` ya no corta la mecha. El corte del bloque sigue en `melt-scene.ts` (Cera).        |
 | Cera                | Fogón lateral con corte de bloque, perilla, olla, cuchara y termómetro.                                    | `melt-scene.ts` ya tiene tabla, olla, perilla, vapor y fluido.                                                                                                                |
 | Mezcla              | Fogones laterales en fila, gota de color y chorrito de aroma visible.                                      | `mix-scene.ts` usa una grilla frontal de 1–4 fogones; el chorrito de aroma es objetivo visual.                                                                                |
 | Vertido             | Corte lateral del envase, jarra inclinada y meta.                                                          | `pour-scene.ts` ya lo resuelve con jarra, chorro, salpicaduras y derrame.                                                                                                     |
 | Curado              | Repisa, ventilador, sostenedor y burbujas.                                                                 | `cool-scene.ts` ya tiene repisa, ventilador, anillo y sostenedor.                                                                                                             |
-| Acabado             | Etiqueta/moño, tapa desde vista aérea y empaque.                                                           | `finish-scene.ts` aún tiene etiqueta, corte de mecha, tapa y empaque; mover el corte a Preparación, sumar moños/stickers y cámara aérea son objetivo.                         |
+| Acabado             | Etiqueta/moño, tapa desde vista aérea y empaque.                                                           | `finish-scene.ts` ya tiene etiqueta, tapa y empaque; el corte de mecha se movió a Preparación. Sumar moños/stickers y cámara aérea siguen como objetivo.                      |
 | Receta              | Recibo DOM con cantidades, precios oficiales y CTA.                                                        | `ScorePanel` + `ShoppingList` ya lo hacen.                                                                                                                                    |
 
-**Nota de alcance:** integrar la estantería en el taller, mover el corte de mecha a Preparación (el corte del bloque sigue en Cera) y añadir moños/stickers implica tocar estado, escenas y tests. Este documento fija la dirección; no es una promesa de implementación en #141.
+**Nota de alcance:** integrar la estantería en el taller y añadir moños/stickers implica tocar estado, escenas y tests; el corte de mecha ya vive en Preparación y el corte del bloque sigue en Cera. Este documento fija la dirección; no es una promesa de implementación en #141.
 
 ### 5.3 Tabla de estaciones
 
@@ -193,12 +193,12 @@ La versión 2.2 ya implementa:
 - Motion tokens, `motionBudget`, `?motion=off`/`?motion=full`, pausa por pestaña oculta y fallback sin WebGL.
 - Tests del motor, typecheck y QA con axe, overflow, consola, bundle y FPS.
 
-Cambios que este GDD propone y que **no** están en 2.2:
+Cambios del rediseño que **no** estaban en 2.2:
 
 1. Estantería integrada en el taller físico, con el diseño en la misma mesa (hoy el diseño y la estantería viven en el panel DOM).
-2. Preparación lateral con frasco, mecha, sostenedor y corte de mecha en el mismo banco (hoy: cenital; el corte de mecha está en Acabado y el corte del bloque en Cera).
+2. Preparación lateral con frasco, mecha, sostenedor y corte de mecha en el mismo banco (implementado en `wick-scene.ts`; el corte del bloque sigue en Cera).
 3. Mezcla lateral en fila y chorrito de aroma visible (hoy: grilla frontal y dosis mientras se mantiene el gotero).
-4. Moños/stickers y tapa aérea en Acabado, sin corte de mecha (hoy: etiqueta, corte de mecha, tapa y empaque por tarjetas).
+4. Moños/stickers y tapa aérea en Acabado (hoy: etiqueta, tapa y empaque; el corte de mecha ya no está en Acabado).
 5. Recuperación del sobrecalentamiento (hoy `overheated` bloquea el avance y no se puede revertir sin reiniciar).
 6. Vertical slice clásica como prioridad de pulido, aunque los cuatro tipos ya existan.
 

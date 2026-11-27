@@ -301,6 +301,18 @@ export function wickAccuracy(craft: Craft): number {
   return Math.max(0, 1 - wickDistance(craft) / WICK_MAX_OFFSET);
 }
 
+/**
+ * Visual inclination of the wick, in radians, derived from its horizontal
+ * offset. The score keeps using `wickAccuracy`; this helper exists so the
+ * preparation scene and `CandleRig` draw the same lean.
+ */
+export const WICK_LEAN_MAX = 0.3;
+
+export function wickLean(craft: Craft): number {
+  const ratio = Math.max(-1, Math.min(1, craft.wick.x / WICK_MAX_OFFSET));
+  return ratio * WICK_LEAN_MAX;
+}
+
 export function labelAccuracy(craft: Craft): number {
   const offset =
     (Math.abs(craft.label.x) / LABEL_MAX_X) * 0.4 +

@@ -21,6 +21,7 @@ import {
   totalWaxGrams,
   trimAccuracy,
   wickAccuracy,
+  wickLean,
   waxNeedsCutting,
 } from "./craft";
 import {
@@ -57,6 +58,15 @@ import { surfacePoints } from "./render/liquid-rig";
 import { scoreCandle, scoreDesign, starsFor } from "./scoring";
 import { buildRecipe } from "./supplies";
 import type { Brief, CandleDesign, Craft } from "./types";
+
+// Vitest does not run the Svelte compiler on `.svelte.ts` files, so provide
+// the rune used by `GameState` class fields as a plain identity function.
+const runeState = <T>(value: T): T => value;
+const runeGlobal = globalThis as unknown as {
+  $state?: typeof runeState;
+};
+runeGlobal.$state ??= runeState;
+const { GameState } = await import("./game-state.svelte");
 
 function designForBrief(brief: Brief): CandleDesign {
   const design = createDesign(brief.type);
@@ -487,6 +497,121 @@ describe("craft execution", () => {
     expect(execution.mix).toBe(0);
     expect(execution.spill).toBe(0);
     expect(execution.total).toBe(33);
+  });
+});
+
+describe("wick preparation", () => {
+  function wickGame() {
+    const game = new GameState();
+    game.phase = "wick";
+    game.view = "wick";
+    game.design = designForBrief(briefs[0]);
+    game.craft = createCraft(game.design);
+    return game;
+  }
+
+  it("blocks the melt station until the wick is placed and trimmed", () => {
+    const game = wickGame();
+
+    game.goMelt();
+    expect(game.phase).toBe("wick");
+
+    game.craft.wick.placed = true;
+    game.craft.wick.trimmed = false;
+    game.goMelt();
+    expect(game.phase).toBe("wick");
+
+    game.craft.wick.trimmed = true;
+    game.goMelt();
+    expect(game.phase).toBe("melt");
+    expect(game.view).toBe("melt");
+  });
+
+  it("only cuts the wick in preparation and after placing it", () => {
+    const game = wickGame();
+
+    game.phase = "melt";
+    game.craft.wick.placed = true;
+    game.cutWick();
+    expect(game.craft.wick.trimmed).toBe(false);
+
+    game.phase = "wick";
+    game.craft.wick.placed = false;
+    game.cutWick();
+    expect(game.craft.wick.trimmed).toBe(false);
+
+    game.craft.wick.placed = true;
+    game.cutWick();
+    expect(game.craft.wick.trimmed).toBe(true);
+
+    game.cutWick();
+    expect(game.craft.wick.trimmed).toBe(true);
+  });
+
+  it("locks the wick after the cut and re-places before cutting", () => {
+    const game = wickGame();
+    game.craft.wick.x = 12.34;
+    game.craft.wick.placed = true;
+    game.craft.wick.trimmed = false;
+
+    game.placeWick();
+    expect(game.craft.wick.placed).toBe(true);
+    expect(game.craft.wick.trimmed).toBe(false);
+    expect(game.craft.wick.x).toBe(12.3);
+
+    game.craft.wick.trimmed = true;
+    game.craft.wick.x = 4;
+    game.placeWick();
+    game.moveWick(6, 6);
+    expect(game.craft.wick.x).toBe(4);
+
+    game.setWickPosition(10, 10);
+    expect(game.craft.wick.x).toBe(4);
+  });
+
+  it("adjusts the trim only in preparation with a placed wick", () => {
+    const game = wickGame();
+    game.craft.wick.placed = true;
+
+    game.setTrimMm(5);
+    expect(game.craft.wick.trimMm).toBe(5);
+    expect(game.craft.wick.trimmed).toBe(false);
+
+    game.setTrimMm(99);
+    expect(game.craft.wick.trimMm).toBe(12);
+    game.setTrimMm(0);
+    expect(game.craft.wick.trimMm).toBe(2);
+
+    game.phase = "finish";
+    game.setTrimMm(7);
+    expect(game.craft.wick.trimMm).toBe(2);
+
+    game.phase = "wick";
+    game.craft.wick.placed = false;
+    game.setTrimMm(7);
+    expect(game.craft.wick.trimMm).toBe(2);
+  });
+
+  it("finishes without requiring a trimmed wick", () => {
+    const game = wickGame();
+    game.craft = perfectCraft(game.design);
+    game.craft.wick.trimmed = false;
+
+    expect(game.canFinish).toBe(true);
+  });
+
+  it("derives the visual lean from the horizontal wick offset", () => {
+    const craft = createCraft(designForBrief(briefs[0]));
+
+    craft.wick.x = 0;
+    expect(wickLean(craft)).toBe(0);
+    craft.wick.x = 30;
+    const maxLean = wickLean(craft);
+    expect(maxLean).toBeGreaterThan(0);
+    craft.wick.x = -30;
+    expect(wickLean(craft)).toBeLessThan(0);
+    craft.wick.x = 100;
+    expect(wickLean(craft)).toBeCloseTo(maxLean);
   });
 });
 

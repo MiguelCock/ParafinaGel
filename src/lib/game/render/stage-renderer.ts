@@ -94,7 +94,7 @@ export class StageRenderer {
 
   handleKeyDown(event: KeyboardEvent): boolean {
     if (!this.scene?.keyDown) return false;
-    this.scene.keyDown(event.key, this.game, event.shiftKey);
+    this.scene.keyDown(event.key, this.game, event.shiftKey, event.repeat);
     return true;
   }
 
