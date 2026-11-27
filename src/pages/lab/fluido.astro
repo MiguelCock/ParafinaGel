@@ -1,0 +1,90 @@
+---
+import "@fontsource-variable/fraunces";
+import "@fontsource-variable/manrope";
+import "@styles/global.css";
+import "@styles/fluid-lab.css";
+
+import FluidLab from "@components/game/FluidLab.svelte";
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="robots" content="noindex, nofollow, noarchive" />
+    <meta name="color-scheme" content="light dark" />
+    <meta
+      name="theme-color"
+      content="#faf5ee"
+      media="(prefers-color-scheme: light)"
+    />
+    <meta
+      name="theme-color"
+      content="#151210"
+      media="(prefers-color-scheme: dark)"
+    />
+
+    <title>Laboratorio de fluido · ParafinaGel</title>
+    <meta
+      name="description"
+      content="Laboratorio interno para probar el autómata de fluido de ParafinaGel. Ruta no indexable."
+    />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+
+  <body class="lab-page">
+    <a class="skip-link" href="#contenido">
+      Saltar al contenido
+    </a>
+
+    <header class="lab-topbar">
+      <p class="lab-brand">
+        <span class="lab-brand__mark" aria-hidden="true"></span>
+        ParafinaGel <small>laboratorio</small>
+      </p>
+      <span class="lab-flag">Interno · noindex</span>
+    </header>
+
+    <main id="contenido" class="lab-main">
+      <section class="lab-intro" aria-labelledby="lab-title">
+        <p class="lab-eyebrow">Banco de pruebas · fluido lateral</p>
+        <h1 class="lab-title" id="lab-title">
+          Fluido de cera y gel
+        </h1>
+        <p class="lab-lead">
+          Un espacio aislado para probar el autómata que mueve la cera, el gel,
+          el color y el aroma del taller. Calienta el fogón, inclina la jarra y
+          observa cómo cae y se mezcla cada material. Nada de esto se enlaza
+          desde la navegación pública.
+        </p>
+        <div class="lab-tags" aria-label="Detalles del prototipo">
+          <span class="lab-tag">PixiJS 8 · 2D WebGL</span>
+          <span class="lab-tag">Grid 64 × 32</span>
+          <span class="lab-tag">Prototipo interno</span>
+        </div>
+      </section>
+
+      <noscript>
+        <p class="lab-noscript">
+          Este laboratorio necesita JavaScript para montar la escena WebGL. El
+          resto del sitio funciona sin él.
+        </p>
+      </noscript>
+
+      <FluidLab client:load />
+
+      <footer class="lab-footnote">
+        <span>
+          Laboratorio interno de ParafinaGel. No indexable y sin enlaces desde
+          el sitio público.
+        </span>
+        <span>
+          Los tiempos, caudales y temperaturas son de ejemplo; no son datos
+          reales de fabricación.
+        </span>
+      </footer>
+    </main>
+  </body>
+</html>
