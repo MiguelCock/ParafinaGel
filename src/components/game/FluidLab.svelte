@@ -231,7 +231,7 @@
 
     async init(): Promise<void> {
       const [pixi, fluid, rigModule] = await Promise.all([
-        import("pixi.js"),
+        import("@lib/game/render/lab-pixi"),
         import("@lib/game/fluid"),
         import("@lib/game/render/fluid-rig"),
       ]);
@@ -464,7 +464,7 @@
       this.dragging = false;
     }
 
-    private buildScene(pixi: typeof import("pixi.js")): void {
+    private buildScene(pixi: typeof import("@lib/game/render/lab-pixi")): void {
       const root = this.root;
       if (!root) return;
 
