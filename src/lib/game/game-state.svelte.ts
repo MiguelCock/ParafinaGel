@@ -462,6 +462,7 @@ export class GameState {
     for (const unit of this.craft.units) {
       unit.temperature = temperature;
       unit.heating = false;
+      unit.heatLevel = 0;
     }
     this.craft.mix = 0;
     this.mixIndex = 0;
@@ -472,8 +473,13 @@ export class GameState {
   selectMixBatch(index: number): void {
     if (this.phase !== "mix") return;
     this.stopAroma();
-    for (const unit of this.craft.units) unit.heating = false;
-    this.mixIndex = clamp(index, 0, Math.max(0, this.craft.units.length - 1));
+    const next = clamp(index, 0, Math.max(0, this.craft.units.length - 1));
+    this.craft.units.forEach((unit, unitIndex) => {
+      if (unitIndex === next) return;
+      unit.heating = false;
+      unit.heatLevel = 0;
+    });
+    this.mixIndex = next;
   }
 
   startMixHeat(index: number): void {
@@ -481,13 +487,24 @@ export class GameState {
     const unit = this.craft.units[index];
     if (!unit) return;
     this.selectMixBatch(index);
-    for (const item of this.craft.units) item.heating = false;
+    unit.heatLevel = 1;
     unit.heating = true;
+  }
+
+  setMixHeat(index: number, level: number): void {
+    if (this.phase !== "mix") return;
+    const unit = this.craft.units[index];
+    if (!unit) return;
+    this.selectMixBatch(index);
+    unit.heatLevel = clamp(level, 0, 1);
+    unit.heating = unit.heatLevel > 0;
   }
 
   stopMixHeat(index: number): void {
     const unit = this.craft.units[index];
-    if (unit) unit.heating = false;
+    if (!unit) return;
+    unit.heatLevel = 0;
+    unit.heating = false;
   }
 
   addColorDrop(index: number): void {
@@ -539,7 +556,10 @@ export class GameState {
 
   goPour(): void {
     if (!this.canContinueMix || !this.craft.wick.placed) return;
-    for (const unit of this.craft.units) unit.heating = false;
+    for (const unit of this.craft.units) {
+      unit.heating = false;
+      unit.heatLevel = 0;
+    }
     this.stopAroma();
     this.craft.pourOffset = 0.55;
     this.phase = "pour";
@@ -821,9 +841,11 @@ export class GameState {
 
       for (const unit of this.craft.units) {
         if (unit.heating) {
+          const level = unit.heatLevel;
           unit.temperature = Math.min(
             wax.meltMax,
-            unit.temperature + wax.heatRate * 0.9 * delta,
+            unit.temperature +
+              wax.heatRate * (0.35 + level * 0.65) * 0.9 * delta,
           );
         }
 

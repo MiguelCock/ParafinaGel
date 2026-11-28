@@ -213,6 +213,8 @@ export interface PourUnit {
   grams: number;
   temperature: number;
   heating: boolean;
+  /** Knob position for this burner, 0 (off) to 1 (full heat). */
+  heatLevel: number;
   scentId: string | null;
   colorDrops: number;
   aromaMl: number;

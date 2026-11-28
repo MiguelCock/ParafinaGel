@@ -81,8 +81,8 @@ Regla: **el texto esencial no se hornea solo en el canvas**. El canvas puede mos
 
 **Objetivo:** entender que cada capa o parte tiene su lote y que color y aroma se dosifican distinto.
 
-- **Cámara:** lateral, fogones en fila; foco en el fogón activo. Hoy `mix-scene.ts` usa una grilla frontal de tarjetas.
-- **Capas:** fogones, ollas, palancas, frascos de color y aroma, cuchara y vapor.
+- **Cámara:** lateral, fogones en fila; foco en el fogón activo. `mix-scene.ts` ya usa esta fila lateral.
+- **Capas:** fogones, ollas, perillas, frascos de color y aroma, cuchara y vapor.
 - **Verbo:** calentar el fogón, una gota de color, un chorrito de aroma, revolver.
 - **Feedback:** color que se integra, gotas/ml, nivel de aroma, vapor y “LISTO”.
 - **Error:** fuera de rango, sin color/aroma, dosis alta/baja o aroma cruzado. Se corrige dentro del fogón; no se pierde la capa.

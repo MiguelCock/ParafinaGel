@@ -137,21 +137,25 @@ async function waitForStirs(page) {
 const MIX_LAYOUTS = {
   1: [{ x: 500, y: 330 }],
   2: [
-    { x: 300, y: 330 },
-    { x: 700, y: 330 },
+    { x: 360, y: 330 },
+    { x: 640, y: 330 },
   ],
   3: [
-    { x: 300, y: 270 },
-    { x: 700, y: 270 },
-    { x: 500, y: 480 },
+    { x: 280, y: 330 },
+    { x: 500, y: 330 },
+    { x: 720, y: 330 },
   ],
   4: [
-    { x: 300, y: 255 },
-    { x: 700, y: 255 },
-    { x: 300, y: 465 },
-    { x: 700, y: 465 },
+    { x: 238, y: 330 },
+    { x: 413, y: 330 },
+    { x: 588, y: 330 },
+    { x: 762, y: 330 },
   ],
 };
+
+const MIX_KNOB = { x: 48, y: 84, drag: 90 };
+const MIX_COLOR_BOTTLE = { x: -76, y: -8 };
+const MIX_AROMA_BOTTLE = { x: 76, y: -8 };
 
 async function mixBurnerCount(page) {
   return page.$$eval(
@@ -212,7 +216,9 @@ async function mixWithKeyboard(page) {
   for (let index = 0; index < count; index += 1) {
     await click(page, `mix-burner-${index}`);
     await focusCanvas(page, "mix");
-    await page.keyboard.down(" ");
+    for (let step = 0; step < 10; step += 1) {
+      await page.keyboard.press("=");
+    }
     await waitForMixRange(page, index);
 
     const color = await readMixDose(page, "mix-color");
@@ -243,18 +249,29 @@ async function mixWithKeyboard(page) {
       await page.keyboard.press("ArrowRight");
     }
     await waitForMixStirs(page);
-    await page.keyboard.up(" ");
   }
 }
 
 async function heatMixWithPointer(page, index, position) {
-  const lever = await stagePoint(page, "mix", position.x + 112, position.y);
-  await page.mouse.move(lever.x, lever.y);
+  const knob = await stagePoint(
+    page,
+    "mix",
+    position.x + MIX_KNOB.x,
+    position.y + MIX_KNOB.y,
+  );
+  const full = await stagePoint(
+    page,
+    "mix",
+    position.x + MIX_KNOB.x,
+    position.y + MIX_KNOB.y - MIX_KNOB.drag,
+  );
+  await page.mouse.move(knob.x, knob.y);
   await page.mouse.down();
   try {
+    await page.mouse.move(full.x, full.y, { steps: 12 });
     await waitForMixRange(page, index);
-    // Keep heating a little past the lower bound so the dose does not sit on
-    // the range edge while the pointer is released.
+    // Releasing the knob must keep the level: wait until the reading is
+    // comfortably inside the range before letting go.
     await wait(500);
   } finally {
     await page.mouse.up();
@@ -264,6 +281,13 @@ async function heatMixWithPointer(page, index, position) {
 async function mixWithPointer(page) {
   const count = await mixBurnerCount(page);
   const layout = MIX_LAYOUTS[count] ?? MIX_LAYOUTS[1];
+  const origin = await stagePoint(page, "mix", 0, 0);
+  const unitPoint = await stagePoint(page, "mix", 100, 100);
+  const stageScale = (unitPoint.x - origin.x) / 100;
+  const toScreen = (x, y) => ({
+    x: origin.x + x * stageScale,
+    y: origin.y + y * stageScale,
+  });
 
   for (let index = 0; index < count; index += 1) {
     const position = layout[index];
@@ -276,8 +300,8 @@ async function mixWithPointer(page) {
     const colorBottle = await stagePoint(
       page,
       "mix",
-      position.x - 120,
-      position.y + 30,
+      position.x + MIX_COLOR_BOTTLE.x,
+      position.y + MIX_COLOR_BOTTLE.y,
     );
     for (let drop = 0; drop < color.target; drop += 1) {
       await page.mouse.click(colorBottle.x, colorBottle.y);
@@ -287,8 +311,8 @@ async function mixWithPointer(page) {
     const aromaBottle = await stagePoint(
       page,
       "mix",
-      position.x - 85,
-      position.y + 30,
+      position.x + MIX_AROMA_BOTTLE.x,
+      position.y + MIX_AROMA_BOTTLE.y,
     );
     await page.mouse.move(aromaBottle.x, aromaBottle.y);
     await page.mouse.down();
@@ -298,17 +322,19 @@ async function mixWithPointer(page) {
       await page.mouse.up();
     }
 
-    const pot = await stagePoint(page, "mix", position.x, position.y - 22);
-    await page.mouse.move(pot.x + 42, pot.y);
+    const potCenterY = position.y - 24;
+    const pot = toScreen(position.x + 42, potCenterY);
+    await page.mouse.move(pot.x, pot.y);
     await page.mouse.down();
     try {
       for (let circle = 0; circle < 3; circle += 1) {
         for (let step = 1; step <= 18; step += 1) {
           const angle = (step / 18) * Math.PI * 2;
-          await page.mouse.move(
-            pot.x + Math.cos(angle) * 42,
-            pot.y + Math.sin(angle) * 24,
+          const point = toScreen(
+            position.x + Math.cos(angle) * 42,
+            potCenterY + Math.sin(angle) * 24,
           );
+          await page.mouse.move(point.x, point.y);
           await wait(12);
         }
       }

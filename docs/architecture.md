@@ -230,8 +230,9 @@ Los hotspots de `WorkshopStage.svelte` son DOM porcentual y no se migran a
   tests ahí.
 - **Typecheck:** `npm run check` valida Astro, Svelte y TypeScript, incluido
   `layout.ts`.
-- **Build:** `npm run build` genera salida estática; Pixi queda en un chunk
-  diferido de `/juego` (~180–230 KB gzip).
+- **Build:** `npm run build` genera salida estática; Pixi queda en chunks
+  diferidos de `/juego`, con un máximo cercano a 100 KB gzip y un total del
+  sitio de ~262 KB (presupuesto de QA: 280 KB).
 - **E2E:** `npm run qa:game` construye, sirve `dist/` y recorre 4 pedidos,
   puntero, teclado, sandbox, fallback, 390/1280, claro/oscuro, axe, overflow,
   consola, bundle y FPS.

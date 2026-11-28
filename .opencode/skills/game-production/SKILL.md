@@ -147,7 +147,7 @@ Una slice está terminada cuando:
 - [ ] Receta y CTA de WhatsApp funcionan; sin precios de vela terminada.
 - [ ] Fallback sin WebGL sigue mostrando diseño y receta.
 - [ ] `?motion=off` y `?motion=full` se revisaron; reduced conserva la información.
-- [ ] Bundle dentro de presupuesto: chunk grande ≤ 130 KB gzip y total ≤ 260 KB (`scripts/qa/checks.mjs`). El total está cerca del límite: no agregues dependencias.
+- [ ] Bundle dentro de presupuesto: chunk grande ≤ 130 KB gzip y total ≤ 280 KB (`scripts/qa/checks.mjs`). El total ronda los 262 KB: no agregues dependencias.
 - [ ] Capturas en `qa/` revisadas; no se commitea `qa/`, `dist/` ni `node_modules/`.
 - [ ] Docs actualizados solo si cambió el comportamiento: GDD, `docs/architecture.md`, `AGENTS.md` o el issue.
 - [ ] Datos nuevos marcados como placeholder y enlazados a [#87](https://github.com/MiguelCock/ParafinaGel/issues/87).

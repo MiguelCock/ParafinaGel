@@ -6,6 +6,7 @@
     mixColorAccuracy,
     mixStirAccuracy,
     mixTargetColorDrops,
+    mixUnitReady,
   } from "@lib/game/craft";
   import { scentsById, waxesById } from "@lib/game/data";
   import type { GameState } from "@lib/game/game-state.svelte";
@@ -34,9 +35,7 @@
       .map((id) => scentsById[id])
       .filter((scent): scent is NonNullable<typeof scent> => Boolean(scent)),
   );
-  const ready = $derived(
-    Boolean(unit) && unit.colorDrops > 0 && unit.aromaMl > 0 && unit.mix > 0,
-  );
+  const ready = $derived(unit ? mixUnitReady(unit) : false);
   const colorAccuracy = $derived(unit ? mixColorAccuracy(unit) : 0);
   const aromaAccuracy = $derived(unit ? mixAromaAccuracy(unit, wax) : 0);
   const stirAccuracy = $derived(unit ? mixStirAccuracy(unit) : 0);
@@ -44,12 +43,12 @@
 
 <div class="game-station-panel" data-testid="mix-panel">
   <p class="game-eyebrow">Estación de mezcla</p>
-  <h3 class="game-title">Un fogón por color</h3>
+  <h3 class="game-title">Una perilla por fogón</h3>
   <p class="game-text">
     La cera se repartió entre {game.craft.units.length}
-    {game.craft.units.length === 1 ? "fogón" : "fogones"}. Calienta cada uno,
-    dosifica el color gota a gota, agrega el aroma y revuelve antes de pasar al
-    vertido.
+    {game.craft.units.length === 1 ? "fogón" : "fogones"} en fila. Cada fogón tiene
+    su perilla: arrástrala o usa + / − y el nivel queda fijo al soltar. Dosifica el
+    color gota a gota, agrega el aroma y revuelve cada lote.
   </p>
 
   <div class="burner-tabs" role="group" aria-label="Fogones de mezcla">
@@ -57,9 +56,7 @@
       <button
         class="burner-tab"
         class:burner-tab--active={index === game.mixIndex}
-        class:burner-tab--done={item.colorDrops > 0 &&
-          item.aromaMl > 0 &&
-          item.mix > 0}
+        class:burner-tab--done={mixUnitReady(item)}
         type="button"
         aria-pressed={index === game.mixIndex}
         onclick={() => game.selectMixBatch(index)}
@@ -73,6 +70,9 @@
               ? (scentsById[item.scentId]?.nombre ?? `${item.grams} g`)
               : `${item.grams} g`}
           </small>
+          <small class="burner-tab__heat" data-testid={`mix-heat-${index}`}>
+            Calor {Math.round(item.heatLevel * 100)} %
+          </small>
         </span>
       </button>
     {/each}
@@ -82,6 +82,9 @@
     <div class="mix-current">
       <span class="game-badge" data-testid="mix-temperature">
         {Math.round(unit.temperature)} °C
+      </span>
+      <span class="game-badge" data-testid="mix-heat">
+        Calor {Math.round(unit.heatLevel * 100)} %
       </span>
       <span
         class:game-warning={!inRange}
@@ -164,7 +167,8 @@
     <div class="manual-note">
       <span class="manual-note__icon" aria-hidden="true">↕</span>
       <span>
-        <strong>Palanca:</strong> mantén el control del fogón.
+        <strong>Perilla:</strong> arrastra hacia arriba o abajo, o pulsa + / −.
+        El nivel queda fijo al soltar.
         <br />
         <strong>Color:</strong> toca el frasco o pulsa C para una gota.
         <br />
@@ -173,7 +177,8 @@
         <strong>Cuchara:</strong> arrastra en círculos o usa ← →.
         {#if game.craft.units.length > 1}
           <br />
-          <strong>Fogón:</strong> pulsa 1–{game.craft.units.length}.
+          <strong>Fogón:</strong> pulsa 1–{game.craft.units.length}; los demás
+          se apagan.
         {/if}
       </span>
     </div>
@@ -232,6 +237,11 @@
     font-size: 0.55rem;
   }
 
+  .burner-tab__heat {
+    color: var(--color-accent-strong);
+    font-weight: 800;
+  }
+
   .burner-tab--active {
     border-color: var(--color-accent);
     background: var(--color-accent-soft);
@@ -259,6 +269,7 @@
 
   .mix-current {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     gap: 0.4rem;
   }

@@ -97,6 +97,7 @@ function createPourUnit(
     grams,
     temperature: wax ? (wax.meltMin + wax.meltMax) / 2 : 65,
     heating: false,
+    heatLevel: 0,
     scentId: scents.length > 0 ? (scents[index % scents.length] ?? null) : null,
     colorDrops: 0,
     aromaMl: 0,

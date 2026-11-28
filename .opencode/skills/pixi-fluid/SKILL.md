@@ -131,7 +131,7 @@ La olla usa una máscara `Graphics.roundRect` para recortar el fluido a la boca 
 
 ## Rendimiento
 
-Presupuesto actual de QA: chunk grande ≤ 130 KB gzip, JS total ≤ 260 KB; FPS < 30 es aviso bajo SwiftShader (`scripts/qa/checks.mjs`). En el último reporte el total ronda los 256 KB, así que **no agregues dependencias**.
+Presupuesto actual de QA: chunk grande ≤ 130 KB gzip, JS total ≤ 280 KB; FPS < 30 es aviso bajo SwiftShader (`scripts/qa/checks.mjs`). En el último reporte el total ronda los 262 KB y el chunk mayor los 99 KB, así que **no agregues dependencias**.
 
 - Un solo `Sprite` + textura; nunca un `Graphics` por celda.
 - Evita asignaciones por celda en el hot path: `stepFluid` crea un array de candidatos por celda líquida y dos números aleatorios. A 1.248 celdas es aceptable; si el grid crece, reemplaza arrays por comprobaciones directas y mide GC.

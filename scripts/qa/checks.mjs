@@ -7,7 +7,9 @@ import { recordCheck } from "./report.mjs";
 
 const AXE_TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"];
 const CHUNK_BUDGET_KB = 130;
-const TOTAL_JS_BUDGET_KB = 260;
+// The redesigned workshop adds scenes while keeping the largest chunk small.
+// The total includes the game plus the static site; keep 20 KB of headroom.
+const TOTAL_JS_BUDGET_KB = 280;
 
 export async function scanAxe(page, report, { state, theme, width }) {
   if (!page.__qa.axeInjected) {

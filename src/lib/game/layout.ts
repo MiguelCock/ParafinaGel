@@ -204,29 +204,58 @@ export const MELT_STOVE = {
 
 export type BurnerCount = 1 | 2 | 3 | 4;
 
+/** Highlighted cell behind one lateral burner. */
 export const BURNER_CARD = {
-  width: 340,
-  height: 190,
-  radius: 24,
+  width: 166,
+  height: 360,
+  radius: 26,
 } as const satisfies StageSize & { readonly radius: number };
 
-/** One card per layer, figure part or gel batch. */
+/**
+ * Lateral mix bench: every layer, figure part or gel batch gets its own pot,
+ * flame, spoon and heat knob in a single row. Offsets are relative to the
+ * burner center in `BURNER_LAYOUTS`.
+ */
+export const MIX_VIEW = {
+  board: WORKBENCH,
+  rowY: 330,
+  card: BURNER_CARD,
+  pot: { width: 126, height: 58, radius: 22 },
+  stove: { width: 138, height: 48, radius: 16 },
+  knob: {
+    offsetX: 48,
+    offsetY: 84,
+    radius: 20,
+    hitRadius: 34,
+    /** Stage pixels of vertical drag from 0 % to 100 %. */
+    drag: 90,
+  },
+  colorBottle: { offsetX: -76, offsetY: -8, radius: 15, hitRadius: 34 },
+  aromaBottle: { offsetX: 76, offsetY: -8, radius: 15, hitRadius: 34 },
+  spoon: { pivotOffsetX: 40, pivotOffsetY: -78, reach: 22 },
+  statusOffsetY: -140,
+  labelOffsetY: -116,
+  temperatureOffsetY: -96,
+  heatOffsetY: 116,
+} as const;
+
+/** One pot per layer, figure part or gel batch, lined up on the side bench. */
 export const BURNER_LAYOUTS = {
-  1: [{ x: 500, y: 330 }],
+  1: [{ x: 500, y: MIX_VIEW.rowY }],
   2: [
-    { x: 300, y: 330 },
-    { x: 700, y: 330 },
+    { x: 360, y: MIX_VIEW.rowY },
+    { x: 640, y: MIX_VIEW.rowY },
   ],
   3: [
-    { x: 300, y: 270 },
-    { x: 700, y: 270 },
-    { x: 500, y: 480 },
+    { x: 280, y: MIX_VIEW.rowY },
+    { x: 500, y: MIX_VIEW.rowY },
+    { x: 720, y: MIX_VIEW.rowY },
   ],
   4: [
-    { x: 300, y: 255 },
-    { x: 700, y: 255 },
-    { x: 300, y: 465 },
-    { x: 700, y: 465 },
+    { x: 238, y: MIX_VIEW.rowY },
+    { x: 413, y: MIX_VIEW.rowY },
+    { x: 588, y: MIX_VIEW.rowY },
+    { x: 762, y: MIX_VIEW.rowY },
   ],
 } as const satisfies Record<BurnerCount, readonly StagePoint[]>;
 

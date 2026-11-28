@@ -31,7 +31,7 @@
       return "Acabado. Arrastra la etiqueta y su tirador; toca la tapa y el empaque. Teclado: 1 etiqueta, 2 tapa, 3 empaque.";
     }
     if (game.phase === "mix") {
-      return "Mezcla. Hay varios fogones. Selecciona uno con 1–4, mantén su palanca para calentar, añade gotas de color con C, mantén A para el aroma y revuelve con las flechas o la cuchara.";
+      return "Mezcla. Hay varios fogones en fila. Selecciona uno con 1–4, ajusta su perilla con + / − o arrastrando, añade gotas de color con C, mantén A para el aroma y revuelve con las flechas o la cuchara.";
     }
     if (game.phase === "pour") {
       return "Vertido. La mecha ya está preparada. Arrastra la jarra sobre la boca del frasco y suelta para terminar la capa.";

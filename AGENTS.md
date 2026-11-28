@@ -84,7 +84,7 @@ Sitio de **ParafinaGel**, negocio familiar de velas que vende **insumos y materi
 - **Retos manuales**:
   - Preparación: vista lateral; arrastrar la mecha (puede quedar inclinada/de lado), soltarla para fijar el sostenedor y cortarla con la tijera antes de verter.
   - Cera: cortar la parafina en bloque (2–4 cortes) antes de calentar; al calentar, los trozos caen en la olla y el nivel de cera sube; agregar ácido esteárico solo a las parafinas en bloque; girar la perilla del fogón para regular el calor, sin palanca mantenida, y arrastrar la cuchara en círculos.
-  - Mezcla: un fogón por capa o parte; calentar cada fogón con su palanca, dosificar color gota a gota, aroma manual y un aroma por fogón; revolver cada lote.
+  - Mezcla: un fogón por capa o parte en fila lateral; calentar cada fogón con su perilla (el nivel queda al soltar), dosificar color gota a gota, aroma manual y un aroma por fogón; revolver cada lote.
   - Vertido: arrastrar la jarra sobre la boca del frasco y soltar para cerrar la capa.
   - Curado: retirar el sostenedor, tocar el ventilador; en gel, tocar las burbujas.
   - Acabado: arrastrar la etiqueta y su tirador, tocar tapa y empaque. El corte de mecha ya no vive aquí.
@@ -151,7 +151,7 @@ Sitio de **ParafinaGel**, negocio familiar de velas que vende **insumos y materi
 
 ## Notas
 
-- PixiJS agrega ~180–230 KB gzip al chunk del juego, cargado solo en `/juego` y de forma diferida. Mantén el presupuesto.
+- El taller suma ~262 KB gzip al JS total del sitio; el chunk mayor ronda 99 KB y el presupuesto de QA es 280 KB. Pixi se carga solo en `/juego` y de forma diferida. Mantén el presupuesto.
 - `?motion=off` fuerza el modo reducido y `?motion=full` lo desactiva para QA visual.
 - `npm run qa:game` tarda ~10 min en la matriz completa y ~3 min en modo rápido; `qa/` está ignorada.
 - `package-lock.json` se versiona; `node_modules/`, `dist/` y `qa/` están ignorados.

@@ -404,6 +404,133 @@ describe("mix station", () => {
   });
 });
 
+describe("mix burner knobs", () => {
+  function mixGame() {
+    const game = new GameState();
+    game.phase = "mix";
+    game.view = "mix";
+    game.design = designForBrief(briefs[1]);
+    game.craft = createCraft(game.design);
+    game.craft.wick.placed = true;
+    return game;
+  }
+
+  function readyUnits(game: ReturnType<typeof mixGame>) {
+    for (const unit of game.craft.units) {
+      unit.colorDrops = 1;
+      unit.aromaMl = 1;
+      unit.stirs = 1;
+      unit.mix = 1 / MIX_FULL_STIRS;
+    }
+  }
+
+  it("sets each knob independently and clamps its level", () => {
+    const game = mixGame();
+
+    game.setMixHeat(0, 0.42);
+    expect(game.craft.units[0]!.heatLevel).toBeCloseTo(0.42);
+    expect(game.craft.units[0]!.heating).toBe(true);
+
+    game.setMixHeat(0, 2);
+    expect(game.craft.units[0]!.heatLevel).toBe(1);
+    expect(game.craft.units[0]!.heating).toBe(true);
+
+    game.setMixHeat(0, -1);
+    expect(game.craft.units[0]!.heatLevel).toBe(0);
+    expect(game.craft.units[0]!.heating).toBe(false);
+  });
+
+  it("puts a knob at full or off with start and stop", () => {
+    const game = mixGame();
+
+    game.startMixHeat(1);
+    expect(game.craft.units[1]!.heatLevel).toBe(1);
+    expect(game.craft.units[1]!.heating).toBe(true);
+
+    game.stopMixHeat(1);
+    expect(game.craft.units[1]!.heatLevel).toBe(0);
+    expect(game.craft.units[1]!.heating).toBe(false);
+  });
+
+  it("shuts the other burners off and keeps the selected level", () => {
+    const game = mixGame();
+
+    game.setMixHeat(0, 0.7);
+    game.selectMixBatch(0);
+    expect(game.craft.units[0]!.heatLevel).toBeCloseTo(0.7);
+    expect(game.craft.units[0]!.heating).toBe(true);
+
+    game.setMixHeat(1, 0.4);
+    expect(game.craft.units[0]!.heatLevel).toBe(0);
+    expect(game.craft.units[0]!.heating).toBe(false);
+    expect(game.craft.units[1]!.heatLevel).toBeCloseTo(0.4);
+    expect(game.craft.units[1]!.heating).toBe(true);
+
+    game.selectMixBatch(1);
+    expect(game.craft.units[1]!.heatLevel).toBeCloseTo(0.4);
+    expect(game.craft.units[1]!.heating).toBe(true);
+  });
+
+  it("heats at the level set on the active knob", () => {
+    const game = mixGame();
+    const wax = waxesById[game.design.waxId!]!;
+    const unit = game.craft.units[0]!;
+    unit.temperature = wax.meltMin;
+
+    game.setMixHeat(0, 0.5);
+    game.tick(0.1);
+
+    expect(unit.temperature).toBeCloseTo(
+      wax.meltMin + wax.heatRate * (0.35 + 0.5 * 0.65) * 0.9 * 0.1,
+      6,
+    );
+  });
+
+  it("keeps goPour blocked while any burner is incomplete", () => {
+    const game = mixGame();
+    readyUnits(game);
+    game.craft.units[1]!.mix = 0;
+
+    expect(game.canContinueMix).toBe(false);
+    game.goPour();
+    expect(game.phase).toBe("mix");
+    expect(game.view).toBe("mix");
+  });
+
+  it("clears every knob level when going to the pour", () => {
+    const game = mixGame();
+    readyUnits(game);
+    game.setMixHeat(0, 0.6);
+
+    game.goPour();
+
+    expect(game.phase).toBe("pour");
+    expect(
+      game.craft.units.every((unit) => !unit.heating && unit.heatLevel === 0),
+    ).toBe(true);
+  });
+
+  it("clears the knobs when entering the mix from the melt", () => {
+    const game = new GameState();
+    game.phase = "melt";
+    game.view = "melt";
+    game.design = designForBrief(briefs[0]);
+    game.craft = createCraft(game.design);
+    game.craft.wick.placed = true;
+    game.craft.meltTemperature = 53;
+    game.craft.stirs = 3;
+    game.craft.units[0]!.heatLevel = 0.5;
+    game.craft.units[0]!.heating = true;
+
+    game.goMix();
+
+    expect(game.phase).toBe("mix");
+    expect(
+      game.craft.units.every((unit) => !unit.heating && unit.heatLevel === 0),
+    ).toBe(true);
+  });
+});
+
 describe("craft execution", () => {
   it("scores a perfect execution at 40", () => {
     for (const brief of briefs) {

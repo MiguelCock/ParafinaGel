@@ -50,7 +50,7 @@ El sitio vende **insumos y materias primas**, no velas terminadas. El juego perm
 2. **Diseño**: tipo, cera, tamaño, recipiente/molde, capas/partes/montajes, aroma, pabilo y etiqueta. Los materiales se eligen como objetos físicos en la estantería; el selector accesible es la alternativa de teclado/lector.
 3. **Preparación**: vista lateral; colocar la mecha (puede quedar inclinada), fijar el sostenedor y cortar la mecha.
 4. **Cera**: cortar el bloque si hace falta, girar la perilla del fogón y arrastrar la cuchara en círculos.
-5. **Mezcla**: calentar cada fogón, dosificar color y aroma, y revolver cada lote.
+5. **Mezcla**: calentar cada fogón con su perilla, dosificar color y aroma, y revolver cada lote.
 6. **Vertido**: arrastrar la jarra sobre la boca; el líquido cae, se ondula y llena. Soltar cierra la capa.
 7. **Curado**: retirar el sostenedor y tocar el ventilador; en gel, tocar las burbujas.
 8. **Acabado**: arrastrar etiqueta y tirador, tocar tapa y empaque. El corte de mecha ya ocurrió en Preparación.
@@ -97,6 +97,7 @@ La **preparación lateral con corte de mecha** ya está implementada ([#138](htt
 
 - **Preparación**: vista lateral; arrastrar la mecha, soltarla para `placeWick` y cortarla con la tijera o la regla (`setTrimMm` + `cutWick`). Si queda descentrada se ve inclinada; el sostenedor de madera se retira después del curado. Teclado: flechas + Enter para colocar; ↑/↓ y Enter para cortar.
 - **Cera**: arrastrar la perilla hacia arriba/abajo regula `game.setHeatLevel`; el corte del bloque se hace con un trazo horizontal o `C`; al calentar, los trozos caen en la olla y el nivel del fluido sube. Tocar el frasco agrega esteárico o `E`; arrastrar la cuchara acumula ángulo y llama `game.stir()` cada 1.6π. Teclado: `+`/`-` para calor, Espacio para encender/apagar y flechas para revolver.
+- **Mezcla**: 1–4 fogones en fila; la perilla de cada uno se arrastra o se ajusta con `+`/`-` y conserva el nivel al soltar (`game.setMixHeat`). `C` deja una gota, `A` mantenida dosifica aroma y las flechas o la cuchara revuelven. Los demás fogones se apagan al cambiar con 1–4.
 - **Vertido**: arrastrar la jarra; `game.setPourOffset` alinea. Si `|offset| <= 0.32`, el tick llena la unidad; si no, acumula `spill`. Al soltar, `game.releasePour()` cierra la capa si hay suficiente cera. Teclado: flechas + Espacio.
 - **Curado**: clic en el ventilador (`game.fan()`); burbujas de gel (`game.popBubble()`). Teclado: Espacio y B.
 - **Acabado**: etiqueta arrastrable con tirador de giro; tapa y empaque clicables. Teclado: 1 etiqueta, 2 tapa, 3 empaque, flechas, Mayús + flechas, Enter. Moños/stickers y tapa aérea son el siguiente paso del rediseño.

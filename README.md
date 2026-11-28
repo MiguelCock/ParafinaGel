@@ -54,7 +54,7 @@ flowchart LR
 - **Cuatro tipos de vela**: clásica, capas, figura con molde y gel con montajes.
 - **Envases**: vidrio, lata y cerámica, con pabilos recomendados según el diámetro.
 - **Preparación de mecha**: vista lateral, sostenedor de madera y corte de mecha antes del vertido.
-- **Fogones de mezcla**: un lote por capa o parte; palanca de calor, color por gotas y un aroma por fogón.
+- **Fogones de mezcla**: un lote por capa o parte en fila lateral; perilla de calor por fogón, color por gotas y un aroma por fogón.
 - **Estantería física**: los materiales se eligen como objetos, no como listas; incluye un selector accesible para teclado y lectores de pantalla.
 - **Simulación de líquido**: motor celular lateral para cera/gel, superficie con menisco, chorro, salpicaduras, derrame, película entre capas, mezcla y burbujas. Afecta el puntaje.
 - **Retos manuales**: sin sliders ni botones para las estaciones; el teclado es la alternativa accesible.
