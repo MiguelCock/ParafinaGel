@@ -170,7 +170,8 @@ async function waitForMixRange(page, index) {
       const panel = document.querySelector('[data-testid="mix-panel"]');
       return Boolean(panel) && !panel.innerText.includes("Calienta el fogón");
     },
-    { timeout: 15000 },
+    // SwiftShader can run the mix ticks much slower than a real GPU.
+    { timeout: 30000 },
     index,
   );
 }
@@ -190,7 +191,7 @@ async function waitForMixStirs(page) {
       /Revueltos:\s*3\/3/.test(
         document.querySelector('[data-testid="mix-panel"]')?.innerText ?? "",
       ),
-    { timeout: 15000 },
+    { timeout: 30000 },
   );
 }
 
@@ -200,7 +201,7 @@ async function waitForAroma(page, minimum) {
       const row = document.querySelector('[data-testid="mix-aroma"]');
       return Number(row?.dataset.current ?? 0) >= value;
     },
-    { timeout: 15000 },
+    { timeout: 30000 },
     minimum,
   );
 }
@@ -494,7 +495,7 @@ async function waitForWickCut(page) {
         document.querySelector('[data-testid="wick-quality"]')?.textContent ??
         ""
       ).includes("Cortada"),
-    { timeout: 5000 },
+    { timeout: 8000 },
   );
 }
 

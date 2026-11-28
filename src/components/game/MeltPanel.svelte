@@ -33,6 +33,22 @@
         ? "Agrega el esteárico"
         : "Calienta con calma",
   );
+  const hasMelted = $derived(game.craft.meltTemperature >= game.meltMin);
+  const meltHint = $derived.by(() => {
+    if (game.needsCutting && !game.cutPrepared) {
+      return "Corta el bloque: los trozos caen en la olla al calentar.";
+    }
+    if (game.craft.overheated) {
+      return "Fuera de rango: el nivel y los restos quedan visibles.";
+    }
+    if (game.isTemperatureReady || hasMelted) {
+      return "Cera fundida: el nivel y los restos marcan la fusión.";
+    }
+    if (game.craft.heating) {
+      return "La cera se funde y el nivel sube mientras calientas.";
+    }
+    return "Gira la perilla y observa cómo sube el nivel de cera.";
+  });
 </script>
 
 <div class="game-station-panel" data-testid="melt-panel">
@@ -142,6 +158,8 @@
                   : "Falta calor"}
     </span>
   </div>
+
+  <p class="game-text" data-testid="melt-visual-state">{meltHint}</p>
 
   <p class="game-text">
     Aroma: <strong>{scent?.nombre ?? "—"}</strong> · Cera:

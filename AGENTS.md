@@ -83,7 +83,7 @@ Sitio de **ParafinaGel**, negocio familiar de velas que vende **insumos y materi
 - **Diseño**: cera, tamaño, recipiente o molde, capas/colores, aroma, pabilo y etiqueta. Los materiales se eligen como objetos en la estantería física; el selector accesible es la alternativa de teclado/lector. Las validaciones aparecen en el panel.
 - **Retos manuales**:
   - Preparación: vista lateral; arrastrar la mecha (puede quedar inclinada/de lado), soltarla para fijar el sostenedor y cortarla con la tijera antes de verter.
-  - Cera: cortar la parafina en bloque (2–4 cortes) antes de calentar; agregar ácido esteárico solo a las parafinas en bloque; girar la perilla del fogón para regular el calor, sin palanca mantenida, y arrastrar la cuchara en círculos.
+  - Cera: cortar la parafina en bloque (2–4 cortes) antes de calentar; al calentar, los trozos caen en la olla y el nivel de cera sube; agregar ácido esteárico solo a las parafinas en bloque; girar la perilla del fogón para regular el calor, sin palanca mantenida, y arrastrar la cuchara en círculos.
   - Mezcla: un fogón por capa o parte; calentar cada fogón con su palanca, dosificar color gota a gota, aroma manual y un aroma por fogón; revolver cada lote.
   - Vertido: arrastrar la jarra sobre la boca del frasco y soltar para cerrar la capa.
   - Curado: retirar el sostenedor, tocar el ventilador; en gel, tocar las burbujas.

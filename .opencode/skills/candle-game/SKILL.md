@@ -96,7 +96,7 @@ La **preparación lateral con corte de mecha** ya está implementada ([#138](htt
 ## Retos manuales
 
 - **Preparación**: vista lateral; arrastrar la mecha, soltarla para `placeWick` y cortarla con la tijera o la regla (`setTrimMm` + `cutWick`). Si queda descentrada se ve inclinada; el sostenedor de madera se retira después del curado. Teclado: flechas + Enter para colocar; ↑/↓ y Enter para cortar.
-- **Cera**: arrastrar la perilla hacia arriba/abajo regula `game.setHeatLevel`; el corte del bloque se hace con un trazo horizontal o `C`; tocar el frasco agrega esteárico o `E`; arrastrar la cuchara acumula ángulo y llama `game.stir()` cada 1.6π. Teclado: `+`/`-` para calor, Espacio para encender/apagar y flechas para revolver.
+- **Cera**: arrastrar la perilla hacia arriba/abajo regula `game.setHeatLevel`; el corte del bloque se hace con un trazo horizontal o `C`; al calentar, los trozos caen en la olla y el nivel del fluido sube. Tocar el frasco agrega esteárico o `E`; arrastrar la cuchara acumula ángulo y llama `game.stir()` cada 1.6π. Teclado: `+`/`-` para calor, Espacio para encender/apagar y flechas para revolver.
 - **Vertido**: arrastrar la jarra; `game.setPourOffset` alinea. Si `|offset| <= 0.32`, el tick llena la unidad; si no, acumula `spill`. Al soltar, `game.releasePour()` cierra la capa si hay suficiente cera. Teclado: flechas + Espacio.
 - **Curado**: clic en el ventilador (`game.fan()`); burbujas de gel (`game.popBubble()`). Teclado: Espacio y B.
 - **Acabado**: etiqueta arrastrable con tirador de giro; tapa y empaque clicables. Teclado: 1 etiqueta, 2 tapa, 3 empaque, flechas, Mayús + flechas, Enter. Moños/stickers y tapa aérea son el siguiente paso del rediseño.

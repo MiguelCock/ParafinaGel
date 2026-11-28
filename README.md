@@ -44,7 +44,7 @@ flowchart LR
 | **Mostrador**   | Escuchas al cliente y creas la nota del pedido.                                     |
 | **Diseño**      | Eliges cera, envase, pabilo, aroma, color y etiqueta como objetos en la estantería. |
 | **Preparación** | Colocas la mecha de lado, fijas el sostenedor y la cortas con la tijera.            |
-| **Cera**        | Cortas el bloque, agregas estearina y giras la perilla del fogón.                   |
+| **Cera**        | Cortas el bloque, los trozos caen en la olla y giras la perilla del fogón.          |
 | **Mezcla**      | Calientas cada fogón, dosificas color y aroma, y revuelves cada lote.               |
 | **Vertido**     | La mecha ya está lista; arrastras la jarra y cierras cada capa.                     |
 | **Curado**      | Retiras el sostenedor y abanicas; en gel, revientas burbujas.                       |

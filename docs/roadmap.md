@@ -10,13 +10,13 @@ La ruta de 109 pasos de 2.2 quedó como **backlog de referencia**. La cola activ
 - [x] **#142** · Skills y prácticas para agentes
 - [x] **#143** · Organización del código y layout compartido
 - [x] **#144** · Laboratorio de fluido lateral (dev y build con `ENABLE_FLUID_LAB=true`)
-- [ ] **#145** · Vertical slice clásica (en curso: preparación lateral y corte listos)
+- [ ] **#145** · Vertical slice clásica (en curso: preparación lateral, corte y fusión visible listos)
 
 ## Fase R · Construcción
 
 - [x] **#126** · R-01 Motor de fluido celular lateral
 - [x] **#127** · R-02 Renderer Pixi del fluido
-- [ ] **#128** · R-03 Cera lateral con fogón y perilla
+- [x] **#128** · R-03 Cera lateral con fogón y perilla
 - [x] **#129** · R-04 Arte del fogón lateral
 - [ ] **#130** · R-05 Mezcla lateral con varios fogones
 - [ ] **#131** · R-06 Dosificación visible de color y aroma

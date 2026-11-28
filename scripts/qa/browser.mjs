@@ -8,6 +8,9 @@ export const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const WEBGL_ARGS = [
   "--no-sandbox",
   "--disable-dev-shm-usage",
+  "--disable-background-timer-throttling",
+  "--disable-renderer-backgrounding",
+  "--disable-backgrounding-occluded-windows",
   "--enable-webgl",
   "--ignore-gpu-blocklist",
   "--use-angle=swiftshader",
@@ -168,6 +171,17 @@ export async function gotoGame(page, baseUrl, { query = "" } = {}) {
     await document.fonts?.ready;
   });
   await wait(500);
+  await pokeFrame(page);
+}
+
+/**
+ * Brave's headless compositor can stay idle until a capture, which freezes
+ * rAF and the game tick. A 1x1 screenshot starts the frame loop again.
+ */
+async function pokeFrame(page) {
+  await page
+    .screenshot({ clip: { x: 0, y: 0, width: 1, height: 1 } })
+    .catch(() => {});
 }
 
 export async function click(
@@ -223,6 +237,7 @@ export async function waitForStage(page, scene, { timeout = 20000 } = {}) {
   await page.waitForSelector(`[data-testid="stage-canvas-${scene}"] canvas`, {
     timeout,
   });
+  await pokeFrame(page);
   await wait(700);
 }
 
@@ -256,6 +271,7 @@ export async function focusCanvas(page, scene) {
       .querySelector(`[data-testid="${testid}"]`)
       ?.focus({ preventScroll: true });
   }, `stage-canvas-${scene}`);
+  await pokeFrame(page);
   await wait(150);
 }
 
